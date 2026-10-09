@@ -2,7 +2,7 @@
 
 本仓库维护各应用的通用 Helm Chart 源码及打包配套。产品与部署设计以 [verdantflare-design 工作区规范](https://github.com/verdantflarehub/verdantflare-design/blob/dev/AGENTS.md)和 [Market 总设计](https://github.com/verdantflarehub/verdantflare-design/blob/dev/docs/design/center/market/README.md)为准；在父工作区内工作时优先读取对应本地文件。
 
-- 应用目录使用现有 Hub App ID：`charts/<app_id>/`。首个样本是 `blender-mcp`，应用源码在 `verdantflare-app-blender`。
+- 应用目录与源码项目同名：`charts/<project_name>/`。首个目录为 `charts/verdantflare-app-blender/`，现有 Hub App ID 为 `blender-mcp`；目录名不作为应用身份。
 - Hub／Control 持有管理元数据、版本索引和授权；本仓库不维护另一套可编辑市场目录，也不新增业务服务。
 - 一个 Chart 只保留一份权威源码。集群专属 values、固定版本引用及部署记录归设计仓库 `deploys/`，不将某个现场实例复制为通用默认值。
 - 新 Chart 必须依据真实镜像、启动方式、端口、健康检查、存储与资源契约实现。资料缺失时明确记录准备状态，不虚构可安装包或验收结果。
