@@ -1,0 +1,26 @@
+# Local configuration and generated artifacts
+.env
+.env.*
+!.env.example
+.tmp/
+.output/
+dist/
+*.tgz
+*.prov
+
+# Local tools and editor state
+.venv/
+__pycache__/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Runtime assets belong in controlled artifact storage
+*.blend
+*.blend1
+*.mp4
+*.wav
+*.mp3
+*.safetensors
+*.ckpt
