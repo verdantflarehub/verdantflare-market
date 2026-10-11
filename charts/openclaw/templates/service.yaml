@@ -1,0 +1,15 @@
+{{- if .Values.install.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "candidate.name" . }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Chart.Name }}
+  ports:
+    - name: app
+      port: 18789
+      targetPort: app
+{{- end }}

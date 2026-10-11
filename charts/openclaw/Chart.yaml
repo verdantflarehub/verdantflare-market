@@ -1,0 +1,8 @@
+apiVersion: v2
+name: openclaw
+description: Review-only candidate for a single-user openclaw instance
+type: application
+version: 0.1.0
+appVersion: "pending-audit"
+annotations:
+  verdantflare.io/review-status: candidate-not-installable

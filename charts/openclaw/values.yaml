@@ -1,0 +1,22 @@
+# Candidate only. Enabling install requires reviewed immutable inputs and target approval.
+install:
+  enabled: false
+  studioNamespace: ""
+image:
+  repository: ghcr.io/openclaw/openclaw
+  tag: ""
+  digest: ""
+  pullPolicy: Always
+secret:
+  existingName: ""
+storage:
+  create: true
+  storageClassName: ""
+  size: 10Gi
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: "2"
+    memory: 4Gi

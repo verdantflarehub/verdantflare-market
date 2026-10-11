@@ -1,0 +1,22 @@
+# Candidate only. Enabling install requires reviewed immutable inputs and target approval.
+install:
+  enabled: false
+  studioNamespace: ""
+image:
+  repository: docker.io/nousresearch/hermes-agent
+  tag: ""
+  digest: ""
+  pullPolicy: Always
+secret:
+  existingName: ""
+storage:
+  create: true
+  storageClassName: ""
+  size: 10Gi
+resources:
+  requests:
+    cpu: 1
+    memory: 2Gi
+  limits:
+    cpu: "2"
+    memory: 4Gi

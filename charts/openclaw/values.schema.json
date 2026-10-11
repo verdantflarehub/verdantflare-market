@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "install": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "studioNamespace": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "studioNamespace"
+      ]
+    },
+    "image": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        },
+        "digest": {
+          "type": "string"
+        },
+        "pullPolicy": {
+          "const": "Always"
+        }
+      },
+      "required": [
+        "repository",
+        "tag",
+        "digest",
+        "pullPolicy"
+      ]
+    },
+    "secret": {
+      "type": "object",
+      "properties": {
+        "existingName": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "existingName"
+      ]
+    },
+    "storage": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "const": true
+        },
+        "storageClassName": {
+          "type": "string"
+        },
+        "size": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "create",
+        "storageClassName",
+        "size"
+      ]
+    }
+  },
+  "required": [
+    "install",
+    "image",
+    "secret",
+    "storage"
+  ]
+}
