@@ -1,0 +1,6 @@
+# Audited image identity only. Target storage/GPU/entry review is still required.
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/comfyui
+  tag: "0.1.0"
+  digest: sha256:70722ff8f815a40ce9609bca5d0bd5165b008c47e519150b0dbd4f7c417c3473
+  pullPolicy: Always

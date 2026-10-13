@@ -1,0 +1,50 @@
+# Static review candidate. Replace only after controlled image and Station review.
+image:
+  repository: registry.invalid/verdantflare/indextts2
+  tag: "0.1.0"
+  digest: ""
+  pullPolicy: Always
+
+replicaCount: 1
+service:
+  port: 7860
+
+resources:
+  requests:
+    cpu: "1"
+    memory: 6Gi
+    nvidia.com/gpu: 1
+  limits:
+    cpu: "5"
+    memory: 20Gi
+    nvidia.com/gpu: 1
+
+storage:
+  create: true
+  existingClaim: ""
+  size: 30Gi
+  storageClassName: ""
+  accessMode: ReadWriteOnce
+  mountPath: /app/checkpoints
+
+review:
+  modelAssetsApproved: false
+  accessApproved: false
+  licenseApproved: false
+  existingSecretName: ""
+
+nodeSelector: {}
+tolerations: []
+probes:
+  startup:
+    path: /
+    periodSeconds: 10
+    failureThreshold: 90
+  readiness:
+    path: /
+    periodSeconds: 10
+    failureThreshold: 3
+  liveness:
+    path: /
+    periodSeconds: 30
+    failureThreshold: 3

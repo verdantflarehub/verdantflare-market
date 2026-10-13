@@ -1,0 +1,59 @@
+# Review defaults are intentionally not installable. Use an audited target
+# overlay only after Station verifies the existing ConfigMap, Secrets and PVCs.
+images:
+  app:
+    repository: registry.invalid/wod/verdantflare-app
+    tag: blender-v0.1.2
+    digest: ""
+  worker:
+    repository: registry.invalid/wod/verdantflare-app
+    tag: blender-worker-v0.1.2
+    digest: ""
+  pullPolicy: Always
+
+replicaCount: 1
+instance:
+  alias: a
+  configMapName: ""
+  configKey: instances.json
+  idKey: instance-a-id
+
+auth:
+  secretName: ""
+  workerTokenKey: BLENDER_WORKER_A
+  studioTokenKey: BLENDER_STUDIO_TOKEN
+  guiPasswordKey: BLENDER_GUI_A_PASSWORD
+  contentSecretName: ""
+  contentTokenKey: token
+
+contentOrigin: ""
+stationNamespace: verdantflare-station
+studioPodName: verdantflare-studio
+
+storage:
+  storageClassName: ""
+  app:
+    create: true
+    existingClaim: ""
+    size: 5Gi
+  worker:
+    create: true
+    existingClaim: ""
+    size: 50Gi
+
+resources:
+  app:
+    requests: {cpu: 100m, memory: 128Mi}
+    limits: {cpu: "2", memory: 512Mi}
+  worker:
+    requests: {cpu: "2", memory: 4Gi, nvidia.com/gpu: 1}
+    limits: {cpu: "8", memory: 16Gi, nvidia.com/gpu: 1}
+
+service:
+  appPort: 8080
+  guiPort: 48083
+  controlPort: 48084
+  filePort: 48085
+
+nodeSelector: {}
+tolerations: []

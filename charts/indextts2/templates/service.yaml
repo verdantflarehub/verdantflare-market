@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "indextts2.name" . }}
+  labels:
+    {{- include "indextts2.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "indextts2.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP

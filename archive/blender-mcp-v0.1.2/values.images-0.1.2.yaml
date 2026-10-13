@@ -1,0 +1,12 @@
+# Pod imageID evidence only; verify Registry tags before target installation.
+# Instance ConfigMap, Secrets, content origin, storage and GPU remain target-owned.
+images:
+  app:
+    repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+    tag: blender-v0.1.2
+    digest: sha256:864e70747d05c66d3f8aa46d87cbde3dc14606cf310c3ae9f6085b884612ceec
+  worker:
+    repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+    tag: blender-worker-v0.1.2
+    digest: sha256:6c440b9f550eeedf50fecf2b283f8d061af75102cf2ef4709e2d5602e93cb151
+  pullPolicy: Always

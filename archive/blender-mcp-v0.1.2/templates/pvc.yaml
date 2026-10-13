@@ -1,0 +1,33 @@
+{{- if and .Values.storage.app.create (not .Values.storage.app.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "blender-mcp.appName" . }}-state
+  annotations:
+    helm.sh/resource-policy: keep
+  labels:
+    {{- include "blender-mcp.labels" . | nindent 4 }}
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: {{ .Values.storage.storageClassName | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.app.size | quote }}
+---
+{{- end }}
+{{- if and .Values.storage.worker.create (not .Values.storage.worker.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "blender-mcp.workerName" . }}
+  annotations:
+    helm.sh/resource-policy: keep
+  labels:
+    {{- include "blender-mcp.labels" . | nindent 4 }}
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: {{ .Values.storage.storageClassName | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.worker.size | quote }}
+{{- end }}

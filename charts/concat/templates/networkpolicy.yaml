@@ -1,0 +1,12 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "concat.name" . }}-deny-ingress
+  labels:
+    {{- include "concat.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "concat.selectorLabels" . | nindent 6 }}
+  policyTypes: [Ingress]
+  ingress: []

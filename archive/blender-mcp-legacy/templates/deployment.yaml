@@ -1,0 +1,135 @@
+{{- include "blender-mcp.validateInstall" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "blender-mcp.name" . }}
+  labels:
+    {{- include "blender-mcp.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "blender-mcp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "blender-mcp.selectorLabels" . | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.auth.existingSecretName }}
+      initContainers:
+        - name: prepare-auth
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}{{ if .Values.image.digest }}@{{ .Values.image.digest }}{{ end }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-ec"]
+          args:
+            - test -s /secret/mcp-token && cp /secret/mcp-token /auth/mcp-token && chmod 0600 /auth/mcp-token
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: source-token
+              mountPath: /secret
+              readOnly: true
+            - name: runtime-auth
+              mountPath: /auth
+      {{- end }}
+      containers:
+        - name: blender-mcp
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}{{ if .Values.image.digest }}@{{ .Values.image.digest }}{{ end }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: INSTANCE_ID
+              value: {{ .Release.Name | quote }}
+            - name: BLENDER_MCP_TOKEN_FILE
+              value: /run/blender-mcp/mcp-token
+            {{- if .Values.auth.existingSecretName }}
+            - name: BDWIND_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.existingSecretName | quote }}
+                  key: {{ .Values.auth.appPasswordKey | quote }}
+            {{- end }}
+            - name: BLENDER_MCP_DEV_GENERATE_TOKEN
+              value: "false"
+            - name: BDWIND_PORT_NGINX
+              value: {{ .Values.service.appPort | quote }}
+            - name: BLENDER_MCP_PORT
+              value: {{ .Values.service.mcpPort | quote }}
+          ports:
+            - name: app
+              containerPort: {{ .Values.service.appPort }}
+              protocol: TCP
+            - name: mcp
+              containerPort: {{ .Values.service.mcpPort }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: workspace
+              mountPath: {{ .Values.storage.mountPath }}
+            - name: shm
+              mountPath: /dev/shm
+            {{- if .Values.auth.existingSecretName }}
+            - name: runtime-auth
+              mountPath: /run/blender-mcp
+            {{- end }}
+          startupProbe:
+            httpGet:
+              path: {{ .Values.probes.startup.path }}
+              port: mcp
+            periodSeconds: {{ .Values.probes.startup.periodSeconds }}
+            failureThreshold: {{ .Values.probes.startup.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.readiness.path }}
+              port: mcp
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+            failureThreshold: {{ .Values.probes.readiness.failureThreshold }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.liveness.path }}
+              port: mcp
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+            failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
+      volumes:
+        - name: workspace
+          persistentVolumeClaim:
+            claimName: {{ .Values.storage.existingClaim | default (include "blender-mcp.name" .) }}
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 4Gi
+        {{- if .Values.auth.existingSecretName }}
+        - name: source-token
+          secret:
+            secretName: {{ .Values.auth.existingSecretName | quote }}
+            items:
+              - key: {{ .Values.auth.tokenKey | quote }}
+                path: mcp-token
+        - name: runtime-auth
+          emptyDir:
+            medium: Memory
+        {{- end }}

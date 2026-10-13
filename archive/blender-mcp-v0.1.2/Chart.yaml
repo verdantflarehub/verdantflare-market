@@ -1,0 +1,9 @@
+apiVersion: v2
+name: blender-mcp
+description: Blender application and private GPU worker for Station
+type: application
+version: 0.1.2
+appVersion: "0.1.2"
+annotations:
+  verdantflare.com/access-scope: studio-only
+  verdantflare.com/source-repo: verdantflarehub/verdantflare-app-blender

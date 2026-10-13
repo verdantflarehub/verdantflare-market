@@ -1,0 +1,10 @@
+apiVersion: v2
+name: blender-mcp
+description: Blender MCP single-user Station package candidate
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+home: https://www.blender.org/
+annotations:
+  verdantflare.com/source-state: image-built-runtime-unverified
+  verdantflare.com/access-scope: station-single-operator

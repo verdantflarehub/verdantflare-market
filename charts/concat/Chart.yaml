@@ -1,0 +1,14 @@
+apiVersion: v2
+name: concat
+description: Concat Station delivery candidate; not an installable release
+type: application
+version: 0.1.0
+appVersion: "0.2.2"
+home: https://github.com/jub0t/Concat
+icon: https://raw.githubusercontent.com/jub0t/Concat/39f24d9ab158fb384acdd2a7ab974bf768f80d73/assets/concat_logo_512.png
+sources:
+  - https://github.com/jub0t/Concat
+annotations:
+  verdantflare.com/upstream-revision: "39f24d9ab158fb384acdd2a7ab974bf768f80d73"
+  verdantflare.com/delivery-status: candidate
+  verdantflare.com/access-scope: station-single-operator

@@ -1,0 +1,52 @@
+# Review defaults are intentionally not installable. Target values must be
+# supplied by Station after checking the existing ConfigMap, Secrets and PVC.
+image:
+  repository: registry.invalid/wod/verdantflare-app
+  tag: blender-v0.1.12
+  digest: ""
+  pullPolicy: Always
+
+replicaCount: 1
+
+instance:
+  configMapName: ""
+  configKey: instances.json
+
+auth:
+  existingSecretName: ""
+  studioTokenKey: BLENDER_STUDIO_TOKEN
+  workerTokenKey: BLENDER_WORKER_A
+  guiPasswordKey: BLENDER_GUI_A_PASSWORD
+  contentSecretName: ""
+  contentTokenKey: token
+  turnSecretName: ""
+  turnSecretKey: auth.conf
+
+contentOrigin: ""
+turn:
+  host: ""
+  port: 3478
+
+storage:
+  create: true
+  existingClaim: ""
+  storageClassName: ""
+  size: 5Gi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: "2"
+    memory: 512Mi
+
+service:
+  port: 8080
+
+networkPolicy:
+  stationNamespace: verdantflare-station
+  studioPodName: verdantflare-studio
+
+nodeSelector: {}
+tolerations: []

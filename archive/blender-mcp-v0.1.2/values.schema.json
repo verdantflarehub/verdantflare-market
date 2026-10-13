@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["images", "replicaCount", "instance", "auth", "storage", "resources", "service"],
+  "properties": {
+    "images": {
+      "type": "object",
+      "required": ["app", "worker", "pullPolicy"],
+      "properties": {
+        "app": {"$ref": "#/definitions/image"},
+        "worker": {"$ref": "#/definitions/image"},
+        "pullPolicy": {"const": "Always"}
+      }
+    },
+    "replicaCount": {"const": 1},
+    "instance": {
+      "type": "object",
+      "required": ["alias", "configMapName", "configKey", "idKey"],
+      "properties": {
+        "alias": {"const": "a"},
+        "configMapName": {"type": "string"},
+        "configKey": {"const": "instances.json"},
+        "idKey": {"const": "instance-a-id"}
+      }
+    },
+    "auth": {
+      "type": "object",
+      "required": ["secretName", "workerTokenKey", "studioTokenKey", "guiPasswordKey", "contentSecretName", "contentTokenKey"],
+      "properties": {
+        "secretName": {"type": "string"},
+        "workerTokenKey": {"const": "BLENDER_WORKER_A"},
+        "studioTokenKey": {"const": "BLENDER_STUDIO_TOKEN"},
+        "guiPasswordKey": {"const": "BLENDER_GUI_A_PASSWORD"},
+        "contentSecretName": {"type": "string"},
+        "contentTokenKey": {"const": "token"}
+      }
+    },
+    "contentOrigin": {"type": "string"},
+    "stationNamespace": {"type": "string", "minLength": 1},
+    "studioPodName": {"type": "string", "minLength": 1},
+    "storage": {
+      "type": "object",
+      "required": ["storageClassName", "app", "worker"],
+      "properties": {
+        "storageClassName": {"type": "string"},
+        "app": {"$ref": "#/definitions/storage"},
+        "worker": {"$ref": "#/definitions/storage"}
+      }
+    },
+    "service": {
+      "type": "object",
+      "required": ["appPort", "guiPort", "controlPort", "filePort"],
+      "properties": {
+        "appPort": {"const": 8080},
+        "guiPort": {"const": 48083},
+        "controlPort": {"const": 48084},
+        "filePort": {"const": 48085}
+      }
+    }
+  },
+  "definitions": {
+    "image": {
+      "type": "object",
+      "required": ["repository", "tag", "digest"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 1},
+        "tag": {"type": "string", "pattern": "^blender(-worker)?-v0\\.1\\.2$"},
+        "digest": {"type": "string", "pattern": "^$|^sha256:[a-f0-9]{64}$"}
+      }
+    },
+    "storage": {
+      "type": "object",
+      "required": ["create", "existingClaim", "size"],
+      "properties": {
+        "create": {"type": "boolean"},
+        "existingClaim": {"type": "string"},
+        "size": {"type": "string", "pattern": "^[1-9][0-9]*(Gi|Ti)$"}
+      }
+    }
+  }
+}

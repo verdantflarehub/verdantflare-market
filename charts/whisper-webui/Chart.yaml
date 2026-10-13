@@ -1,0 +1,14 @@
+apiVersion: v2
+name: whisper-webui
+description: Whisper-WebUI Station delivery candidate; not an installable release
+type: application
+version: 0.1.0
+appVersion: "1.0.7"
+home: https://github.com/jhj0517/Whisper-WebUI
+icon: https://app.cdn.olares.com/appstore/whisperwebui/icon.png
+sources:
+  - https://github.com/jhj0517/Whisper-WebUI
+annotations:
+  verdantflare.com/upstream-revision: "5962780b807399c3bbc3a25380826e7bab3d50bd"
+  verdantflare.com/delivery-status: candidate
+  verdantflare.com/access-scope: station-single-operator

@@ -1,0 +1,48 @@
+# Static review candidate. Replace only after controlled image and Station review.
+image:
+  repository: registry.invalid/verdantflare/concat
+  tag: "0.1.0"
+  digest: ""
+  pullPolicy: Always
+
+replicaCount: 1
+service:
+  port: 3000
+
+resources:
+  requests:
+    cpu: "500m"
+    memory: 2Gi
+  limits:
+    cpu: "4"
+    memory: 8Gi
+
+storage:
+  create: true
+  existingClaim: ""
+  size: 20Gi
+  storageClassName: ""
+  accessMode: ReadWriteOnce
+  mountPath: /config
+
+review:
+  modelAssetsApproved: false
+  accessApproved: false
+  licenseApproved: false
+  existingSecretName: ""
+
+nodeSelector: {}
+tolerations: []
+probes:
+  startup:
+    path: /
+    periodSeconds: 10
+    failureThreshold: 90
+  readiness:
+    path: /
+    periodSeconds: 10
+    failureThreshold: 3
+  liveness:
+    path: /
+    periodSeconds: 30
+    failureThreshold: 3

@@ -1,0 +1,53 @@
+# Historical review defaults only; this chart is not a current install candidate.
+image:
+  repository: registry.invalid/wod/blender-mcp
+  tag: "0.1.0"
+  digest: ""
+  pullPolicy: Always
+
+replicaCount: 1
+service:
+  appPort: 48083
+  mcpPort: 48086
+
+# Candidate budget only; target Station must approve actual capacity.
+resources:
+  requests:
+    cpu: "4"
+    memory: 8Gi
+    nvidia.com/gpu: 1
+  limits:
+    cpu: "8"
+    memory: 16Gi
+    nvidia.com/gpu: 1
+
+storage:
+  create: true
+  existingClaim: ""
+  size: 50Gi
+  storageClassName: ""
+  accessMode: ReadWriteOnce
+  mountPath: /workspace
+
+# The named Secret is created by Station outside this Chart.
+auth:
+  existingSecretName: ""
+  tokenKey: mcp-token
+  appPasswordKey: app-password
+
+nodeSelector: {}
+tolerations: []
+
+probes:
+  startup:
+    path: /readyz
+    periodSeconds: 10
+    failureThreshold: 60
+  readiness:
+    path: /readyz
+    periodSeconds: 10
+    failureThreshold: 3
+  liveness:
+    path: /readyz
+    periodSeconds: 30
+    failureThreshold: 3

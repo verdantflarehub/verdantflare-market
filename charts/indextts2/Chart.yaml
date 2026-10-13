@@ -1,0 +1,14 @@
+apiVersion: v2
+name: indextts2
+description: IndexTTS2 Station delivery candidate; not an installable release
+type: application
+version: 0.1.0
+appVersion: "2.0.0"
+home: https://github.com/index-tts/index-tts
+icon: https://raw.githubusercontent.com/index-tts/index-tts/830f6f8f94a51fea23ab1d639027a86200075a4e/assets/index_icon.png
+sources:
+  - https://github.com/index-tts/index-tts
+annotations:
+  verdantflare.com/upstream-revision: "830f6f8f94a51fea23ab1d639027a86200075a4e"
+  verdantflare.com/delivery-status: candidate
+  verdantflare.com/access-scope: station-single-operator

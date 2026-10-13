@@ -1,0 +1,103 @@
+{{- include "blender-mcp.validate" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "blender-mcp.name" . }}
+  labels:
+    {{- include "blender-mcp.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: blender
+      app.kubernetes.io/instance: {{ .Release.Name | quote }}
+  template:
+    metadata:
+      labels:
+        {{- include "blender-mcp.labels" . | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - {name: BLENDER_INSTANCE_MANAGEMENT, value: "true"}
+            - {name: BLENDER_INSTANCES_FILE, value: /config/instances.json}
+            - {name: BLENDER_DATABASE, value: /state/blender.db}
+            - {name: BLENDER_TURN_HOST, value: {{ .Values.turn.host | quote }}}
+            - {name: BLENDER_TURN_PORT, value: {{ .Values.turn.port | quote }}}
+            - {name: BLENDER_TURN_SECRET_FILE, value: /turn/auth.conf}
+            - {name: BLENDER_CONTENT_ORIGIN, value: {{ .Values.contentOrigin | quote }}}
+            - name: BLENDER_CONTENT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.contentSecretName | quote }}
+                  key: {{ .Values.auth.contentTokenKey | quote }}
+            - name: BLENDER_STUDIO_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.existingSecretName | quote }}
+                  key: {{ .Values.auth.studioTokenKey | quote }}
+            - name: BLENDER_WORKER_A
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.existingSecretName | quote }}
+                  key: {{ .Values.auth.workerTokenKey | quote }}
+            - name: BLENDER_GUI_A_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.existingSecretName | quote }}
+                  key: {{ .Values.auth.guiPasswordKey | quote }}
+          ports:
+            - {name: http, containerPort: {{ .Values.service.port }}, protocol: TCP}
+          readinessProbe:
+            httpGet: {path: /healthz, port: http}
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /healthz, port: http}
+            periodSeconds: 15
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - {name: config, mountPath: /config, readOnly: true}
+            - {name: state, mountPath: /state}
+            - {name: turn, mountPath: /turn, readOnly: true}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Values.instance.configMapName | quote }}
+            items:
+              - key: {{ .Values.instance.configKey | quote }}
+                path: instances.json
+        - name: state
+          persistentVolumeClaim:
+            claimName: {{ .Values.storage.existingClaim | default (printf "%s-state" (include "blender-mcp.name" .)) | quote }}
+        - name: turn
+          secret:
+            secretName: {{ .Values.auth.turnSecretName | quote }}
+            defaultMode: 0444
+            items:
+              - key: {{ .Values.auth.turnSecretKey | quote }}
+                path: auth.conf
