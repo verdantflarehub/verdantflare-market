@@ -1,0 +1,50 @@
+--- a/backend/src/utils/task-logger.ts
++++ b/backend/src/utils/task-logger.ts
+@@ -35,16 +35,17 @@
+ 
+ function formatMeta(meta?: Record<string, unknown>) {
+   if (!meta) return ''
+-  const entries = Object.entries(meta)
++  const entries = Object.entries(sanitizeValue(meta) as Record<string, unknown>)
+     .filter(([, value]) => value !== undefined)
+     .map(([key, value]) => `${key}=${safeValue(value)}`)
+   return entries.length ? ` | ${entries.join(' ')}` : ''
+ }
+ 
+ export function redactUrl(rawUrl: string) {
++  if (rawUrl.startsWith('data:')) return '<inline-media-redacted>'
+   try {
+     const url = new URL(rawUrl)
+-    for (const key of ['key', 'api_key', 'apikey', 'token', 'access_token']) {
++    for (const key of ['key', 'api_key', 'apikey', 'token', 'access_token', 'signature']) {
+       if (url.searchParams.has(key)) {
+         url.searchParams.set(key, '***')
+       }
+@@ -52,7 +53,7 @@
+     return url.toString()
+   } catch {
+     return rawUrl
+-      .replace(/([?&](?:key|api_key|apikey|token|access_token)=)[^&]+/gi, '$1***')
++      .replace(/([?&](?:key|api_key|apikey|token|access_token|signature)=)[^&]+/gi, '$1***')
+   }
+ }
+ 
+@@ -69,7 +70,7 @@
+     const out: Record<string, unknown> = {}
+     for (const [key, raw] of Object.entries(value as Record<string, unknown>)) {
+       const lower = key.toLowerCase()
+-      if (['authorization', 'api_key', 'apikey', 'apiKey', 'token', 'access_token'].includes(key) ||
++      if (['authorization', 'api_key', 'apikey', 'apiKey', 'token', 'access_token', 'signature'].includes(key) ||
+         lower.includes('authorization') || lower.includes('token') || lower.includes('apikey') || lower.includes('api_key')) {
+         out[key] = '***'
+         continue
+--- a/backend/src/services/adapters/minimax-video.ts
++++ b/backend/src/services/adapters/minimax-video.ts
+@@ -102,6 +102,7 @@
+       method: 'POST',
+       headers: {
+         'Content-Type': 'application/json',
++        'Idempotency-Key': `huobao-task-${record.id}`,
+         'Authorization': `Bearer ${config.apiKey}`,
+       },
+       body,

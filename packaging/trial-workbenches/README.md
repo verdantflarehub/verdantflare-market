@@ -17,3 +17,7 @@
 - [Huobao Drama 许可证](https://github.com/chatfire-AI/huobao-drama/blob/v4.0.8/LICENSE)：非商用使用边界。
 - [Toonflow 发布版本](https://github.com/HBAI-Ltd/Toonflow-app/releases/tag/v2.0.6)：固定来源。
 - [Toonflow 许可证](https://github.com/HBAI-Ltd/Toonflow-app/blob/v2.0.6/LICENSE)：许可保留。
+
+## 4. Huobao H3 接入补丁
+
+`huobao-drama-trial-v0.1.1` 沿用上述 v4.0.8 固定提交，通过 `huobao-h3.patch` 为 MiniMax 请求增加基于 Huobao 任务 ID 的幂等头，并对行内日志、下载签名、data URL 统一脱敏。补丁保留上游许可，属于内部非商用试用修改。构建使用 `huobao-h3-trial.yml`，不重建或覆盖 Toonflow。
