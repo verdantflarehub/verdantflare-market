@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "google.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "google.labels" . | nindent 4 }}
   annotations:

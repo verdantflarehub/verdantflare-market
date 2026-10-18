@@ -4,7 +4,7 @@ providerId: fal
 displayName: fal.ai
 category: channel
 version: 0.2.12
-logo: logo.svg
+logo: logo.png
 capabilities:
 - video.generate
 - image.generate

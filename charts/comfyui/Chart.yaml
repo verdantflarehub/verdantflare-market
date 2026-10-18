@@ -1,13 +1,6 @@
 apiVersion: v2
 name: comfyui
-description: ComfyUI shared service candidate for a VerdantFlare Station
+description: 独立 ComfyUI 基础环境，不包含模型和第三方节点。查看实例及资源占用。
 type: application
 version: 0.1.0
-appVersion: "0.32.0"
-home: https://github.com/Comfy-Org/ComfyUI
-sources:
-  - https://github.com/Comfy-Org/ComfyUI
-annotations:
-  verdantflare.com/upstream-revision: c2bcbecd82ec5ae66594340b395c24ef0217b238
-  verdantflare.com/upstream-license: GPL-3.0
-  verdantflare.com/access-scope: station-single-operator
+appVersion: 0.1.12

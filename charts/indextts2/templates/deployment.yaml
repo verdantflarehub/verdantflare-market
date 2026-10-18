@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "indextts2.name" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "indextts2.labels" . | nindent 4 }}
 spec:

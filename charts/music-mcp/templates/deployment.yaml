@@ -2,7 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: music-mcp-server
-  namespace: verdantflare-music
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
   labels:
     app.kubernetes.io/component: api
     app.kubernetes.io/name: music-mcp-server
@@ -13,7 +15,7 @@ metadata:
     apps.verdantflare.com/managed: 'true'
 spec:
   progressDeadlineSeconds: 600
-  replicas: 1
+  replicas: {{ .Values.replicas | default 1 }}
   revisionHistoryLimit: 10
   selector:
     matchLabels:
@@ -42,6 +44,26 @@ spec:
               optional: true
         - name: SERVICE_VERSION
           value: 0.9.16
+        - name: ETCD_ENDPOINTS
+          value: {{ (dig "etcdEndpoints" "http://etcd.verdantflare-station.svc.cluster.local:2379" (.Values.services | default dict)) | quote }}
+        - name: MCP_SERVICE_ENDPOINT
+          value: {{ (dig "mcpServiceEndpoint" (printf "http://music-mcp-server.%s.svc.cluster.local:8000/mcp" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: MCP_HEALTH_ENDPOINT
+          value: {{ (dig "mcpHealthEndpoint" (printf "http://music-mcp-server.%s.svc.cluster.local:8000/health" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: MUSIC_MCP_ALLOWED_HOSTS
+          value: {{ (dig "allowedHosts" (printf "192.168.1.200:*,127.0.0.1:*,localhost:*,[::1]:*,music-mcp-server:*,music-mcp-server.%s:*,music-mcp-server.%s.svc.cluster.local:*,*.cluster.local:*" .Release.Namespace .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: MUSIC3_URL
+          value: {{ (dig "music3Url" (printf "http://music-minimax-music3-api.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: UVR5_URL
+          value: {{ (dig "uvr5Url" (printf "http://music-uvr5-api.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: RVC_URL
+          value: {{ (dig "rvcUrl" (printf "http://music-rvc-api.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: LYRICS_ALIGNER_URL
+          value: {{ (dig "lyricsAlignerUrl" (printf "http://music-lyrics-aligner-api.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: MIXER_URL
+          value: {{ (dig "mixerUrl" (printf "http://music-audio-mixer-api.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: MUSIC_EDITOR_URL
+          value: {{ (dig "musicEditorUrl" (printf "http://music-ace-step-api.%s.svc.cluster.local:8001" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: MUSIC_MCP_BEARER_TOKEN
           valueFrom:
             secretKeyRef:
@@ -55,8 +77,8 @@ spec:
         envFrom:
         - configMapRef:
             name: music-runtime-config
-        image: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:music-mcp-server-v0.9.16
-        imagePullPolicy: Always
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
         livenessProbe:
           failureThreshold: 3
           httpGet:
@@ -96,4 +118,4 @@ spec:
       volumes:
       - name: projects
         persistentVolumeClaim:
-          claimName: music-projects
+          claimName: {{ .Values.storage.existingClaim | default "music-projects" }}

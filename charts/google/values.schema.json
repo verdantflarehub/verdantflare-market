@@ -7,6 +7,10 @@
       "type": "string",
       "minLength": 1
     },
+    "namespace": {
+      "type": "string",
+      "minLength": 1
+    },
     "image": {
       "type": "object",
       "required": ["repository", "tag", "digest", "pullPolicy"],
@@ -34,6 +38,7 @@
       "required": ["url", "existingSecretName", "tokenKey"],
       "properties": {
         "url": {"type": "string", "minLength": 1},
+        "proxyUrl": {"type": "string"},
         "existingSecretName": {"type": "string", "minLength": 1},
         "tokenKey": {"type": "string", "minLength": 1}
       }
@@ -45,9 +50,19 @@
         "create": {"type": "boolean"},
         "existingClaim": {"type": "string"},
         "storageClassName": {"type": "string"},
+        "volumeName": {"type": "string"},
         "size": {"type": "string", "pattern": "^[1-9][0-9]*(Gi|Ti)$"},
         "mountPath": {"type": "string", "minLength": 1},
         "stateDbPath": {"type": "string", "minLength": 1}
+      }
+    },
+    "persistence": {
+      "type": "object",
+      "properties": {
+        "create": {"type": "boolean"},
+        "storageClassName": {"type": "string"},
+        "volumeName": {"type": "string"},
+        "size": {"type": "string"}
       }
     },
     "service": {
@@ -67,6 +82,7 @@
         "studioPodName": {"type": "string", "minLength": 1},
         "runtimePodName": {"type": "string", "minLength": 1},
         "etcdPodName": {"type": "string", "minLength": 1},
+        "networkNamespace": {"type": "string", "minLength": 1},
         "networkPodName": {"type": "string", "minLength": 1},
         "imageNamespace": {"type": "string", "minLength": 1},
         "imagePodName": {"type": "string", "minLength": 1},

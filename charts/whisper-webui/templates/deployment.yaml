@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "whisper-webui.name" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "whisper-webui.labels" . | nindent 4 }}
 spec:

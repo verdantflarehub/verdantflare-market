@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-resources
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+  labels:
+    app.kubernetes.io/name: app-resources
+    app.kubernetes.io/part-of: verdantflare
+spec:
+  progressDeadlineSeconds: 600
+  replicas: {{ .Values.replicas | default 1 }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: app-resources
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: app-resources
+        app.kubernetes.io/part-of: verdantflare
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - env:
+        - name: RESOURCES_ASSETS_DIR
+          value: /app/frontend/dist
+        - name: RESOURCES_LISTEN
+          value: 0.0.0.0:8000
+        - name: STATION_URL
+          value: {{ (dig "stationCoreUrl" "http://station-core.verdantflare-station.svc.cluster.local:5050" (.Values.services | default dict)) | quote }}
+        - name: STATION_ID
+          valueFrom:
+            secretKeyRef:
+              key: STATION_ID
+              name: app-resources-secret
+        - name: STATION_RESOURCES_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: STATION_RESOURCES_TOKEN
+              name: app-resources-secret
+        - name: APP_SERVICE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: APP_SERVICE_TOKEN
+              name: app-resources-secret
+        image: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:resources-v0.1.6
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: business
+          timeoutSeconds: 2
+        name: app
+        ports:
+        - containerPort: 8000
+          name: business
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: business
+            scheme: HTTP
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 2
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        kubernetes.io/hostname: verdentflare-5090
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 30

@@ -1,0 +1,35 @@
+appId: image-mcp
+appVersion: 0.2.26
+namespace: verdantflare-app
+workloadName: image-mcp-server
+station:
+  stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
+  organizationId: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
+  installationId: 01a14d98-008c-75a3-a2ab-772b2f66bb71
+  templateHash: ''
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: image-mcp-server-v0.2.26
+  pullPolicy: Always
+replicas: 1
+services:
+  etcdEndpoints: http://etcd.verdantflare-station.svc.cluster.local:2379
+  projectServiceUrl: https://app-project.verdantflare-app.svc.cluster.local:8443
+  projectGrpcAddr: app-project.verdantflare-app.svc.cluster.local:9092
+  networkProxyUrl: http://app-network-egress.verdantflare-app.svc.cluster.local:3128
+  chatgptChannelUrl: http://chatgpt-channel.verdantflare-app.svc.cluster.local:8001
+  grokChannelUrl: http://grok-channel.verdantflare-app.svc.cluster.local:8001
+  googleChannelUrl: http://google-channel.verdantflare-app.svc.cluster.local:8001
+  allowedHosts: mcp.dev.verdantflarehub.com,mcp.dev.verdantflarehub.com:*,studio.dev.verdantflarehub.com,studio.dev.verdantflarehub.com:*,192.168.1.200:*,127.0.0.1:*,localhost:*,[::1]:*,image-mcp-server:*,image-mcp-server.verdantflare-app:*,image-mcp-server.verdantflare-app.svc.cluster.local:*,*.cluster.local:*
+storage:
+  create: false
+  existingClaim: image-projects
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 200Gi
+persistence:
+  create: false
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 200Gi
+pvcs: []

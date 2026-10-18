@@ -1,0 +1,155 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-mcp-server
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+  labels:
+    app.kubernetes.io/component: api
+    app.kubernetes.io/name: image-mcp-server
+    app.kubernetes.io/part-of: verdantflare-image
+    app.kubernetes.io/version: 0.2.16
+    apps.verdantflare.com/brand: vf
+    apps.verdantflare.com/group: image
+    apps.verdantflare.com/managed: 'true'
+spec:
+  progressDeadlineSeconds: 600
+  replicas: {{ .Values.replicas | default 1 }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: image-mcp-server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: image-mcp-server
+    spec:
+      containers:
+      - env:
+        - name: SERVICE_VERSION
+          value: v0.2.26
+        - name: XAI_IMAGE_ENABLED
+          value: 'true'
+        - name: XAI_IMAGE_MODEL
+          value: grok-imagine-image-2.0
+        - name: ETCD_ENDPOINTS
+          value: {{ (dig "etcdEndpoints" "http://etcd.verdantflare-station.svc.cluster.local:2379" (.Values.services | default dict)) | quote }}
+        - name: IMAGE_ARTIFACT_ROOT
+          value: /data/projects/image
+        - name: IMAGE_ASSET_IMPORT_ORIGINS
+          value: https://cache.ali.wodcloud.com
+        - name: IMAGE_MCP_PUBLIC_BASE_URL
+          value: https://studio.dev.verdantflarehub.com
+        - name: IMAGE_MCP_ALLOWED_HOSTS
+          value: {{ (dig "allowedHosts" (printf "mcp.dev.verdantflarehub.com,mcp.dev.verdantflarehub.com:*,studio.dev.verdantflarehub.com,studio.dev.verdantflarehub.com:*,192.168.1.200:*,127.0.0.1:*,localhost:*,[::1]:*,image-mcp-server:*,image-mcp-server.%s:*,image-mcp-server.%s.svc.cluster.local:*,*.cluster.local:*" .Release.Namespace .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: IMAGE_MCP_ALLOWED_ORIGINS
+          value: https://mcp.dev.verdantflarehub.com,https://mcp.dev.verdantflarehub.com:*,https://studio.dev.verdantflarehub.com,https://studio.dev.verdantflarehub.com:*,http://192.168.1.200:*,http://127.0.0.1:*,http://localhost:*,http://[::1]:*
+        - name: IMAGE_MCP_BEARER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: IMAGE_MCP_BEARER_TOKEN
+              name: image-mcp-auth
+        - name: CODEX_ACTOR_AUTH
+          value: local-image-extension
+        - name: IMAGE_CHATGPT_CHANNEL_URL
+          value: {{ (dig "chatgptChannelUrl" (printf "http://chatgpt-channel.%s.svc.cluster.local:8001" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: IMAGE_CHATGPT_CHANNEL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: IMAGE_CHATGPT_CHANNEL_TOKEN
+              name: image-channel-authority
+        - name: IMAGE_PROJECT_SERVICE_URL
+          value: {{ (dig "projectServiceUrl" (printf "https://app-project.%s.svc.cluster.local:8443" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: IMAGE_PROJECT_SERVICE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: IMAGE_PROJECT_SERVICE_TOKEN
+              name: image-channel-authority
+        - name: IMAGE_PROJECT_CA_PEM
+          valueFrom:
+            configMapKeyRef:
+              key: ca.crt
+              name: image-project-ca-v1
+        - name: IMAGE_GROK_CHANNEL_URL
+          value: {{ (dig "grokChannelUrl" (printf "http://grok-channel.%s.svc.cluster.local:8001" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: IMAGE_GROK_CHANNEL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: IMAGE_GROK_CHANNEL_TOKEN
+              name: image-channel-authority
+        - name: ETCD_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: active-username
+              name: etcd-client-image
+              optional: true
+        - name: ETCD_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: active-password
+              name: etcd-client-image
+              optional: true
+        - name: CHANNEL_DISCOVERY_ETCD_URL
+          valueFrom:
+            secretKeyRef:
+              key: discovery-endpoint
+              name: etcd-client-image
+              optional: true
+        - name: CHANNEL_DISCOVERY_SCOPE_ID
+          valueFrom:
+            secretKeyRef:
+              key: discovery-scope
+              name: etcd-client-image
+              optional: true
+        - name: IMAGE_GOOGLE_CHANNEL_URL
+          value: {{ (dig "googleChannelUrl" (printf "http://google-channel.%s.svc.cluster.local:8001" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: IMAGE_GOOGLE_CHANNEL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: IMAGE_GOOGLE_CHANNEL_TOKEN
+              name: image-channel-authority
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: http
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: api
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: http
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /data/projects
+          name: projects
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        kubernetes.io/hostname: verdentflare-5090
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: projects
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.existingClaim | default "image-projects" }}

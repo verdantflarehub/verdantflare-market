@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "google.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "google.labels" . | nindent 4 }}
   annotations:

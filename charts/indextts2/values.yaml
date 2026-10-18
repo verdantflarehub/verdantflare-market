@@ -26,6 +26,7 @@ storage:
   storageClassName: ""
   accessMode: ReadWriteOnce
   mountPath: /app/checkpoints
+  volumeName: ""
 
 review:
   modelAssetsApproved: false

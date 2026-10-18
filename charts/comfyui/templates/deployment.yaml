@@ -1,74 +1,127 @@
-{{- include "comfyui.validateInstall" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "comfyui.name" . }}
+  name: comfyui-manager
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
   labels:
-    {{- include "comfyui.labels" . | nindent 4 }}
+    app.kubernetes.io/name: comfyui-manager
+    app.kubernetes.io/part-of: verdantflare-app
 spec:
-  replicas: {{ .Values.replicaCount }}
-  strategy:
-    type: Recreate
+  progressDeadlineSeconds: 600
+  replicas: {{ .Values.replicas | default 1 }}
+  revisionHistoryLimit: 10
   selector:
     matchLabels:
-      {{- include "comfyui.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: comfyui-manager
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
-        {{- include "comfyui.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/name: comfyui-manager
     spec:
       automountServiceAccountToken: false
+      containers:
+      - env:
+        - name: COMFYUI_APP_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: app-token
+              name: comfyui-dashboard-access
+        - name: COMFYUI_INSTALLATION_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: core-token
+              name: comfyui-dashboard-access
+        - name: COMFYUI_RUNTIME_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: runtime-token
+              name: comfyui-dashboard-access
+        - name: COMFYUI_MAINTENANCE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: maintenance-token
+              name: comfyui-dashboard-access
+        - name: COMFYUI_INSTALLATION_ID
+          value: 01a12b18-ff90-7294-a423-a746307e9c69
+        - name: COMFYUI_STATION_ID
+          value: 01a0fae2-dbb6-700e-bcf7-99a39c757706
+        - name: COMFYUI_ORGANIZATION_ID
+          value: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
+        - name: COMFYUI_APP_VERSION
+          value: 0.1.15
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
+        livenessProbe:
+          failureThreshold: 3
+          periodSeconds: 15
+          successThreshold: 1
+          tcpSocket:
+            port: http
+          timeoutSeconds: 1
+        name: app
+        ports:
+        - containerPort: 8091
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          periodSeconds: 5
+          successThreshold: 1
+          tcpSocket:
+            port: http
+          timeoutSeconds: 1
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        startupProbe:
+          failureThreshold: 24
+          periodSeconds: 5
+          successThreshold: 1
+          tcpSocket:
+            port: http
+          timeoutSeconds: 1
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /config
+          name: config
+          readOnly: true
+        - mountPath: /data
+          name: state
+        - mountPath: /tmp
+          name: temp
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        kubernetes.io/hostname: verdentflare-5090
+      restartPolicy: Always
+      schedulerName: default-scheduler
       securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
         runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 10001
         seccompProfile:
           type: RuntimeDefault
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      containers:
-        - name: comfyui
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
-          ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
-              protocol: TCP
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            - name: data
-              mountPath: {{ .Values.storage.mountPath }}
-          startupProbe:
-            httpGet:
-              path: {{ .Values.probes.startup.path }}
-              port: http
-            periodSeconds: {{ .Values.probes.startup.periodSeconds }}
-            failureThreshold: {{ .Values.probes.startup.failureThreshold }}
-          readinessProbe:
-            httpGet:
-              path: {{ .Values.probes.readiness.path }}
-              port: http
-            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
-            failureThreshold: {{ .Values.probes.readiness.failureThreshold }}
-          livenessProbe:
-            httpGet:
-              path: {{ .Values.probes.liveness.path }}
-              port: http
-            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
-            failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
+      terminationGracePeriodSeconds: 30
       volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: {{ .Values.storage.existingClaim | default (include "comfyui.name" .) }}
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: app.json
+            path: app.json
+          name: comfyui-manager-config
+        name: config
+      - name: state
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.existingClaim | default "comfyui-app-state" }}
+      - emptyDir:
+          sizeLimit: 128Mi
+        name: temp

@@ -2,7 +2,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: video-higgsfield-gateway
-  namespace: verdantflare-video
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
 spec:
   ports:
   - name: http

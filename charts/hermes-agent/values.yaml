@@ -13,6 +13,7 @@ storage:
   create: true
   storageClassName: ""
   size: 10Gi
+  volumeName: ""
 resources:
   requests:
     cpu: 1

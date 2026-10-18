@@ -1,18 +1,24 @@
-{{- if and .Values.storage.create (not .Values.storage.existingClaim) }}
+{{- if or .Values.storage.create (dig "create" false (.Values.persistence | default dict)) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "google.fullname" . }}
+  name: {{ .Values.storage.existingClaim | default (include "google.fullname" .) }}
+  namespace: {{ .Release.Namespace }}
   annotations:
     helm.sh/resource-policy: keep
+    station.verdantflare.com/app-id: {{ .Chart.Name | quote }}
   labels:
     {{- include "google.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: {{ .Values.storage.storageClassName | quote }}
+  storageClassName: {{ (.Values.storage.storageClassName | default (dig "storageClassName" "" (.Values.persistence | default dict))) | quote }}
+  {{- $volumeName := .Values.storage.volumeName | default (dig "volumeName" "" (.Values.persistence | default dict)) }}
+  {{- if $volumeName }}
+  volumeName: {{ $volumeName | quote }}
+  {{- end }}
   resources:
     requests:
-      storage: {{ .Values.storage.size | quote }}
+      storage: {{ (.Values.storage.size | default (dig "size" "2Gi" (.Values.persistence | default dict))) | quote }}
 {{- end }}
 

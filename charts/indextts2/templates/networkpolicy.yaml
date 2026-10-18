@@ -2,6 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: {{ include "indextts2.name" . }}-deny-ingress
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "indextts2.labels" . | nindent 4 }}
 spec:

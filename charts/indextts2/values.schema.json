@@ -136,6 +136,9 @@
         },
         "mountPath": {
           "const": "/app/checkpoints"
+        },
+        "volumeName": {
+          "type": "string"
         }
       },
       "additionalProperties": false

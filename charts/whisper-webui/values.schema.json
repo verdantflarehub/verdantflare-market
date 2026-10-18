@@ -136,6 +136,9 @@
         },
         "mountPath": {
           "const": "/Whisper-WebUI/models"
+        },
+        "volumeName": {
+          "type": "string"
         }
       },
       "additionalProperties": false

@@ -24,6 +24,6 @@
 
 ```bash
 helm lint charts/google
-helm template google charts/google --namespace verdantflare-google
+helm template google charts/google --namespace verdantflare-app
 ```
 

@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "concat.name" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "concat.labels" . | nindent 4 }}
 spec:

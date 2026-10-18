@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: video-minimax-h3-singularity
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+  labels:
+    app.kubernetes.io/name: video-minimax-h3-singularity
+    app.kubernetes.io/part-of: verdantflare-video
+spec:
+  ports:
+  - name: http
+    port: 8000
+    protocol: TCP
+    targetPort: http
+  selector:
+    app.kubernetes.io/name: video-minimax-h3-singularity
+  type: ClusterIP

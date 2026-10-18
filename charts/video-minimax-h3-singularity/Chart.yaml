@@ -1,0 +1,6 @@
+apiVersion: v2
+name: video-minimax-h3-singularity
+description: 现行生产主力：单卡独占 RTX 5090，为 Video MCP 提供参考素材驱动的音视频生成能力（Ref2VA INT8 DiT）。
+type: application
+version: 0.1.0
+appVersion: 0.1.36

@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "blender-mcp.name" . }}
-  labels:
-    {{- include "blender-mcp.labels" . | nindent 4 }}
+  name: blender
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
 spec:
-  type: ClusterIP
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: http
   selector:
     app.kubernetes.io/name: blender
-    app.kubernetes.io/instance: {{ .Release.Name | quote }}
-  ports:
-    - name: http
-      port: {{ .Values.service.port }}
-      targetPort: http
-      protocol: TCP
+  type: ClusterIP

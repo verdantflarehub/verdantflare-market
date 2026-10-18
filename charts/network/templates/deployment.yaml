@@ -1,0 +1,138 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-network
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+  labels:
+    app.kubernetes.io/name: app-network
+    app.kubernetes.io/part-of: verdantflare
+spec:
+  progressDeadlineSeconds: 600
+  replicas: {{ .Values.replicas | default 1 }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: app-network
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: app-network
+        app.kubernetes.io/part-of: verdantflare
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - env:
+        - name: NETWORK_ALLOWED_INTERNAL
+          value: openclash.openclash.svc.cluster.local:7891,openclash.openclash.svc.cluster.local:1080,openclash.openclash.svc.cluster.local:1081,openclash.openclash.svc.cluster.local:1082,openclash.openclash.svc.cluster.local:7890
+        - name: NETWORK_CORE_URL
+          value: {{ (dig "stationCoreUrl" "http://station-core.verdantflare-station.svc.cluster.local:5050" (.Values.services | default dict)) | quote }}
+        - name: NETWORK_DASHBOARD_DIR
+          value: /app/dashboard
+        - name: NETWORK_LISTEN_ADDR
+          value: 0.0.0.0:8080
+        - name: NETWORK_DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              key: NETWORK_DATABASE_URL
+              name: app-network-secret
+        - name: NETWORK_STATION_ID
+          valueFrom:
+            secretKeyRef:
+              key: NETWORK_STATION_ID
+              name: app-network-secret
+        - name: NETWORK_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              key: NETWORK_ENCRYPTION_KEY
+              name: app-network-secret
+        - name: NETWORK_CORE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: NETWORK_CORE_TOKEN
+              name: app-network-secret
+        - name: NETWORK_STUDIO_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: NETWORK_STUDIO_TOKEN
+              name: app-network-secret
+        - name: NETWORK_CHANNEL_CONSUMERS_FILE
+          value: /etc/network/channel-consumers/consumers.json
+        - name: NETWORK_CHANNEL_FAL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: network-channel-fal-access
+        - name: NETWORK_CHANNEL_GOOGLE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: network-channel-google-access
+        - name: NETWORK_CHANNEL_GROK_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: network-channel-grok-access
+        - name: NETWORK_CHANNEL_CHATGPT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: network-channel-chatgpt-access
+        image: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:network-v0.1.8
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: business
+          timeoutSeconds: 2
+        name: app
+        ports:
+        - containerPort: 8080
+          name: business
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: business
+            scheme: HTTP
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 2
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/network/channel-consumers
+          name: channel-consumers
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        kubernetes.io/hostname: verdentflare-5090
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 70
+      volumes:
+      - configMap:
+          defaultMode: 292
+          name: network-channel-consumers-v0-1-8
+        name: channel-consumers

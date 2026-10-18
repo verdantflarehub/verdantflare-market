@@ -32,7 +32,7 @@
 
 ```bash
 helm lint charts/blender
-helm template blender charts/blender --namespace verdantflare-blender
+helm template blender charts/blender --namespace verdantflare-app
 ```
 
 用目标 values 渲染时，模板要求真实镜像摘要、现有 ConfigMap、三份 Secret、内容服务、TURN 地址，以及 PVC 或 StorageClass；若给 App 填 GPU 请求则拒绝。默认渲染只用于审阅 YAML，不能 `helm upgrade --install`。

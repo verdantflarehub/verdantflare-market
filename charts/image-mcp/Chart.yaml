@@ -1,0 +1,6 @@
+apiVersion: v2
+name: image-mcp
+description: 生成图像、编辑画面与局部重绘。
+type: application
+version: 0.1.0
+appVersion: 0.2.26

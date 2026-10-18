@@ -1,6 +1,6 @@
 appId: fal
 appVersion: 0.2.12
-namespace: verdantflare-video
+namespace: verdantflare-app
 workloadName: video-fal-gateway
 station:
   stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
@@ -12,3 +12,21 @@ image:
   tag: video-fal-gateway-v0.2.12
   pullPolicy: Always
 replicas: 1
+network:
+  url: http://app-network.verdantflare-app.svc.cluster.local:8080
+  proxyUrl: http://app-network-egress.verdantflare-app.svc.cluster.local:3128
+  existingSecretName: network-channel-fal-access
+  tokenKey: token
+storage:
+  create: false
+  existingClaim: video-fal-gateway
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 2Gi
+  mountPath: /data/fal
+  stateDbPath: /data/fal/state.sqlite3
+persistence:
+  create: false
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 2Gi

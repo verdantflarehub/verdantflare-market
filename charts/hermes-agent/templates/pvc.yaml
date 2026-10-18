@@ -3,9 +3,15 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ include "candidate.name" . }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    helm.sh/resource-policy: keep
 spec:
   accessModes: [ReadWriteOnce]
   storageClassName: {{ .Values.storage.storageClassName | quote }}
+  {{- if .Values.storage.volumeName }}
+  volumeName: {{ .Values.storage.volumeName | quote }}
+  {{- end }}
   resources:
     requests:
       storage: {{ .Values.storage.size }}

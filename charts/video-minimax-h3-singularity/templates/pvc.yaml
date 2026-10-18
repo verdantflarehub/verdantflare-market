@@ -1,0 +1,47 @@
+{{- if or .Values.storage.create (dig "create" false (.Values.persistence | default dict)) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.storage.existingClaim | default "models-minimax-h3" }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    helm.sh/resource-policy: keep
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+  labels:
+    app.kubernetes.io/name: video-minimax-h3-singularity
+    app.kubernetes.io/part-of: verdantflare-video
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ (.Values.storage.storageClassName | default (dig "storageClassName" "local-nvme" (.Values.persistence | default dict))) | quote }}
+  {{- $volumeName := .Values.storage.volumeName | default (dig "volumeName" "" (.Values.persistence | default dict)) }}
+  {{- if $volumeName }}
+  volumeName: {{ $volumeName | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ (.Values.storage.size | default (dig "size" "200Gi" (.Values.persistence | default dict))) | quote }}
+{{- end }}
+{{- range .Values.pvcs }}
+{{- if .create }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace }}
+  annotations:
+    helm.sh/resource-policy: keep
+    station.verdantflare.com/app-id: {{ $.Values.appId | default $.Chart.Name | quote }}
+spec:
+  accessModes:
+    - {{ .accessMode | default "ReadWriteOnce" }}
+  storageClassName: {{ (.storageClassName | default "local-nvme") | quote }}
+  {{- if .volumeName }}
+  volumeName: {{ .volumeName | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ (.size | default "200Gi") | quote }}
+{{- end }}
+{{- end }}

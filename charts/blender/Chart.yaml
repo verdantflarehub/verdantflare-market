@@ -1,11 +1,6 @@
 apiVersion: v2
-name: blender-mcp
-description: Blender application service for Station-managed instances
+name: blender
+description: 选择独立 Blender 实例，使用图形界面或专用 MCP 编辑场景，将工程保存到项目修订。
 type: application
-version: 0.2.0
-appVersion: "0.1.12"
-annotations:
-  verdantflare.com/app-id: blender-mcp
-  verdantflare.com/worker-owner: station-runtime
-  verdantflare.com/access-scope: studio-only
-  verdantflare.com/source-repo: verdantflarehub/verdantflare-app-blender
+version: 0.1.0
+appVersion: 0.1.12

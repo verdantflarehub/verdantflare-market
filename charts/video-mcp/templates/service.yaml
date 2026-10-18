@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: video-mcp-server
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+  labels:
+    app.kubernetes.io/name: video-mcp-server
+    app.kubernetes.io/part-of: verdantflare-video
+spec:
+  ports:
+  - name: http
+    port: 8000
+    protocol: TCP
+    targetPort: http
+  - name: authority
+    port: 8001
+    protocol: TCP
+    targetPort: authority
+  selector:
+    app.kubernetes.io/name: video-mcp-server
+  type: ClusterIP

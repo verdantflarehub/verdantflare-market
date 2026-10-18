@@ -1,0 +1,19 @@
+appId: project
+appVersion: 0.1.23
+namespace: verdantflare-app
+workloadName: app-project
+station:
+  stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
+  organizationId: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
+  installationId: 01a14d91-e71e-7070-a420-97b5f6714f1d
+  templateHash: ''
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: project-v0.1.23
+  pullPolicy: Always
+replicas: 1
+services:
+  artifactUrl: https://artifact.verdantflare-station.svc.cluster.local:8094
+  etcdEndpoints: http://etcd.verdantflare-station.svc.cluster.local:2379
+  mcpAdvertiseUrl: https://app-project.verdantflare-app.svc.cluster.local:8444/mcp
+  worldServiceUrl: https://app-world.verdantflare-app.svc.cluster.local:8443

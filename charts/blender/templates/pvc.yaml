@@ -1,16 +1,50 @@
-{{- if and .Values.storage.create (not .Values.storage.existingClaim) }}
+{{- if or .Values.storage.create (dig "create" false (.Values.persistence | default dict)) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "blender-mcp.name" . }}-state
+  name: {{ .Values.storage.existingClaim | default "blender-app-state" }}
+  namespace: {{ .Release.Namespace }}
   annotations:
     helm.sh/resource-policy: keep
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
   labels:
-    {{- include "blender-mcp.labels" . | nindent 4 }}
+    app.kubernetes.io/name: blender
 spec:
-  accessModes: [ReadWriteOnce]
-  storageClassName: {{ .Values.storage.storageClassName | quote }}
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ (.Values.storage.storageClassName | default (dig "storageClassName" "local-nvme" (.Values.persistence | default dict))) | quote }}
+  {{- $volumeName := .Values.storage.volumeName | default (dig "volumeName" "" (.Values.persistence | default dict)) }}
+  {{- if $volumeName }}
+  volumeName: {{ $volumeName | quote }}
+  {{- end }}
   resources:
     requests:
-      storage: {{ .Values.storage.size | quote }}
+      storage: {{ (.Values.storage.size | default (dig "size" "5Gi" (.Values.persistence | default dict))) | quote }}
+{{- end }}
+{{- range .Values.pvcs }}
+{{- if .create }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace }}
+  annotations:
+    helm.sh/resource-policy: keep
+    station.verdantflare.com/app-id: {{ $.Values.appId | default $.Chart.Name | quote }}
+  {{- with .labels }}
+  labels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    - {{ .accessMode | default "ReadWriteOnce" }}
+  storageClassName: {{ (.storageClassName | default "local-nvme") | quote }}
+  {{- if .volumeName }}
+  volumeName: {{ .volumeName | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ (.size | default "50Gi") | quote }}
+{{- end }}
 {{- end }}

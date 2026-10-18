@@ -3,6 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: {{ include "google.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "google.labels" . | nindent 4 }}
 spec:
@@ -32,7 +33,7 @@ spec:
     - from:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: {{ .Values.networkPolicy.imageNamespace | quote }}
+              kubernetes.io/metadata.name: {{ .Values.networkPolicy.imageNamespace | default .Release.Namespace | quote }}
           podSelector:
             matchLabels:
               app.kubernetes.io/name: {{ .Values.networkPolicy.imagePodName | quote }}
@@ -65,7 +66,7 @@ spec:
     - to:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: {{ .Values.networkPolicy.stationNamespace | quote }}
+              kubernetes.io/metadata.name: {{ .Values.networkPolicy.networkNamespace | default .Release.Namespace | quote }}
           podSelector:
             matchLabels:
               app.kubernetes.io/name: {{ .Values.networkPolicy.networkPodName | quote }}

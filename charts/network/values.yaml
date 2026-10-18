@@ -1,0 +1,16 @@
+appId: network
+appVersion: 0.1.8
+namespace: verdantflare-app
+workloadName: app-network
+station:
+  stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
+  organizationId: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
+  installationId: 01a14d92-fce8-793d-bbed-fe400561cb8b
+  templateHash: ''
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: network-v0.1.8
+  pullPolicy: Always
+replicas: 1
+services:
+  stationCoreUrl: http://station-core.verdantflare-station.svc.cluster.local:5050

@@ -13,7 +13,7 @@ app.kubernetes.io/name: {{ include "google.fullname" . }}
 {{- define "google.labels" -}}
 {{ include "google.selectorLabels" . }}
 app.kubernetes.io/instance: {{ .Release.Name | quote }}
-app.kubernetes.io/part-of: verdantflare-google
+app.kubernetes.io/part-of: verdantflare-app
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
 {{- end -}}

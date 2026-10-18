@@ -1,0 +1,38 @@
+appId: video-mcp
+appVersion: 0.17.39
+namespace: verdantflare-app
+workloadName: video-mcp-server
+station:
+  stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
+  organizationId: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
+  installationId: 01a14da0-79c5-78e0-824d-39b97aa3e2df
+  templateHash: ''
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: video-mcp-server-v0.17.39
+  pullPolicy: Always
+replicas: 1
+services:
+  etcdEndpoints: http://etcd.verdantflare-station.svc.cluster.local:2379
+  artifactServiceUrl: https://artifact.verdantflare-station.svc.cluster.local:8094
+  projectServiceUrl: https://app-project.verdantflare-app.svc.cluster.local:8443
+  projectGrpcAddr: app-project.verdantflare-app.svc.cluster.local:9092
+  networkProxyUrl: http://app-network-egress.verdantflare-app.svc.cluster.local:3128
+  interpolationRuntimeUrl: http://video-frame-interpolation-api.verdantflare-app.svc.cluster.local:8000
+  h3RuntimeUrl: http://video-minimax-h3-singularity.verdantflare-app.svc.cluster.local:8000
+  higgsfieldGatewayUrl: http://video-higgsfield-gateway.verdantflare-app.svc.cluster.local:8000
+  falGatewayUrl: http://video-fal-gateway.verdantflare-app.svc.cluster.local:8001
+  runtimeBaseUrl: http://video-mcp-server.verdantflare-app.svc.cluster.local:8000
+  allowedHosts: 192.168.1.200:*,127.0.0.1:*,localhost:*,[::1]:*,video-mcp-server:*,video-mcp-server.verdantflare-app:*,video-mcp-server.verdantflare-app.svc.cluster.local:*,*.cluster.local:*
+storage:
+  create: false
+  existingClaim: video-projects
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 1Ti
+persistence:
+  create: false
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 1Ti
+pvcs: []

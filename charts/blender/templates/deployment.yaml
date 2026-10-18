@@ -1,103 +1,122 @@
-{{- include "blender-mcp.validate" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "blender-mcp.name" . }}
-  labels:
-    {{- include "blender-mcp.labels" . | nindent 4 }}
+  name: blender
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
 spec:
-  replicas: {{ .Values.replicaCount }}
-  strategy:
-    type: Recreate
+  progressDeadlineSeconds: 600
+  replicas: {{ .Values.replicas | default 1 }}
+  revisionHistoryLimit: 10
   selector:
     matchLabels:
       app.kubernetes.io/name: blender
-      app.kubernetes.io/instance: {{ .Release.Name | quote }}
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
-        {{- include "blender-mcp.labels" . | nindent 8 }}
+        app.kubernetes.io/name: blender
+        app.kubernetes.io/part-of: verdantflare-app
     spec:
       automountServiceAccountToken: false
+      containers:
+      - env:
+        - name: BLENDER_INSTANCE_MANAGEMENT
+          value: 'true'
+        - name: BLENDER_INSTANCES_FILE
+          value: /config/instances.json
+        - name: BLENDER_DATABASE
+          value: /state/blender.db
+        - name: BLENDER_TURN_HOST
+          value: 192.168.1.200
+        - name: BLENDER_TURN_PORT
+          value: '3478'
+        - name: BLENDER_TURN_SECRET_FILE
+          value: /turn/auth.conf
+        - name: BLENDER_CONTENT_ORIGIN
+          value: {{ (dig "contentOrigin" "http://studio-blender-content.verdantflare-station.svc.cluster.local:8001" (.Values.services | default dict)) | quote }}
+        - name: BLENDER_CONTENT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: blender-content
+        - name: BLENDER_STUDIO_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: BLENDER_STUDIO_TOKEN
+              name: blender-internal-auth
+        - name: BLENDER_WORKER_A
+          valueFrom:
+            secretKeyRef:
+              key: BLENDER_WORKER_A
+              name: blender-internal-auth
+        - name: BLENDER_GUI_A_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: BLENDER_GUI_A_PASSWORD
+              name: blender-internal-auth
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: http
+            scheme: HTTP
+          periodSeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: app
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: http
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /config
+          name: config
+          readOnly: true
+        - mountPath: /state
+          name: state
+        - mountPath: /turn
+          name: turn
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
       securityContext:
+        runAsGroup: 10001
         runAsNonRoot: true
         runAsUser: 10001
-        runAsGroup: 10001
-        seccompProfile:
-          type: RuntimeDefault
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      containers:
-        - name: app
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop: ["ALL"]
-          env:
-            - {name: BLENDER_INSTANCE_MANAGEMENT, value: "true"}
-            - {name: BLENDER_INSTANCES_FILE, value: /config/instances.json}
-            - {name: BLENDER_DATABASE, value: /state/blender.db}
-            - {name: BLENDER_TURN_HOST, value: {{ .Values.turn.host | quote }}}
-            - {name: BLENDER_TURN_PORT, value: {{ .Values.turn.port | quote }}}
-            - {name: BLENDER_TURN_SECRET_FILE, value: /turn/auth.conf}
-            - {name: BLENDER_CONTENT_ORIGIN, value: {{ .Values.contentOrigin | quote }}}
-            - name: BLENDER_CONTENT_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.auth.contentSecretName | quote }}
-                  key: {{ .Values.auth.contentTokenKey | quote }}
-            - name: BLENDER_STUDIO_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.auth.existingSecretName | quote }}
-                  key: {{ .Values.auth.studioTokenKey | quote }}
-            - name: BLENDER_WORKER_A
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.auth.existingSecretName | quote }}
-                  key: {{ .Values.auth.workerTokenKey | quote }}
-            - name: BLENDER_GUI_A_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.auth.existingSecretName | quote }}
-                  key: {{ .Values.auth.guiPasswordKey | quote }}
-          ports:
-            - {name: http, containerPort: {{ .Values.service.port }}, protocol: TCP}
-          readinessProbe:
-            httpGet: {path: /healthz, port: http}
-            periodSeconds: 5
-          livenessProbe:
-            httpGet: {path: /healthz, port: http}
-            periodSeconds: 15
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            - {name: config, mountPath: /config, readOnly: true}
-            - {name: state, mountPath: /state}
-            - {name: turn, mountPath: /turn, readOnly: true}
+      terminationGracePeriodSeconds: 30
       volumes:
-        - name: config
-          configMap:
-            name: {{ .Values.instance.configMapName | quote }}
-            items:
-              - key: {{ .Values.instance.configKey | quote }}
-                path: instances.json
-        - name: state
-          persistentVolumeClaim:
-            claimName: {{ .Values.storage.existingClaim | default (printf "%s-state" (include "blender-mcp.name" .)) | quote }}
-        - name: turn
-          secret:
-            secretName: {{ .Values.auth.turnSecretName | quote }}
-            defaultMode: 0444
-            items:
-              - key: {{ .Values.auth.turnSecretKey | quote }}
-                path: auth.conf
+      - configMap:
+          defaultMode: 420
+          name: blender-instances
+        name: config
+      - name: state
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.existingClaim | default "blender-app-state" }}
+      - name: turn
+        secret:
+          defaultMode: 292
+          secretName: blender-turn-auth

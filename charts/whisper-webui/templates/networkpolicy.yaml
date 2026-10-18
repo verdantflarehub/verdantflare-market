@@ -2,6 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: {{ include "whisper-webui.name" . }}-deny-ingress
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "whisper-webui.labels" . | nindent 4 }}
 spec:

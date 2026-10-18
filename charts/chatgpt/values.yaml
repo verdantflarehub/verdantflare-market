@@ -1,6 +1,6 @@
 appId: chatgpt
 appVersion: 0.1.10
-namespace: verdantflare-chatgpt
+namespace: verdantflare-app
 workloadName: chatgpt-channel
 station:
   stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
@@ -12,3 +12,21 @@ image:
   tag: chatgpt-channel-v0.1.10
   pullPolicy: Always
 replicas: 1
+network:
+  url: http://app-network.verdantflare-app.svc.cluster.local:8080
+  proxyUrl: http://app-network-egress.verdantflare-app.svc.cluster.local:3128
+  existingSecretName: network-channel-chatgpt-access
+  tokenKey: token
+storage:
+  create: false
+  existingClaim: chatgpt-channel
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 2Gi
+  mountPath: /data/chatgpt
+  stateDbPath: /data/chatgpt/state.sqlite3
+persistence:
+  create: false
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 2Gi

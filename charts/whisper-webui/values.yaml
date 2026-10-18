@@ -26,6 +26,7 @@ storage:
   storageClassName: ""
   accessMode: ReadWriteOnce
   mountPath: /Whisper-WebUI/models
+  volumeName: ""
 
 review:
   modelAssetsApproved: false

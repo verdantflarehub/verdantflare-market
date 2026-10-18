@@ -1,6 +1,6 @@
 appId: higgsfield
 appVersion: 0.5.8
-namespace: verdantflare-video
+namespace: verdantflare-app
 workloadName: video-higgsfield-gateway
 station:
   stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
@@ -12,3 +12,18 @@ image:
   tag: video-higgsfield-gateway-v0.5.8
   pullPolicy: Always
 replicas: 1
+network:
+  url: http://app-network.verdantflare-app.svc.cluster.local:8080
+  proxyUrl: http://app-network-egress.verdantflare-app.svc.cluster.local:3128
+storage:
+  create: false
+  existingClaim: video-higgsfield
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 20Gi
+  mountPath: /data/higgsfield
+persistence:
+  create: false
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 20Gi

@@ -1,0 +1,23 @@
+{{- if or .Values.storage.create (dig "create" false (.Values.persistence | default dict)) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.storage.existingClaim | default "video-fal-gateway" }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    helm.sh/resource-policy: keep
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+  labels:
+    app.kubernetes.io/name: video-fal-gateway
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ (.Values.storage.storageClassName | default (dig "storageClassName" "local-nvme" (.Values.persistence | default dict))) | quote }}
+  {{- $volumeName := .Values.storage.volumeName | default (dig "volumeName" "" (.Values.persistence | default dict)) }}
+  {{- if $volumeName }}
+  volumeName: {{ $volumeName | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ (.Values.storage.size | default (dig "size" "2Gi" (.Values.persistence | default dict))) | quote }}
+{{- end }}

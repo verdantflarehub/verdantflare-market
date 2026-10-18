@@ -1,6 +1,6 @@
 appId: music-mcp
 appVersion: 0.9.16
-namespace: verdantflare-music
+namespace: verdantflare-app
 workloadName: music-mcp-server
 station:
   stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
@@ -12,3 +12,34 @@ image:
   tag: music-mcp-server-v0.9.16
   pullPolicy: Always
 replicas: 1
+services:
+  etcdEndpoints: http://etcd.verdantflare-station.svc.cluster.local:2379
+  projectServiceUrl: https://app-project.verdantflare-app.svc.cluster.local:8443
+  projectGrpcAddr: app-project.verdantflare-app.svc.cluster.local:9092
+  networkProxyUrl: http://app-network-egress.verdantflare-app.svc.cluster.local:3128
+  mcpServiceEndpoint: http://music-mcp-server.verdantflare-app.svc.cluster.local:8000/mcp
+  mcpHealthEndpoint: http://music-mcp-server.verdantflare-app.svc.cluster.local:8000/health
+  allowedHosts: 192.168.1.200:*,127.0.0.1:*,localhost:*,[::1]:*,music-mcp-server:*,music-mcp-server.verdantflare-app:*,music-mcp-server.verdantflare-app.svc.cluster.local:*,*.cluster.local:*
+  music3Url: http://music-minimax-music3-api.verdantflare-app.svc.cluster.local:8000
+  uvr5Url: http://music-uvr5-api.verdantflare-app.svc.cluster.local:8000
+  uvrUrl: http://music-uvr-api.verdantflare-app.svc.cluster.local:8000
+  rvcUrl: http://music-rvc-api.verdantflare-app.svc.cluster.local:8000
+  applioUrl: http://music-applio-api.verdantflare-app.svc.cluster.local:8000
+  lyricsAlignerUrl: http://music-lyrics-aligner-api.verdantflare-app.svc.cluster.local:8000
+  mixerUrl: http://music-audio-mixer-api.verdantflare-app.svc.cluster.local:8000
+  matcheringUrl: http://music-matchering-api.verdantflare-app.svc.cluster.local:8000
+  musicEditorUrl: http://music-ace-step-api.verdantflare-app.svc.cluster.local:8001
+  acestep15Url: http://music-acestep15-api.verdantflare-app.svc.cluster.local:8000
+  acestepUrl: http://music-acestep-api.verdantflare-app.svc.cluster.local:8000
+storage:
+  create: false
+  existingClaim: music-projects
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 200Gi
+persistence:
+  create: false
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 200Gi
+pvcs: []

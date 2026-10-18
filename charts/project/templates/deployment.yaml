@@ -1,0 +1,192 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-project
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+  labels:
+    app.kubernetes.io/name: app-project
+    app.kubernetes.io/part-of: verdantflare
+spec:
+  progressDeadlineSeconds: 600
+  replicas: {{ .Values.replicas | default 1 }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: app-project
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: app-project
+        app.kubernetes.io/part-of: verdantflare
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - env:
+        - name: ARTIFACT_CA_FILE
+          value: /etc/app/ca/ca.crt
+        - name: ARTIFACT_URL
+          value: {{ (dig "artifactUrl" "https://artifact.verdantflare-station.svc.cluster.local:8094" (.Values.services | default dict)) | quote }}
+        - name: ETCD_ENDPOINTS
+          value: {{ (dig "etcdEndpoints" "http://etcd.verdantflare-station.svc.cluster.local:2379" (.Values.services | default dict)) | quote }}
+        - name: PROJECT_DASHBOARD_DIR
+          value: /app/dashboard/dist
+        - name: PROJECT_LISTEN
+          value: 0.0.0.0:8443
+        - name: PROJECT_MCP_ADVERTISE_URL
+          value: {{ (dig "mcpAdvertiseUrl" (printf "https://app-project.%s.svc.cluster.local:8444/mcp" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: PROJECT_MCP_LISTEN
+          value: 0.0.0.0:8444
+        - name: PROJECT_TLS_CERT
+          value: /etc/app/tls/tls.crt
+        - name: PROJECT_TLS_KEY
+          value: /etc/app/tls/tls.key
+        - name: SSL_CERT_FILE
+          value: /etc/app/ca/ca.crt
+        - name: WORLD_CA_FILE
+          value: /etc/app/ca/ca.crt
+        - name: WORLD_SERVICE_URL
+          value: {{ (dig "worldServiceUrl" (printf "https://app-world.%s.svc.cluster.local:8443" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: PROJECT_DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              key: PROJECT_DATABASE_URL
+              name: app-project-secret
+        - name: PROJECT_SERVICE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: PROJECT_SERVICE_TOKEN
+              name: app-project-secret
+        - name: PROJECT_AUTHORITY_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: PROJECT_AUTHORITY_TOKEN
+              name: app-project-secret
+        - name: PROJECT_COORD_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: PROJECT_COORD_TOKEN
+              name: app-project-secret
+        - name: WORLD_SERVICE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: WORLD_SERVICE_TOKEN
+              name: app-project-secret
+        - name: WORLD_COORD_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: WORLD_COORD_TOKEN
+              name: app-project-secret
+        - name: ARTIFACT_SERVICE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: ARTIFACT_SERVICE_TOKEN
+              name: app-project-secret
+        - name: PROJECT_COORD_FENCE
+          valueFrom:
+            secretKeyRef:
+              key: PROJECT_COORD_FENCE
+              name: app-project-secret
+        - name: WORLD_COORD_FENCE
+          valueFrom:
+            secretKeyRef:
+              key: WORLD_COORD_FENCE
+              name: app-project-secret
+        - name: ETCD_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: active-username
+              name: etcd-client-project
+              optional: true
+        - name: ETCD_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: active-password
+              name: etcd-client-project
+              optional: true
+        - name: PROJECT_READ_LISTEN
+          value: 0.0.0.0:8096
+        - name: PROJECT_READ_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: STUDIO_PROJECT_SERVICE_TOKEN
+              name: studio-project-artifact-gateway
+        image: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:project-v0.1.23
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: business
+          timeoutSeconds: 2
+        name: app
+        ports:
+        - containerPort: 8443
+          name: business
+          protocol: TCP
+        - containerPort: 8444
+          name: mcp
+          protocol: TCP
+        - containerPort: 8096
+          name: peer-read
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: business
+            scheme: HTTPS
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 2
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/app/tls
+          name: tls
+          readOnly: true
+        - mountPath: /etc/app/ca
+          name: ca
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        kubernetes.io/hostname: verdentflare-5090
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: tls
+        secret:
+          defaultMode: 420
+          items:
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
+          secretName: app-project-tls
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: app-internal-ca
+        name: ca

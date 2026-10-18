@@ -1,0 +1,324 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: video-mcp-server
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+  labels:
+    app.kubernetes.io/component: api
+    app.kubernetes.io/name: video-mcp-server
+    app.kubernetes.io/part-of: verdantflare-video
+    app.kubernetes.io/version: 0.17.39
+    apps.verdantflare.com/brand: vf
+    apps.verdantflare.com/group: video
+    apps.verdantflare.com/managed: 'true'
+spec:
+  progressDeadlineSeconds: 600
+  replicas: {{ .Values.replicas | default 1 }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: video-mcp-server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: video-mcp-server
+    spec:
+      containers:
+      - env:
+        - name: SERVICE_VERSION
+          value: v0.17.39
+        - name: XAI_BASE_URL
+          valueFrom:
+            secretKeyRef:
+              key: XAI_BASE_URL
+              name: xai-provider-auth
+        - name: XAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              key: XAI_API_KEY
+              name: xai-provider-auth
+        - name: XAI_VIDEO_ENABLED
+          value: 'true'
+        - name: XAI_VIDEO_MODEL
+          value: grok-imagine-video-1.5
+        - name: S3_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              key: endpoint
+              name: verdantflare-s3-credentials
+        - name: S3_BUCKET
+          valueFrom:
+            secretKeyRef:
+              key: bucket
+              name: verdantflare-s3-credentials
+        - name: S3_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key: access-key
+              name: verdantflare-s3-credentials
+        - name: S3_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key: secret-key
+              name: verdantflare-s3-credentials
+        - name: S3_REGION
+          valueFrom:
+            secretKeyRef:
+              key: region
+              name: verdantflare-s3-credentials
+        - name: S3_PUBLIC_BASE_URL
+          value: https://s3.chengdu.bc-cloud.com:9090
+        - name: VIDEO_ARTIFACT_ROOT
+          value: /data/projects/video
+        - name: VIDEO_ASSET_IMPORT_ORIGINS
+          value: https://cache.ali.wodcloud.com
+        - name: VIDEO_MCP_PUBLIC_BASE_URL
+          value: https://studio.dev.verdantflarehub.com
+        - name: VIDEO_MCP_BEARER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: VIDEO_MCP_BEARER_TOKEN
+              name: video-mcp-auth
+        - name: VIDEO_MCP_ALLOWED_HOSTS
+          value: {{ (dig "allowedHosts" (printf "192.168.1.200:*,127.0.0.1:*,localhost:*,[::1]:*,video-mcp-server:*,video-mcp-server.%s:*,video-mcp-server.%s.svc.cluster.local:*,*.cluster.local:*" .Release.Namespace .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: VIDEO_MCP_ALLOWED_ORIGINS
+          value: http://192.168.1.200:*,http://127.0.0.1:*,http://localhost:*,http://[::1]:*,https://studio.dev.verdantflarehub.com
+        - name: VIDEO_MCP_RUNTIME_BASE_URL
+          value: {{ (dig "runtimeBaseUrl" (printf "http://video-mcp-server.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: VIDEO_PROJECT_SERVICE_URL
+          value: {{ (dig "projectServiceUrl" (printf "https://app-project.%s.svc.cluster.local:8443" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: VIDEO_PROJECT_SERVICE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: VIDEO_PROJECT_SERVICE_TOKEN
+              name: video-app-project-service
+        - name: VIDEO_PROJECT_CA_FILE
+          value: /etc/video-project-ca/ca.crt
+        - name: VIDEO_INTERPOLATION_RUNTIME_URL
+          value: {{ (dig "interpolationRuntimeUrl" (printf "http://video-frame-interpolation-api.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: VIDEO_INTERPOLATION_RUNTIME_VERSION
+          value: video-frame-interpolation-api-v0.2.4
+        - name: H3_RUNTIME_URL
+          value: {{ (dig "h3RuntimeUrl" (printf "http://video-minimax-h3-singularity.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: H3_RUNTIME_ROUTE
+          value: h3-singularity
+        - name: H3_RUNTIME_ROUTES
+          value: '{}'
+        - name: H3_SINGULARITY_RUNTIME_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: VIDEO_MCP_BEARER_TOKEN
+              name: video-mcp-auth
+        - name: ETCD_ENDPOINTS
+          value: {{ (dig "etcdEndpoints" "http://etcd.verdantflare-station.svc.cluster.local:2379" (.Values.services | default dict)) | quote }}
+        - name: H3_RUNTIME_VERSION
+          value: video-minimax-h3-singularity-v0.1.36
+        - name: HIGGSFIELD_GATEWAY_URL
+          value: {{ (dig "higgsfieldGatewayUrl" (printf "http://video-higgsfield-gateway.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: FAL_GATEWAY_URL
+          value: {{ (dig "falGatewayUrl" (printf "http://video-fal-gateway.%s.svc.cluster.local:8001" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: FAL_RESULT_PROXY_URL
+          value: http://openclash.openclash.svc.cluster.local:1081
+        - name: FAL_GATEWAY_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: FAL_EXECUTION_TOKEN
+              name: video-fal-gateway-auth
+        - name: HIGGSFIELD_BINDING_ID
+          value: higgsfield-team-20261014
+        - name: HIGGSFIELD_ENABLED
+          value: 'true'
+        - name: HIGGSFIELD_ORGANIZATION_ID
+          valueFrom:
+            secretKeyRef:
+              key: HIGGSFIELD_ORGANIZATION_ID
+              name: video-higgsfield-binding
+        - name: HIGGSFIELD_INTERNAL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: HIGGSFIELD_INTERNAL_TOKEN
+              name: video-higgsfield-binding
+        - name: VIDEO_ARTIFACT_SERVICE_URL
+          value: {{ (dig "artifactServiceUrl" "https://artifact.verdantflare-station.svc.cluster.local:8094" (.Values.services | default dict)) | quote }}
+        - name: VIDEO_ARTIFACT_SERVICE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: VIDEO_ARTIFACT_SERVICE_TOKEN
+              name: video-artifact-client
+        - name: VIDEO_ARTIFACT_CA_FILE
+          value: /etc/video-project-ca/ca.crt
+        - name: VIDEO_MODEL_CATALOG_DIR
+          value: /etc/video-model-catalog
+        - name: ETCD_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: active-username
+              name: etcd-client-video
+              optional: true
+        - name: ETCD_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: active-password
+              name: etcd-client-video
+              optional: true
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: http
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: api
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: http
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/video-project-ca
+          name: project-ca
+          readOnly: true
+        - mountPath: /data/projects
+          name: projects
+        - mountPath: /etc/video-model-catalog
+          name: model-catalog
+          readOnly: true
+      - command:
+        - python
+        - -m
+        - uvicorn
+        - app.higgsfield_authority:app
+        - --host
+        - 0.0.0.0
+        - --port
+        - '8001'
+        - --ssl-certfile
+        - /etc/video-authority-tls/tls.crt
+        - --ssl-keyfile
+        - /etc/video-authority-tls/tls.key
+        - --no-access-log
+        env:
+        - name: HIGGSFIELD_ENABLED
+          value: 'true'
+        - name: VIDEO_ARTIFACT_ROOT
+          value: /data/projects/video
+        - name: VIDEO_PROJECT_SERVICE_URL
+          value: {{ (dig "projectServiceUrl" (printf "https://app-project.%s.svc.cluster.local:8443" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: VIDEO_PROJECT_SERVICE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: VIDEO_PROJECT_SERVICE_TOKEN
+              name: video-app-project-service
+        - name: VIDEO_PROJECT_CA_FILE
+          value: /etc/video-project-ca/ca.crt
+        - name: HIGGSFIELD_ORGANIZATION_ID
+          valueFrom:
+            secretKeyRef:
+              key: HIGGSFIELD_ORGANIZATION_ID
+              name: video-higgsfield-binding
+        - name: VIDEO_ARTIFACT_AUTHORITY_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: VIDEO_ARTIFACT_AUTHORITY_TOKEN
+              name: video-artifact-authority
+        image: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-mcp-server-v0.17.12
+        imagePullPolicy: Always
+        name: artifact-authority
+        ports:
+        - containerPort: 8001
+          name: authority
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          periodSeconds: 5
+          successThreshold: 1
+          tcpSocket:
+            port: authority
+          timeoutSeconds: 1
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/video-project-ca
+          name: project-ca
+          readOnly: true
+        - mountPath: /data/projects
+          name: projects
+          readOnly: true
+        - mountPath: /etc/video-authority-tls
+          name: authority-tls
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        kubernetes.io/hostname: verdentflare-5090
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: project-ca
+        secret:
+          defaultMode: 420
+          secretName: video-app-project-ca
+      - name: projects
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.existingClaim | default "video-projects" }}
+      - name: authority-tls
+        secret:
+          defaultMode: 420
+          secretName: video-artifact-authority-tls
+      - name: model-catalog
+        projected:
+          defaultMode: 420
+          sources:
+          - configMap:
+              items:
+              - key: channels.yaml
+                path: channels.yaml
+              name: video-model-channels-v0-1-4
+          - configMap:
+              items:
+              - key: channel-catalog.yaml
+                path: local/channel-catalog.yaml
+              - key: review.yaml
+                path: local/review.yaml
+              name: video-models-local-v0-1-1
+          - configMap:
+              items:
+              - key: channel-catalog.yaml
+                path: higgsfield/channel-catalog.yaml
+              - key: review.yaml
+                path: higgsfield/review.yaml
+              name: video-models-higgsfield-v0-1-2
+          - configMap:
+              items:
+              - key: channel-catalog.yaml
+                path: fal/channel-catalog.yaml
+              - key: review.yaml
+                path: fal/review.yaml
+              name: video-models-fal-v0-1-1

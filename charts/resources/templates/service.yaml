@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-resources
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+  labels:
+    app.kubernetes.io/name: app-resources
+    app.kubernetes.io/part-of: verdantflare
+spec:
+  ports:
+  - name: business
+    port: 8000
+    protocol: TCP
+    targetPort: business
+  selector:
+    app.kubernetes.io/name: app-resources
+  type: ClusterIP

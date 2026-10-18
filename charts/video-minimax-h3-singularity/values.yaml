@@ -1,0 +1,27 @@
+appId: video-minimax-h3-singularity
+appVersion: 0.1.36
+namespace: verdantflare-app
+workloadName: video-minimax-h3-singularity
+station:
+  stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
+  organizationId: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
+  installationId: 01a14da1-912a-794b-b3c4-484a4f669bff
+  templateHash: ''
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: video-minimax-h3-singularity-v0.1.36
+  pullPolicy: Always
+replicas: 1
+storage:
+  create: false
+  existingClaim: models-minimax-h3
+  projectsClaim: video-projects
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 200Gi
+persistence:
+  create: false
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 200Gi
+pvcs: []

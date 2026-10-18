@@ -1,0 +1,6 @@
+apiVersion: v2
+name: resources
+description: Station 集群硬件、GPU 资源、工作卷与运行配额监管。
+type: application
+version: 0.1.0
+appVersion: 0.1.6

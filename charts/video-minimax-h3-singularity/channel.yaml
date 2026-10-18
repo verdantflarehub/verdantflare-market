@@ -1,0 +1,12 @@
+schemaVersion: 1
+appId: video-minimax-h3-singularity
+providerId: singularity
+displayName: MiniMax H3 · Singularity
+category: local-channel
+version: 0.1.36
+logo: logo.svg
+capabilities:
+- video.generate
+service:
+  name: video-minimax-h3-singularity
+  port: 8000

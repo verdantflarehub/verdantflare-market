@@ -1,0 +1,166 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: video-minimax-h3-singularity
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+  labels:
+    app.kubernetes.io/component: engine
+    app.kubernetes.io/name: video-minimax-h3-singularity
+    app.kubernetes.io/part-of: verdantflare-video
+    app.kubernetes.io/version: 0.1.36
+    apps.verdantflare.com/brand: minimax
+    apps.verdantflare.com/group: video
+    apps.verdantflare.com/managed: 'true'
+    verdantflare.io/channel: singularity
+    verdantflare.io/gpu-device: rtx-5090
+    verdantflare.io/lora-revision: 7e75982b97cd5a41d2dcfa1904ee88d0686d6fd1
+    verdantflare.io/model-revision: 7aa89f2bcb53c426428acdeba17d53c513393609
+    verdantflare.io/route: h3-singularity
+spec:
+  progressDeadlineSeconds: 600
+  replicas: {{ .Values.replicas | default 1 }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: video-minimax-h3-singularity
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: video-minimax-h3-singularity
+        app.kubernetes.io/part-of: verdantflare-video
+        verdantflare.io/channel: singularity
+        verdantflare.io/gpu-device: rtx-5090
+        verdantflare.io/route: h3-singularity
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - env:
+        - name: SINGULARITY_MODEL_ROOT
+          value: /models/MiniMax-H3/singularity
+        - name: H3_BASE_MODEL_ROOT
+          value: /models/MiniMax-H3
+        - name: H3_COMPONENT_MODEL_ROOT
+          value: /models/MiniMax-H3/singularity
+        - name: SINGULARITY_DIFFUSION_NAME
+          value: Minimax-h3_Singularity_ref2va_Pruned_v1.3_int8.safetensors
+        - name: SINGULARITY_LORA_NAME
+          value: minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors
+        - name: SINGULARITY_DUAL_SAMPLE_MODE
+          value: 'off'
+        - name: SINGULARITY_HR_REFINE_MODE
+          value: 'off'
+        - name: SINGULARITY_HR_REFINE_STEPS
+          value: '1'
+        - name: SINGULARITY_LOW_VRAM_MODE
+          value: auto
+        - name: SINGULARITY_LOW_VRAM_STATE
+          value: 'no'
+        - name: SINGULARITY_UPSCALER_DEVICE
+          value: cuda:0
+        - name: H3_CLIP_NAME
+          value: qwen3vl_4b_fp8_scaled.safetensors
+        - name: H3_CLIP_TYPE
+          value: auto
+        - name: H3_CLIP_PROJECTION_NAME
+          value: mmh3-4b-ClipProj-v3.1-mlp.safetensors
+        - name: H3_CLIP_DEVICE
+          value: cuda:0
+        - name: H3_CLIP_MODE
+          value: dynamic
+        - name: H3_VIDEO_VAE_NAME
+          value: minimax_h3_video_vae_int8_convrot.safetensors
+        - name: H3_AUDIO_VAE_NAME
+          value: minimax_h3_audio_vae_fp32.safetensors
+        - name: H3_VAE_DEVICE
+          value: cuda:0
+        - name: SINGULARITY_VAE_ENCODER_TILE_SIZE
+          value: '128'
+        - name: SINGULARITY_VAE_DECODER_TILE_SIZE
+          value: '256'
+        - name: SINGULARITY_VAE_DECODER_OVERLAP
+          value: '64'
+        - name: SINGULARITY_TASK_ROOT
+          value: /data/projects/singularity/tasks
+        - name: SINGULARITY_MODEL_ENDPOINT
+          value: https://hf-mirror.com
+        - name: SINGULARITY_MODEL_DOWNLOAD_WORKERS
+          value: '16'
+        - name: SINGULARITY_RUNTIME_VERSION
+          value: video-minimax-h3-singularity-v0.1.36
+        - name: SINGULARITY_RUNTIME_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: VIDEO_MCP_BEARER_TOKEN
+              name: video-mcp-auth
+        - name: PYTORCH_CUDA_ALLOC_CONF
+          value: expandable_segments:True
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /live
+            port: http
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: runtime
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: http
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          limits:
+            nvidia.com/gpu: '1'
+          requests:
+            nvidia.com/gpu: '1'
+        startupProbe:
+          failureThreshold: 2880
+          httpGet:
+            path: /live
+            port: http
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 5
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /models/MiniMax-H3
+          name: models
+        - mountPath: /data/projects
+          name: projects
+        - mountPath: /dev/shm
+          name: shared-memory
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        kubernetes.io/hostname: verdentflare-5090
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: models
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.existingClaim | default "models-minimax-h3" }}
+      - name: projects
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.projectsClaim | default "video-projects" }}
+      - emptyDir:
+          medium: Memory
+          sizeLimit: 32Gi
+        name: shared-memory

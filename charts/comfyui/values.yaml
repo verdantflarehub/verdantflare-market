@@ -1,45 +1,26 @@
-# Review candidate. The image below is deliberately not deployable.
+appId: comfyui
+appVersion: 0.1.12
+namespace: verdantflare-app
+workloadName: comfyui-manager
+station:
+  stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
+  organizationId: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
+  installationId: 01a12b18-ff90-7294-a423-a746307e9c69
+  templateHash: ''
 image:
-  repository: registry.invalid/wod/comfyui
-  tag: "0.1.0"
-  digest: ""
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: comfyui-v0.1.15
   pullPolicy: Always
-
-replicaCount: 1
-service:
-  port: 8188
-
-resources:
-  requests:
-    cpu: "4"
-    memory: 20Gi
-    nvidia.com/gpu: 1
-  limits:
-    cpu: "8"
-    memory: 32Gi
-    nvidia.com/gpu: 1
-
+replicas: 1
 storage:
-  create: true
-  existingClaim: ""
-  size: 100Gi
-  storageClassName: ""
-  accessMode: ReadWriteOnce
-  mountPath: /data
-
-nodeSelector: {}
-tolerations: []
-
-probes:
-  startup:
-    path: /
-    periodSeconds: 10
-    failureThreshold: 60
-  readiness:
-    path: /
-    periodSeconds: 10
-    failureThreshold: 3
-  liveness:
-    path: /
-    periodSeconds: 30
-    failureThreshold: 3
+  create: false
+  existingClaim: comfyui-app-state
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 5Gi
+persistence:
+  create: false
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 5Gi
+pvcs: []

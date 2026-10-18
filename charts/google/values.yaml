@@ -1,4 +1,5 @@
 fullnameOverride: google-channel
+namespace: verdantflare-app
 
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
@@ -12,17 +13,25 @@ auth:
   existingSecretName: google-channel-auth
 
 network:
-  url: http://app-network.verdantflare-station.svc.cluster.local:8080
+  url: http://app-network.verdantflare-app.svc.cluster.local:8080
+  proxyUrl: http://app-network-egress.verdantflare-app.svc.cluster.local:3128
   existingSecretName: network-channel-google-access
   tokenKey: token
 
 storage:
   create: false
   existingClaim: google-channel
-  storageClassName: ""
+  storageClassName: local-nvme
+  volumeName: ""
   size: 2Gi
   mountPath: /data/google
   stateDbPath: /data/google/state.sqlite3
+
+persistence:
+  create: false
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 2Gi
 
 service:
   managementPort: 8000
@@ -34,8 +43,9 @@ networkPolicy:
   studioPodName: verdantflare-studio
   runtimePodName: station-runtime
   etcdPodName: etcd
+  networkNamespace: verdantflare-app
   networkPodName: app-network
-  imageNamespace: verdantflare-image
+  imageNamespace: verdantflare-app
   imagePodName: image-mcp-server
   openclashNamespace: openclash
   openclashAppLabel: openclash
