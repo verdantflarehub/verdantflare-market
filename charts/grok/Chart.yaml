@@ -1,0 +1,6 @@
+apiVersion: v2
+name: grok
+description: 账号、调用日志。
+type: application
+version: 0.1.0
+appVersion: 0.1.10

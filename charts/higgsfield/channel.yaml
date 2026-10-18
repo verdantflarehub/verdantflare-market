@@ -1,0 +1,12 @@
+schemaVersion: 1
+appId: higgsfield
+providerId: higgsfield
+displayName: Higgsfield
+category: channel
+version: 0.5.8
+logo: logo.svg
+capabilities:
+- video.generate
+service:
+  name: video-higgsfield-gateway
+  port: 8000

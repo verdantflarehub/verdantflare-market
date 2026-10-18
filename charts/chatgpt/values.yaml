@@ -1,0 +1,14 @@
+appId: chatgpt
+appVersion: 0.1.10
+namespace: verdantflare-chatgpt
+workloadName: chatgpt-channel
+station:
+  stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
+  organizationId: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
+  installationId: 01a14d94-f7a0-7e80-be91-f94f11541db6
+  templateHash: ''
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: chatgpt-channel-v0.1.10
+  pullPolicy: Always
+replicas: 1

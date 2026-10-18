@@ -1,0 +1,14 @@
+appId: grok
+appVersion: 0.1.10
+namespace: verdantflare-grok
+workloadName: grok-channel
+station:
+  stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
+  organizationId: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
+  installationId: 01a14d95-4459-7d82-a5b3-1fd3a254700a
+  templateHash: ''
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: grok-channel-v0.1.10
+  pullPolicy: Always
+replicas: 1

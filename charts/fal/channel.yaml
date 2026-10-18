@@ -1,0 +1,13 @@
+schemaVersion: 1
+appId: fal
+providerId: fal
+displayName: fal.ai
+category: channel
+version: 0.2.12
+logo: logo.svg
+capabilities:
+- video.generate
+- image.generate
+service:
+  name: video-fal-gateway
+  port: 8000

@@ -1,0 +1,14 @@
+schemaVersion: 1
+appId: grok
+providerId: grok
+displayName: Grok
+category: channel
+version: 0.1.10
+logo: logo.svg
+capabilities:
+- image.generate
+- video.generate
+- text.generate
+service:
+  name: grok-channel
+  port: 8000

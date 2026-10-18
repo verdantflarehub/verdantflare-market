@@ -1,0 +1,14 @@
+appId: fal
+appVersion: 0.2.12
+namespace: verdantflare-video
+workloadName: video-fal-gateway
+station:
+  stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
+  organizationId: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
+  installationId: 01a14d95-9a6a-72e0-be03-07ee6d33c97c
+  templateHash: ''
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: video-fal-gateway-v0.2.12
+  pullPolicy: Always
+replicas: 1

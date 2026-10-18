@@ -1,0 +1,14 @@
+schemaVersion: 1
+appId: chatgpt
+providerId: chatgpt
+displayName: ChatGPT
+category: channel
+version: 0.1.10
+logo: logo.svg
+capabilities:
+- image.generate
+- image.edit
+- text.generate
+service:
+  name: chatgpt-channel
+  port: 8000

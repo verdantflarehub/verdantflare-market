@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: video-fal-gateway
+  namespace: verdantflare-video
+spec:
+  ports:
+  - name: management
+    port: 8000
+    protocol: TCP
+    targetPort: management
+  - name: execution
+    port: 8001
+    protocol: TCP
+    targetPort: execution
+  selector:
+    app.kubernetes.io/name: video-fal-gateway
+  type: ClusterIP

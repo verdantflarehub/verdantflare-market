@@ -1,0 +1,14 @@
+appId: higgsfield
+appVersion: 0.5.8
+namespace: verdantflare-video
+workloadName: video-higgsfield-gateway
+station:
+  stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
+  organizationId: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
+  installationId: 01a14d95-e8e1-76a3-9c5d-6ddc7ad2ae19
+  templateHash: ''
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: video-higgsfield-gateway-v0.5.8
+  pullPolicy: Always
+replicas: 1

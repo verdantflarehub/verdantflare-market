@@ -1,0 +1,108 @@
+{{- include "google.validate" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "google.fullname" . }}
+  labels:
+    {{- include "google.labels" . | nindent 4 }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Chart.Name | quote }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 10
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "google.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/channel-metadata: {{ .Files.Get "channel.yaml" | sha256sum }}
+      labels:
+        {{- include "google.labels" . | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: gateway
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: GOOGLE_STATE_DB
+              value: {{ .Values.storage.stateDbPath | quote }}
+            - name: CHANNEL_METADATA_FILE
+              value: /etc/verdantflare/channel.yaml
+            - name: GOOGLE_NETWORK_URL
+              value: {{ .Values.network.url | quote }}
+            - name: GOOGLE_NETWORK_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.network.existingSecretName | quote }}
+                  key: {{ .Values.network.tokenKey | quote }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.auth.existingSecretName | quote }}
+          ports:
+            - name: management
+              containerPort: {{ .Values.service.managementPort }}
+              protocol: TCP
+            - name: execution
+              containerPort: {{ .Values.service.executionPort }}
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: management
+              scheme: HTTP
+            periodSeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: management
+              scheme: HTTP
+            periodSeconds: 30
+            timeoutSeconds: 1
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: state
+              mountPath: {{ .Values.storage.mountPath | quote }}
+            - name: channel-metadata
+              mountPath: /etc/verdantflare/channel.yaml
+              subPath: channel.yaml
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: state
+          persistentVolumeClaim:
+            claimName: {{ .Values.storage.existingClaim | default (include "google.fullname" .) | quote }}
+        - name: channel-metadata
+          configMap:
+            name: {{ include "google.fullname" . }}-metadata
+        - name: tmp
+          emptyDir: {}
+
