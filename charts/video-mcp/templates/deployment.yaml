@@ -234,7 +234,7 @@ spec:
         - python
         - -m
         - uvicorn
-        - app.higgsfield_authority:app
+        - app.artifact_authority:app
         - --host
         - 0.0.0.0
         - --port
@@ -268,7 +268,7 @@ spec:
             secretKeyRef:
               key: VIDEO_ARTIFACT_AUTHORITY_TOKEN
               name: video-artifact-authority
-        image: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-mcp-server-v0.17.12
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: Always
         name: artifact-authority
         ports:

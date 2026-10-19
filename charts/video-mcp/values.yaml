@@ -1,5 +1,5 @@
 appId: video-mcp
-appVersion: 0.17.42
+appVersion: 0.17.45
 namespace: verdantflare-app
 workloadName: video-mcp-server
 station:
@@ -9,7 +9,7 @@ station:
   templateHash: ''
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: video-mcp-server-v0.17.42
+  tag: video-mcp-server-v0.17.45
   pullPolicy: Always
 replicas: 1
 gpuTask:
