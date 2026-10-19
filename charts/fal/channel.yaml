@@ -1,13 +1,151 @@
-schemaVersion: 1
-appId: fal
-providerId: fal
-displayName: fal.ai
-category: channel
-version: 0.2.12
-logo: logo.png
+schema_version: 1
+channel_id: fal
 capabilities:
-- video.generate
-- image.generate
-service:
-  name: video-fal-gateway
-  port: 8000
+  - capability_id: video.generate.reference
+    type: video
+    model_id: minimax/h3
+    endpoint_id: minimax/h3/reference-to-video
+    display_name: MiniMax H3 · 参考生视频
+    operation: video.generate.reference
+    parameter_schema: {}
+    execution_state: adapter_connected_unverified
+  - capability_id: video.generate.seedance2.reference
+    type: video
+    model_id: bytedance/seedance-2.0
+    endpoint_id: bytedance/seedance-2.0/reference-to-video
+    display_name: Seedance 2.0 · 参考生视频
+    operation: video.generate.reference
+    parameter_schema: {}
+    execution_state: adapter_connected_unverified
+  - capability_id: video.h3max.3d_to_video
+    type: video
+    model_id: minimax/h3-max
+    endpoint_id: minimax/h3-max/3d-to-video
+    display_name: 3D to Video
+    operation: video.transform.3d_to_video
+    parameter_schema: {}
+    execution_state: catalog_only
+    protocol: queue
+    output_resolutions: [480P, 768P, 1080P]
+    source_url: https://fal.ai/models/minimax/h3-max/3d-to-video/api
+  - capability_id: video.h3max.camera_controls
+    type: video
+    model_id: minimax/h3-max
+    endpoint_id: minimax/h3-max/camera-controls
+    display_name: Camera Controls
+    operation: video.generate.camera_controls
+    parameter_schema: {}
+    execution_state: catalog_only
+    protocol: queue
+    output_resolutions: [480P, 768P, 1080P]
+    source_url: https://fal.ai/models/minimax/h3-max/camera-controls/api
+  - capability_id: video.h3max.director
+    type: video
+    model_id: minimax/h3-max
+    endpoint_id: minimax/h3-max/director
+    display_name: Director
+    operation: video.session.director
+    parameter_schema: {}
+    execution_state: catalog_only
+    protocol: websocket
+    output_resolutions: [480p, 768p, 1080p]
+    source_url: https://fal.ai/models/minimax/h3-max/director/api
+  - capability_id: video.h3max.extend_video
+    type: video
+    model_id: minimax/h3-max
+    endpoint_id: minimax/h3-max/extend-video
+    display_name: Extend Video Max
+    operation: video.transform.extend
+    parameter_schema: {}
+    execution_state: catalog_only
+    protocol: queue
+    output_resolutions: [480P, 768P, 1080P, 2K]
+    source_url: https://fal.ai/models/minimax/h3-max/extend-video/api
+  - capability_id: video.h3max.image_to_video
+    type: video
+    model_id: minimax/h3-max
+    endpoint_id: minimax/h3-max/image-to-video
+    display_name: Image to Video Max
+    operation: video.generate.image_to_video
+    parameter_schema: {}
+    execution_state: catalog_only
+    protocol: queue
+    output_resolutions: [480P, 768P, 1080P]
+    source_url: https://fal.ai/models/minimax/h3-max/image-to-video/api
+  - capability_id: video.h3max.insert_video
+    type: video
+    model_id: minimax/h3-max
+    endpoint_id: minimax/h3-max/insert-video
+    display_name: Insert Video Max
+    operation: video.transform.insert
+    parameter_schema: {}
+    execution_state: catalog_only
+    protocol: queue
+    output_resolutions: [480p, 768p]
+    source_url: https://fal.ai/models/minimax/h3-max/insert-video/api
+  - capability_id: video.h3max.lip_sync
+    type: video
+    model_id: minimax/h3-max
+    endpoint_id: minimax/h3-max/lip-sync/image-to-video
+    display_name: Lip Sync Max
+    operation: video.transform.lip_sync
+    parameter_schema: {}
+    execution_state: catalog_only
+    protocol: queue
+    output_resolutions: [480P, 768P, 1080P, 2K]
+    source_url: https://fal.ai/models/minimax/h3-max/lip-sync/image-to-video/api
+  - capability_id: video.h3max.recast
+    type: video
+    model_id: minimax/h3-max
+    endpoint_id: minimax/h3-max/recast
+    display_name: Recast Max
+    operation: video.transform.recast
+    parameter_schema: {}
+    execution_state: catalog_only
+    protocol: queue
+    output_resolutions: [768P, 1080P]
+    source_url: https://fal.ai/models/minimax/h3-max/recast/api
+  - capability_id: video.h3max.reference_director
+    type: video
+    model_id: minimax/h3-max
+    endpoint_id: minimax/h3-max/reference-director
+    display_name: Reference Director
+    operation: video.session.reference_director
+    parameter_schema: {}
+    execution_state: catalog_only
+    protocol: websocket
+    output_resolutions: [480p, 544p, 640p, 704p, 768p, 1080p, 1440p]
+    source_url: https://fal.ai/models/minimax/h3-max/reference-director/api
+  - capability_id: video.h3max.reference_to_video
+    type: video
+    model_id: minimax/h3-max
+    endpoint_id: minimax/h3-max/reference-to-video
+    display_name: Reference to Video Max
+    operation: video.generate.reference_to_video
+    parameter_schema: {}
+    execution_state: catalog_only
+    protocol: queue
+    output_resolutions: [480P, 768P, 1080P]
+    source_url: https://fal.ai/models/minimax/h3-max/reference-to-video/api
+  - capability_id: video.h3max.relight
+    type: video
+    model_id: minimax/h3-max
+    endpoint_id: minimax/h3-max/relight
+    display_name: Relight Max
+    operation: video.transform.relight
+    parameter_schema: {}
+    execution_state: catalog_only
+    protocol: queue
+    output_resolutions: [480P, 768P, 1080P, 2K]
+    source_url: https://fal.ai/models/minimax/h3-max/relight/api
+  - capability_id: video.h3max.text_to_video
+    type: video
+    model_id: minimax/h3-max
+    endpoint_id: minimax/h3-max/text-to-video
+    display_name: Text to Video Max
+    operation: video.generate.text_to_video
+    parameter_schema: {}
+    execution_state: catalog_only
+    protocol: queue
+    output_resolutions: [480P, 768P, 1080P]
+    source_url: https://fal.ai/models/minimax/h3-max/text-to-video/api

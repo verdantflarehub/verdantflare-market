@@ -30,6 +30,8 @@ spec:
     type: Recreate
   template:
     metadata:
+      annotations:
+        checksum/channel-metadata: {{ .Files.Get "channel.yaml" | sha256sum }}
       labels:
         app.kubernetes.io/name: {{ .Values.workloadName | default "fal-channel" }}
     spec:
@@ -38,6 +40,8 @@ spec:
       - env:
         - name: FAL_STATE_DB
           value: {{ .Values.storage.stateDbPath | default "/data/fal/state.sqlite3" | quote }}
+        - name: CHANNEL_METADATA_FILE
+          value: /etc/verdantflare/channel.yaml
         - name: HTTPS_PROXY
           value: http://openclash.openclash.svc.cluster.local:1081
         - name: NO_PROXY
@@ -92,6 +96,10 @@ spec:
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
+        - mountPath: /etc/verdantflare/channel.yaml
+          name: channel-metadata
+          readOnly: true
+          subPath: channel.yaml
         - mountPath: {{ .Values.storage.mountPath | default "/data/fal" }}
           name: state
         - mountPath: /tmp
@@ -108,6 +116,9 @@ spec:
         runAsUser: 10001
       terminationGracePeriodSeconds: 30
       volumes:
+      - configMap:
+          name: {{ .Values.workloadName | default "fal-channel" }}-metadata
+        name: channel-metadata
       - name: state
         persistentVolumeClaim:
           claimName: {{ .Values.storage.existingClaim | default "video-fal-gateway" }}
