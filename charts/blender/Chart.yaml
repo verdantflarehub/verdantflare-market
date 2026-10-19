@@ -2,7 +2,7 @@ apiVersion: v2
 name: blender
 description: 选择独立 Blender 实例，使用图形界面或专用 MCP 编辑场景，将工程保存到项目修订。
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: 0.1.12
 annotations:
   verdantflare.com/app-id: blender
