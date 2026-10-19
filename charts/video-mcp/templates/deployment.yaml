@@ -23,7 +23,7 @@ metadata:
     app.kubernetes.io/component: api
     app.kubernetes.io/name: video-mcp-server
     app.kubernetes.io/part-of: verdantflare-video
-    app.kubernetes.io/version: 0.17.41
+    app.kubernetes.io/version: {{ .Values.appVersion | quote }}
     apps.verdantflare.com/brand: vf
     apps.verdantflare.com/group: video
     apps.verdantflare.com/managed: 'true'
@@ -48,7 +48,7 @@ spec:
       containers:
       - env:
         - name: SERVICE_VERSION
-          value: v0.17.41
+          value: {{ printf "v%s" .Values.appVersion | quote }}
         {{- with .Values.gpuTask }}
         - name: GPU_TASK_ROLE
           value: {{ .role | quote }}
