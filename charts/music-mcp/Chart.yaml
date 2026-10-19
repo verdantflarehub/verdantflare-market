@@ -4,3 +4,8 @@ description: 统一调用音乐生成、分轨、人声、歌词对齐与母带�
 type: application
 version: 0.1.0
 appVersion: 0.9.18
+annotations:
+  verdantflare.com/app-id: music-mcp
+  verdantflare.com/capabilities: '["music.generate","stems.separate","voice.prepare","voice.train","voice.convert","lyrics.align","mix.master"]'
+  verdantflare.com/models: '[]'
+  verdantflare.com/images: '[{"component":"api","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:music-mcp-server-v0.9.18"}]'

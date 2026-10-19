@@ -30,6 +30,8 @@ spec:
     type: Recreate
   template:
     metadata:
+      annotations:
+        checksum/channel-metadata: {{ .Files.Get "channel.yaml" | sha256sum }}
       labels:
         app.kubernetes.io/name: chatgpt-channel
     spec:
@@ -38,6 +40,8 @@ spec:
       - env:
         - name: CHATGPT_STATE_DB
           value: {{ .Values.storage.stateDbPath | default "/data/chatgpt/state.sqlite3" | quote }}
+        - name: CHANNEL_METADATA_FILE
+          value: /etc/verdantflare/channel.yaml
         - name: CHATGPT_NETWORK_URL
           value: {{ .Values.network.url | default (printf "http://app-network.%s.svc.cluster.local:8080" .Release.Namespace) | quote }}
         - name: CHATGPT_NETWORK_TOKEN
@@ -87,6 +91,10 @@ spec:
         volumeMounts:
         - mountPath: {{ .Values.storage.mountPath | default "/data/chatgpt" }}
           name: state
+        - mountPath: /etc/verdantflare/channel.yaml
+          name: channel-metadata
+          readOnly: true
+          subPath: channel.yaml
         - mountPath: /tmp
           name: tmp
       dnsPolicy: ClusterFirst
@@ -104,5 +112,8 @@ spec:
       - name: state
         persistentVolumeClaim:
           claimName: {{ .Values.storage.existingClaim | default "chatgpt-channel" }}
+      - configMap:
+          name: {{ .Values.workloadName | default "chatgpt-channel" }}-metadata
+        name: channel-metadata
       - emptyDir: {}
         name: tmp

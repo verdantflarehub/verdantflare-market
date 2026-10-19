@@ -1,0 +1,69 @@
+name: Publish Helm Charts
+
+on:
+  workflow_dispatch:
+    inputs:
+      charts:
+        description: "Space-separated chart names to publish (leave empty for all 14 Station charts)"
+        required: false
+        default: ""
+  push:
+    branches: [release]
+    paths:
+      - "charts/**"
+      - "scripts/publish-charts.sh"
+      - ".github/workflows/publish-charts.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: market-publish-charts-release
+  cancel-in-progress: false
+
+env:
+  REGISTRY_HOST: registry.verdantflare.ai
+
+jobs:
+  publish:
+    name: Package, push and verify OCI Helm Charts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.17.3
+
+      - name: Lint and template all charts
+        shell: bash
+        run: |
+          set -euo pipefail
+          for dir in charts/*; do
+            [[ -d "$dir" ]] || continue
+            name="$(basename "$dir")"
+            helm lint "$dir"
+            helm template "$name" "$dir" --namespace verdantflare-app >/dev/null
+          done
+
+      - name: Publish and verify target Station charts
+        env:
+          CHARTS: ${{ inputs.charts }}
+          REGISTRY_PUBLISH_USERNAME: ${{ secrets.REGISTRY_PUBLISH_USERNAME }}
+          REGISTRY_PUBLISH_PASSWORD: ${{ secrets.REGISTRY_PUBLISH_PASSWORD }}
+          DIST_DIR: dist/charts
+          SUMMARY_FILE: dist/charts/published-charts.json
+        shell: bash
+        run: bash scripts/publish-charts.sh
+
+      - name: Upload published chart digests summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: published-charts-summary
+          path: dist/charts/published-charts.json
+          if-no-files-found: error
+          retention-days: 30

@@ -3,6 +3,10 @@ kind: ConfigMap
 metadata:
   name: {{ .Values.workloadName | default "fal-channel" }}-metadata
   namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.workloadName | default "fal-channel" }}
 data:
   channel.yaml: |
 {{- .Files.Get "channel.yaml" | nindent 4 }}

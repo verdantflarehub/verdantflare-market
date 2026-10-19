@@ -2,40 +2,57 @@
 
 VerdantFlare 应用交付仓库，集中维护 Helm Chart 源码与打包配套。
 
-当前状态：Blender、ComfyUI、Concat、Whisper-WebUI、IndexTTS2、OpenClaw 与 Hermes Agent 均有 Chart 候选源码；旧版 Blender 方案保存在 `archive/`。这些源码不代表已有可安装 Chart、已发布制品或 Station 安装结果。
+当前状态：`charts/` 下包含 14 个 Station 受管应用 Chart 与 5 个仅评审候选 Chart（共 19 个）；旧版 Blender 方案保存在 `archive/`。
 
 ## 1. 目录
 
 ```text
 charts/
-  blender/
-  comfyui/
-  concat/
-  hermes-agent/
-  indextts2/
-  openclaw/
-  whisper-webui/
+  blender/                       # Station 受管应用（Chart name = appId = blender）
+  chatgpt/                       # Station 渠道应用（含 channel.yaml ConfigMap 挂载）
+  comfyui/                       # Station 受管应用
+  concat/                        # 候选评审 Chart（非 Station 可安装）
+  fal/                           # Station 渠道应用（含 channel.yaml ConfigMap 挂载）
+  google/                        # Station 渠道应用（含 channel.yaml ConfigMap 挂载）
+  grok/                          # Station 渠道应用（含 channel.yaml ConfigMap 挂载）
+  hermes-agent/                  # 候选评审 Chart（非 Station 可安装）
+  higgsfield/                    # Station 渠道应用（含 channel.yaml ConfigMap 挂载）
+  image-mcp/                     # Station 领域 MCP 应用
+  indextts2/                     # 候选评审 Chart（非 Station 可安装）
+  music-mcp/                     # Station 领域 MCP 应用
+  network/                       # Station 系统应用
+  openclaw/                      # 候选评审 Chart（非 Station 可安装）
+  project/                       # Station 系统应用
+  resources/                     # Station 系统应用
+  video-mcp/                     # Station 领域 MCP 应用
+  video-minimax-h3-singularity/  # Station 本地视频渠道运行时（含 channel.yaml ConfigMap 挂载）
+  whisper-webui/                 # 候选评审 Chart（非 Station 可安装）
+scripts/
+  publish-charts.sh              # OCI Chart 校验、打包、防覆盖检查、推送与匿名回拉双摘要核验脚本
 archive/
-  blender-mcp-v0.1.2/  # 旧 App + Worker 固定部署样本
-  blender-mcp-legacy/  # 更早的成都单容器样本
+  blender-mcp-v0.1.2/            # 旧 App + Worker 固定部署样本
+  blender-mcp-legacy/            # 更早的成都单容器样本
 ```
 
-当前候选目录使用简短应用 slug，不加源码仓库前缀；目录名与 Hub App ID、Chart `name` 分别管理。例如 `charts/blender/` 的 Chart `name` 是 `blender-mcp`。每个 Chart 按应用独立版本化，包含 `Chart.yaml`、`values.yaml`、`values.schema.json` 与 `templates/`。`archive/` 只用于历史评审，不作为当前安装包来源。公共打包工具在出现实际复用需求时放入 `scripts/`。构建产物保存在被忽略的 `dist/`，发布后由受控制品仓库保存。
+当前目录使用简短、稳定的应用 slug，不加源码仓库前缀；14 个 Station 受管 Chart 的目录名、Hub `appId` 与 `Chart.yaml` 中的 `name` 严格一致（例如 `charts/blender/` 的 Chart `name` 与正式 `appId` 均为 `blender`）。每个 Station Chart 在 `Chart.yaml` 的 `annotations` 中声明 `verdantflare.com/app-id`、`verdantflare.com/capabilities`、`verdantflare.com/models`、`verdantflare.com/images` 及可选 `verdantflare.com/logo-file`、`verdantflare.com/channel-file`，供 Control 在登记 `AppVersion` 时从原包直接提取并核验。包含 `channel.yaml` 的 6 个渠道 Chart 均通过 `templates/configmap-channel.yaml` 渲染 ConfigMap 并挂载至 `/etc/verdantflare/channel.yaml`。所有含 `templates/pvc.yaml` 的 16 个 Chart 均保留 `helm.sh/resource-policy: keep`。
+
+`archive/` 只用于历史评审，不作为当前安装包来源。构建产物保存在被忽略的 `dist/` 或 `.tmp/`，发布后由公开 OCI Registry（`oci://registry.verdantflare.ai/charts`）保存。
 
 ## 2. 开发与交付
 
-应用代码和镜像构建由各 `verdantflare-app-*` 项目维护；本仓库消费固定镜像及摘要，维护相应 Chart。应用管理元数据、版本登记、发布与授权由 Hub／Control 承接。具体集群的 values 和部署记录统一保存在设计仓库 `deploys/`。
+应用代码和镜像构建由各 `verdantflare-app-*` 项目维护；本仓库消费固定语义化版本镜像，维护相应 Chart。应用管理元数据、不可变 `AppVersion` 登记、发布选择与组织可见性由 Hub／Control 承接。具体集群的环境 Values 和部署说明统一保存在设计仓库 `deploys/`。
 
-当前 [Blender Chart 候选](charts/blender/README.md)已可做本地静态校验，但默认镜像不可拉取，且 Control 审核、制品存储、签名、Station 安装及目标环境验收仍未闭环。其他候选同样须逐项补齐真实镜像、许可、依赖与验收证据；不能因集中到 Market 就视为可安装。当前未配置 CI/CD；制品存储、签名和发布接口仍按设计仓库的 D1/D2 落实。
+工作流 `.github/workflows/publish-charts.yml` 配合 `scripts/publish-charts.sh` 执行 `helm lint`、`helm template`、`helm dependency build`、`helm package`，在推送 `oci://registry.verdantflare.ai/charts` 前检查远端同版本是否存在并拒绝不同摘要覆盖，推送后执行匿名回拉并核验 OCI `manifestDigest` 与 `.tgz` `packageDigest` 双摘要，输出结构化 JSON 摘要供 Control 登记固定 `AppVersion`。
 
-GitHub 默认分支为 `main`，日常开发及工作区子模块跟踪 `dev`。初始化时两者指向同一份已检查的仓库骨架；后续发布遵循 `dev` → `release` 快进构建交付 → 验证后同步 `main` 的工作区流程，仓库初始化不表示应用已发布。
+GitHub 默认分支为 `main`，日常开发及工作区子模块跟踪 `dev`；发布遵循 `dev` → `release` 快进触发构建交付 → 验证后同步 `main` 的工作区流程。
 
 ## 3. 设计入口
 
 - [Market 总体设计与仓库职责](https://github.com/verdantflarehub/verdantflare-design/blob/dev/docs/design/center/market/README.md)
-- [应用开发与交付指南](https://github.com/verdantflarehub/verdantflare-design/blob/dev/docs/guides/market-app-development.md)
-- [交付包契约](https://github.com/verdantflarehub/verdantflare-design/blob/dev/docs/design/contracts/market-app-package.draft.md)
-- [专项计划](https://github.com/verdantflarehub/verdantflare-design/blob/dev/plan/2026.10.studio.appcenter.lifecycle.plan.md)
+- [Market 技术架构与双摘要契约](https://github.com/verdantflarehub/verdantflare-design/blob/dev/docs/design/center/market/technical-architecture.md)
+- [Chart 发布与更新方案](https://github.com/verdantflarehub/verdantflare-design/blob/dev/docs/design/center/market/details/README.app-release-update.md)
+- [公开 Chart Registry 设计](https://github.com/verdantflarehub/verdantflare-design/blob/dev/docs/design/center/market/details/README.chart-registry.md)
+- [打通 App 下载、安装、更新、卸载全流程与 Market 协作计划](https://github.com/verdantflarehub/verdantflare-design/blob/dev/plan/2026.10.hub-market-app-lifecycle.plan.md)
 - [GitHub Actions 应用指南](https://github.com/verdantflarehub/verdantflare-design/blob/dev/docs/GithubAction.md)
 
 产品/API 契约、跨模块决策和验收记录在设计仓库维护，本仓库只保留开发与构建所需说明。

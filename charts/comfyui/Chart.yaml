@@ -4,3 +4,9 @@ description: 独立 ComfyUI 基础环境，不包含模型和第三方节点。�
 type: application
 version: 0.1.0
 appVersion: "0.1.15"
+annotations:
+  verdantflare.com/app-id: comfyui
+  verdantflare.com/logo-file: logo.svg
+  verdantflare.com/capabilities: '["workflow.run"]'
+  verdantflare.com/models: '[]'
+  verdantflare.com/images: '[{"component":"app","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:comfyui-v0.1.15"}]'
