@@ -114,8 +114,8 @@ spec:
             secretKeyRef:
               key: STUDIO_PROJECT_SERVICE_TOKEN
               name: studio-project-artifact-gateway
-        image: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:project-v0.1.23
-        imagePullPolicy: Always
+        image: {{ printf "%s:%s" .Values.image.repository .Values.image.tag | quote }}
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
         livenessProbe:
           failureThreshold: 3
           initialDelaySeconds: 15
