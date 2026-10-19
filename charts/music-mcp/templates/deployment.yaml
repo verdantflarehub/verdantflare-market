@@ -23,7 +23,7 @@ metadata:
     app.kubernetes.io/component: api
     app.kubernetes.io/name: music-mcp-server
     app.kubernetes.io/part-of: verdantflare-music
-    app.kubernetes.io/version: 0.9.16
+    app.kubernetes.io/version: 0.9.17
     apps.verdantflare.com/brand: vf
     apps.verdantflare.com/group: music
     apps.verdantflare.com/managed: 'true'
@@ -42,6 +42,10 @@ spec:
         app.kubernetes.io/name: music-mcp-server
         app.kubernetes.io/part-of: verdantflare-music
     spec:
+      {{- with (dig "serviceAccount" "" (.Values.gpuTask | default dict)) }}
+      serviceAccountName: {{ . | quote }}
+      automountServiceAccountToken: true
+      {{- end }}
       containers:
       - env:
         - name: ETCD_USERNAME
@@ -57,7 +61,7 @@ spec:
               name: etcd-client-music
               optional: true
         - name: SERVICE_VERSION
-          value: 0.9.16
+          value: 0.9.17
         - name: ETCD_ENDPOINTS
           value: {{ (dig "etcdEndpoints" "http://etcd.verdantflare-station.svc.cluster.local:2379" (.Values.services | default dict)) | quote }}
         - name: MCP_SERVICE_ENDPOINT
@@ -68,6 +72,14 @@ spec:
           value: {{ (dig "allowedHosts" (printf "192.168.1.200:*,127.0.0.1:*,localhost:*,[::1]:*,music-mcp-server:*,music-mcp-server.%s:*,music-mcp-server.%s.svc.cluster.local:*,*.cluster.local:*" .Release.Namespace .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: MUSIC3_URL
           value: {{ (dig "music3Url" (printf "http://music-minimax-music3-api.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        {{- with .Values.gpuTask }}
+        - name: GPU_TASK_ROLE
+          value: {{ .role | quote }}
+        - name: GPU_TASK_DEPLOYMENT
+          value: {{ .deployment | quote }}
+        - name: GPU_IDLE_SECONDS
+          value: {{ .idleSeconds | default "600" | quote }}
+        {{- end }}
         - name: UVR5_URL
           value: {{ (dig "uvr5Url" (printf "http://music-uvr5-api.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: RVC_URL
