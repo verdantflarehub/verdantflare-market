@@ -1,6 +1,32 @@
 schema_version: 1
 channel_id: fal
 capabilities:
+  - capability_id: video.h3.text_to_video
+    type: video
+    model_id: minimax/h3
+    endpoint_id: minimax/h3/text-to-video
+    display_name: MiniMax H3 · 文生视频
+    operation: video.generate.text_to_video
+    parameter_schema: {}
+    execution_state: catalog_only
+    card_group: standard-generation
+    card_title: 标准视频生成
+    input_summary: 提示词
+    output_summary: 视频与音频
+    source_url: https://fal.ai/minimax-h3
+  - capability_id: video.h3.image_to_video
+    type: video
+    model_id: minimax/h3
+    endpoint_id: minimax/h3/image-to-video
+    display_name: MiniMax H3 · 图生视频
+    operation: video.generate.image_to_video
+    parameter_schema: {}
+    execution_state: catalog_only
+    card_group: standard-generation
+    card_title: 标准视频生成
+    input_summary: 提示词 · 图像
+    output_summary: 视频与音频
+    source_url: https://fal.ai/minimax-h3
   - capability_id: video.generate.reference
     type: video
     model_id: minimax/h3
@@ -9,6 +35,11 @@ capabilities:
     operation: video.generate.reference
     parameter_schema: {}
     execution_state: adapter_connected_unverified
+    card_group: standard-generation
+    card_title: 标准视频生成
+    input_summary: 提示词 · 图像／视频／音频参考
+    output_summary: 视频与音频
+    source_url: https://fal.ai/minimax-h3
   - capability_id: video.generate.seedance2.reference
     type: video
     model_id: bytedance/seedance-2.0
@@ -25,6 +56,10 @@ capabilities:
     operation: video.transform.3d_to_video
     parameter_schema: {}
     execution_state: catalog_only
+    card_group: 3d-to-video
+    card_title: 3D 预演转视频
+    input_summary: 3D 预演视频 · 可选外观参考图
+    output_summary: 保留场景和运动约束的视频
     protocol: queue
     output_resolutions: [480P, 768P, 1080P]
     source_url: https://fal.ai/models/minimax/h3-max/3d-to-video/api
@@ -36,6 +71,10 @@ capabilities:
     operation: video.generate.camera_controls
     parameter_schema: {}
     execution_state: catalog_only
+    card_group: camera-controls
+    card_title: 镜头控制
+    input_summary: 单张图像 · 相机轨迹关键帧
+    output_summary: 按机位轨迹生成的视频
     protocol: queue
     output_resolutions: [480P, 768P, 1080P]
     source_url: https://fal.ai/models/minimax/h3-max/camera-controls/api
@@ -47,6 +86,10 @@ capabilities:
     operation: video.session.director
     parameter_schema: {}
     execution_state: catalog_only
+    card_group: director
+    card_title: 连续导演
+    input_summary: 提示词 · 可选剧本节拍和结束帧
+    output_summary: 实时连续视频与音频流
     protocol: websocket
     output_resolutions: [480p, 768p, 1080p]
     source_url: https://fal.ai/models/minimax/h3-max/director/api
@@ -58,6 +101,10 @@ capabilities:
     operation: video.transform.extend
     parameter_schema: {}
     execution_state: catalog_only
+    card_group: extend-video
+    card_title: 视频延长
+    input_summary: 源视频 · 续段提示词
+    output_summary: 延长后的视频或新增片段
     protocol: queue
     output_resolutions: [480P, 768P, 1080P, 2K]
     source_url: https://fal.ai/models/minimax/h3-max/extend-video/api
@@ -69,6 +116,10 @@ capabilities:
     operation: video.generate.image_to_video
     parameter_schema: {}
     execution_state: catalog_only
+    card_group: standard-generation
+    card_title: 标准视频生成
+    input_summary: 提示词 · 可选首帧／尾帧
+    output_summary: 视频与音频
     protocol: queue
     output_resolutions: [480P, 768P, 1080P]
     source_url: https://fal.ai/models/minimax/h3-max/image-to-video/api
@@ -80,6 +131,10 @@ capabilities:
     operation: video.transform.insert
     parameter_schema: {}
     execution_state: catalog_only
+    card_group: insert-video
+    card_title: 视频插入
+    input_summary: 源视频 · 新场景提示词及可选参考素材
+    output_summary: 插入新场景的视频
     protocol: queue
     output_resolutions: [480p, 768p]
     source_url: https://fal.ai/models/minimax/h3-max/insert-video/api
@@ -91,6 +146,10 @@ capabilities:
     operation: video.transform.lip_sync
     parameter_schema: {}
     execution_state: catalog_only
+    card_group: lip-sync
+    card_title: 口型同步
+    input_summary: 人物图像 · 音频
+    output_summary: 口型与音频同步的视频
     protocol: queue
     output_resolutions: [480P, 768P, 1080P, 2K]
     source_url: https://fal.ai/models/minimax/h3-max/lip-sync/image-to-video/api
@@ -102,6 +161,10 @@ capabilities:
     operation: video.transform.recast
     parameter_schema: {}
     execution_state: catalog_only
+    card_group: recast
+    card_title: 人物替换
+    input_summary: 源视频 · 人物参考照片 · 提示词
+    output_summary: 保留原动作与镜头的人物替换视频
     protocol: queue
     output_resolutions: [768P, 1080P]
     source_url: https://fal.ai/models/minimax/h3-max/recast/api
@@ -113,6 +176,10 @@ capabilities:
     operation: video.session.reference_director
     parameter_schema: {}
     execution_state: catalog_only
+    card_group: reference-director
+    card_title: 参考导演
+    input_summary: 提示词 · 参考图像／音频
+    output_summary: 保持参考一致性的实时视频与音频流
     protocol: websocket
     output_resolutions: [480p, 544p, 640p, 704p, 768p, 1080p, 1440p]
     source_url: https://fal.ai/models/minimax/h3-max/reference-director/api
@@ -124,6 +191,10 @@ capabilities:
     operation: video.generate.reference_to_video
     parameter_schema: {}
     execution_state: catalog_only
+    card_group: standard-generation
+    card_title: 标准视频生成
+    input_summary: 提示词 · 多模态参考
+    output_summary: 视频与音频
     protocol: queue
     output_resolutions: [480P, 768P, 1080P]
     source_url: https://fal.ai/models/minimax/h3-max/reference-to-video/api
@@ -135,6 +206,10 @@ capabilities:
     operation: video.transform.relight
     parameter_schema: {}
     execution_state: catalog_only
+    card_group: relight
+    card_title: 视频重光照
+    input_summary: 源视频 · 光照参考图
+    output_summary: 保留原动作与镜头的重光照视频
     protocol: queue
     output_resolutions: [480P, 768P, 1080P, 2K]
     source_url: https://fal.ai/models/minimax/h3-max/relight/api
@@ -146,6 +221,10 @@ capabilities:
     operation: video.generate.text_to_video
     parameter_schema: {}
     execution_state: catalog_only
+    card_group: standard-generation
+    card_title: 标准视频生成
+    input_summary: 提示词
+    output_summary: 视频与音频
     protocol: queue
     output_resolutions: [480P, 768P, 1080P]
     source_url: https://fal.ai/models/minimax/h3-max/text-to-video/api
