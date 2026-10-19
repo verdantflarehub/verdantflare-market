@@ -33,26 +33,34 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Set up Helm
         uses: azure/setup-helm@v4
         with:
           version: v3.17.3
 
-      - name: Lint and template all charts
+      - name: Select requested or changed charts
+        id: targets
+        env:
+          REQUESTED_CHARTS: ${{ inputs.charts }}
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
         shell: bash
         run: |
           set -euo pipefail
-          for dir in charts/*; do
-            [[ -d "$dir" ]] || continue
-            name="$(basename "$dir")"
-            helm lint "$dir"
-            helm template "$name" "$dir" --namespace verdantflare-app >/dev/null
-          done
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "charts=$REQUESTED_CHARTS" >> "$GITHUB_OUTPUT"
+          else
+            charts=$(git diff --name-only "$BEFORE_SHA" HEAD -- charts/ | awk -F/ 'NF >= 3 {print $2}' | sort -u | tr '\n' ' ')
+            echo "charts=$charts" >> "$GITHUB_OUTPUT"
+            if [[ -z "$charts" ]]; then echo "skip=true" >> "$GITHUB_OUTPUT"; fi
+          fi
 
       - name: Publish and verify target Station charts
+        if: steps.targets.outputs.skip != 'true'
         env:
-          CHARTS: ${{ inputs.charts }}
+          CHARTS: ${{ steps.targets.outputs.charts }}
           REGISTRY_PUBLISH_USERNAME: ${{ secrets.REGISTRY_PUBLISH_USERNAME }}
           REGISTRY_PUBLISH_PASSWORD: ${{ secrets.REGISTRY_PUBLISH_PASSWORD }}
           DIST_DIR: dist/charts
@@ -61,6 +69,7 @@ jobs:
         run: bash scripts/publish-charts.sh
 
       - name: Upload published chart digests summary
+        if: steps.targets.outputs.skip != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: published-charts-summary
