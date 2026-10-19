@@ -2,7 +2,7 @@
 
 本仓库维护各应用的通用 Helm Chart 源码及打包配套。产品与部署设计以 [verdantflare-design 工作区规范](https://github.com/verdantflarehub/verdantflare-design/blob/dev/AGENTS.md)和 [Market 总设计](https://github.com/verdantflarehub/verdantflare-design/blob/dev/docs/design/center/market/README.md)为准；在父工作区内工作时优先读取对应本地文件。
 
-- 当前候选按简短、稳定的应用 slug 存放在 `charts/<app-slug>/`，不用 `verdantflare-app-` 等仓库前缀。例如 `charts/blender/` 对应源码项目 `verdantflare-app-blender`，Hub App ID 和 Chart `name` 仍为 `blender-mcp`；目录名不作为应用身份。过时的 Chart 仅在 `archive/` 留作历史对照，不作为当前候选上传。
+- 当前候选按简短、稳定的应用 slug 存放在 `charts/<app-slug>/`，不用 `verdantflare-app-` 等仓库前缀。例如 `charts/blender/` 对应源码项目 `verdantflare-app-blender`，其正式 Hub App ID 与 Chart `name` 均为 `blender`；一般情形下目录名不作为应用身份。过时的 Chart 仅在 `archive/` 留作历史对照，不作为当前候选上传。
 - Hub／Control 持有管理元数据、版本索引和授权；本仓库不维护另一套可编辑市场目录，也不新增业务服务。
 - 一个 Chart 只保留一份权威源码。集群专属 values、固定版本引用及部署记录归设计仓库 `deploys/`，不将某个现场实例复制为通用默认值。
 - 新 Chart 必须依据真实镜像、启动方式、端口、健康检查、存储与资源契约实现。资料缺失时明确记录准备状态，不虚构可安装包或验收结果。
