@@ -1,0 +1,71 @@
+name: Chart Registry infrastructure
+on:
+  push:
+    branches: [release]
+    paths:
+      - .github/workflows/registry-infrastructure.yml
+      - packaging/registry/**
+      - packaging/registry-nginx/**
+permissions:
+  contents: read
+concurrency:
+  group: market-registry-infrastructure-release
+  cancel-in-progress: false
+jobs:
+  image:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - component: registry
+            version: registry-v3.1.2
+          - component: registry-nginx
+            version: registry-nginx-v1.30.6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@v3
+      - name: Configure destination
+        id: destination
+        env:
+          REGISTRY_ENDPOINT: ${{ secrets.REGISTRY_ENDPOINT_ALIYUN }}
+          IMAGE_VERSION: ${{ matrix.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          endpoint="${REGISTRY_ENDPOINT%/}"
+          [[ "$endpoint" =~ ^[a-zA-Z0-9.-]+(:[0-9]+)?$ ]]
+          echo "image=$endpoint/wod/verdantflare:$IMAGE_VERSION" >> "$GITHUB_OUTPUT"
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.REGISTRY_ENDPOINT_ALIYUN }}
+          username: ${{ secrets.REGISTRY_USER_ALIYUN }}
+          password: ${{ secrets.REGISTRY_PASSWORD_ALIYUN }}
+      - name: Refuse existing versions and fail closed on registry errors
+        env:
+          IMAGE: ${{ steps.destination.outputs.image }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if docker buildx imagetools inspect "$IMAGE" > /dev/null 2> inspect-error.txt; then
+            echo 'Refusing to overwrite a published image version'
+            exit 1
+          fi
+          if ! grep -Eqi 'manifest unknown|not found' inspect-error.txt; then
+            cat inspect-error.txt
+            exit 1
+          fi
+      - name: Publish official runtime image
+        uses: docker/build-push-action@v6
+        with:
+          context: packaging/${{ matrix.component }}
+          push: true
+          platforms: linux/amd64
+          tags: ${{ steps.destination.outputs.image }}
+          cache-from: type=gha,scope=${{ matrix.component }}
+          cache-to: type=gha,scope=${{ matrix.component }},mode=max
+          provenance: false
+          sbom: false
