@@ -4,3 +4,8 @@ description: 统一视频工具与渠道。安装后查看能力，按需连接�
 type: application
 version: 0.1.0
 appVersion: 0.17.41
+annotations:
+  verdantflare.com/app-id: video-mcp
+  verdantflare.com/capabilities: '["video.generate","video.status","video.result"]'
+  verdantflare.com/models: '[]'
+  verdantflare.com/images: '[{"component":"api","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-mcp-server-v0.17.41"},{"component":"artifact-authority","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-mcp-server-v0.17.12"}]'

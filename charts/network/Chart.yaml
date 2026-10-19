@@ -4,3 +4,8 @@ description: 网络路由、透明代理通道与安全出口规则管理。
 type: application
 version: 0.1.0
 appVersion: 0.1.8
+annotations:
+  verdantflare.com/app-id: network
+  verdantflare.com/capabilities: '["network.proxy.manage"]'
+  verdantflare.com/models: '[]'
+  verdantflare.com/images: '[{"component":"app","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:network-v0.1.8"}]'

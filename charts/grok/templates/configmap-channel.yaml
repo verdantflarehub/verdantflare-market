@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.workloadName | default "grok-channel" }}-metadata
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.workloadName | default "grok-channel" }}
+data:
+  channel.yaml: |
+{{- .Files.Get "channel.yaml" | nindent 4 }}

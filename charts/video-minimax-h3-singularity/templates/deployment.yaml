@@ -43,6 +43,8 @@ spec:
     type: Recreate
   template:
     metadata:
+      annotations:
+        checksum/channel-metadata: {{ .Files.Get "channel.yaml" | sha256sum }}
       labels:
         app.kubernetes.io/name: video-minimax-h3-singularity
         app.kubernetes.io/part-of: verdantflare-video
@@ -53,6 +55,8 @@ spec:
       automountServiceAccountToken: false
       containers:
       - env:
+        - name: CHANNEL_METADATA_FILE
+          value: /etc/verdantflare/channel.yaml
         - name: SINGULARITY_MODEL_ROOT
           value: /models/MiniMax-H3/singularity
         - name: H3_BASE_MODEL_ROOT
@@ -158,6 +162,10 @@ spec:
           name: models
         - mountPath: /data/projects
           name: projects
+        - mountPath: /etc/verdantflare/channel.yaml
+          name: channel-metadata
+          readOnly: true
+          subPath: channel.yaml
         - mountPath: /dev/shm
           name: shared-memory
       dnsPolicy: ClusterFirst
@@ -174,6 +182,9 @@ spec:
       - name: projects
         persistentVolumeClaim:
           claimName: {{ .Values.storage.projectsClaim | default "video-projects" }}
+      - configMap:
+          name: {{ .Values.workloadName | default "video-minimax-h3-singularity" }}-metadata
+        name: channel-metadata
       - emptyDir:
           medium: Memory
           sizeLimit: 32Gi

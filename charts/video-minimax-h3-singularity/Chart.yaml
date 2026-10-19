@@ -4,3 +4,10 @@ description: 现行生产主力：单卡独占 RTX 5090，为 Video MCP 提供�
 type: application
 version: 0.1.0
 appVersion: 0.1.36
+annotations:
+  verdantflare.com/app-id: video-minimax-h3-singularity
+  verdantflare.com/logo-file: logo.svg
+  verdantflare.com/channel-file: channel.yaml
+  verdantflare.com/capabilities: '["video.generate"]'
+  verdantflare.com/models: '["MiniMax H3 Ref2VA · Singularity"]'
+  verdantflare.com/images: '[{"component":"runtime","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-minimax-h3-singularity-v0.1.36"}]'

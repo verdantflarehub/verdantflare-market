@@ -4,3 +4,10 @@ description: 账号、调用日志。
 type: application
 version: 0.1.0
 appVersion: 0.1.10
+annotations:
+  verdantflare.com/app-id: chatgpt
+  verdantflare.com/logo-file: logo.svg
+  verdantflare.com/channel-file: channel.yaml
+  verdantflare.com/capabilities: '["chatgpt.channel.manage"]'
+  verdantflare.com/models: '[]'
+  verdantflare.com/images: '[{"component":"gateway","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:chatgpt-channel-v0.1.10"}]'

@@ -60,11 +60,11 @@ spec:
               key: maintenance-token
               name: comfyui-dashboard-access
         - name: COMFYUI_INSTALLATION_ID
-          value: 01a12b18-ff90-7294-a423-a746307e9c69
+          value: {{ .Values.station.installationId | quote }}
         - name: COMFYUI_STATION_ID
-          value: 01a0fae2-dbb6-700e-bcf7-99a39c757706
+          value: {{ .Values.station.stationId | quote }}
         - name: COMFYUI_ORGANIZATION_ID
-          value: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
+          value: {{ .Values.station.organizationId | quote }}
         - name: COMFYUI_APP_VERSION
           value: {{ .Values.appVersion | quote }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

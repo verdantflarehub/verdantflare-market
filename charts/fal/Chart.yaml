@@ -4,3 +4,10 @@ description: 管理组织级 fal.ai API 授权与提交限制，为 Video 提供
 type: application
 version: 0.1.0
 appVersion: 0.2.12
+annotations:
+  verdantflare.com/app-id: fal
+  verdantflare.com/logo-file: logo.png
+  verdantflare.com/channel-file: channel.yaml
+  verdantflare.com/capabilities: '["fal.channel.manage"]'
+  verdantflare.com/models: '[]'
+  verdantflare.com/images: '[{"component":"gateway","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-fal-gateway-v0.2.12"}]'

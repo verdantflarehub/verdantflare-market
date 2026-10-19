@@ -4,3 +4,9 @@ description: 选择独立 Blender 实例，使用图形界面或专用 MCP 编�
 type: application
 version: 0.1.0
 appVersion: 0.1.12
+annotations:
+  verdantflare.com/app-id: blender
+  verdantflare.com/logo-file: logo.svg
+  verdantflare.com/capabilities: '["scene.get","object.create","project.save"]'
+  verdantflare.com/models: '[]'
+  verdantflare.com/images: '[{"component":"app","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:blender-v0.1.12"}]'
