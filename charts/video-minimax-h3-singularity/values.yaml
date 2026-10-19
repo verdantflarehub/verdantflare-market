@@ -25,3 +25,6 @@ persistence:
   volumeName: ""
   size: 200Gi
 pvcs: []
+
+# Must match Video MCP VIDEO_MCP_RUNTIME_BASE_URL exactly; enforced by runtime origin validation.
+referenceBaseUrl: ""

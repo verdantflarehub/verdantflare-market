@@ -57,6 +57,9 @@ spec:
       - env:
         - name: CHANNEL_METADATA_FILE
           value: /etc/verdantflare/channel.yaml
+        # Keep the default aligned with the MCP service in this installation namespace.
+        - name: SINGULARITY_REFERENCE_BASE_URL
+          value: {{ .Values.referenceBaseUrl | default (printf "http://video-mcp-server.%s.svc.cluster.local:8000" .Release.Namespace) | quote }}
         - name: SINGULARITY_MODEL_ROOT
           value: /models/MiniMax-H3/singularity
         - name: H3_BASE_MODEL_ROOT
