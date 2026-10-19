@@ -1,5 +1,5 @@
 appId: resources
-appVersion: 0.1.6
+appVersion: 0.1.7
 namespace: verdantflare-app
 workloadName: app-resources
 station:
@@ -9,7 +9,7 @@ station:
   templateHash: ''
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: resources-v0.1.6
+  tag: resources-v0.1.7
   pullPolicy: Always
 replicas: 1
 services:

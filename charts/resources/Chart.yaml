@@ -2,10 +2,10 @@ apiVersion: v2
 name: resources
 description: Station 集群硬件、GPU 资源、工作卷与运行配额监管。
 type: application
-version: 0.1.0
-appVersion: 0.1.6
+version: 0.1.1
+appVersion: 0.1.7
 annotations:
   verdantflare.com/app-id: resources
   verdantflare.com/capabilities: '["resources.gpu.read","resources.node.read"]'
   verdantflare.com/models: '[]'
-  verdantflare.com/images: '[{"component":"app","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:resources-v0.1.6"}]'
+  verdantflare.com/images: '[{"component":"app","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:resources-v0.1.7"}]'

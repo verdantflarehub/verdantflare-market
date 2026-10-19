@@ -61,7 +61,7 @@ spec:
             secretKeyRef:
               key: APP_SERVICE_TOKEN
               name: app-resources-secret
-        image: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:resources-v0.1.6
+        image: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:resources-v0.1.7
         imagePullPolicy: Always
         livenessProbe:
           failureThreshold: 3
