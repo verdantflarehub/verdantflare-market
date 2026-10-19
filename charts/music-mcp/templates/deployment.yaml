@@ -23,7 +23,7 @@ metadata:
     app.kubernetes.io/component: api
     app.kubernetes.io/name: music-mcp-server
     app.kubernetes.io/part-of: verdantflare-music
-    app.kubernetes.io/version: 0.9.17
+    app.kubernetes.io/version: 0.9.18
     apps.verdantflare.com/brand: vf
     apps.verdantflare.com/group: music
     apps.verdantflare.com/managed: 'true'
@@ -61,7 +61,7 @@ spec:
               name: etcd-client-music
               optional: true
         - name: SERVICE_VERSION
-          value: 0.9.17
+          value: 0.9.18
         - name: ETCD_ENDPOINTS
           value: {{ (dig "etcdEndpoints" "http://etcd.verdantflare-station.svc.cluster.local:2379" (.Values.services | default dict)) | quote }}
         - name: MCP_SERVICE_ENDPOINT

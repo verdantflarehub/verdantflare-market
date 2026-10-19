@@ -3,4 +3,4 @@ name: music-mcp
 description: 统一调用音乐生成、分轨、人声、歌词对齐与母带处理全流程。
 type: application
 version: 0.1.0
-appVersion: 0.9.17
+appVersion: 0.9.18
