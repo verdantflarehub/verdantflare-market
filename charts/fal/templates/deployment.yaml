@@ -1,23 +1,37 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: video-fal-gateway
+  name: {{ .Values.workloadName | default "fal-channel" }}
   namespace: {{ .Release.Namespace }}
   annotations:
     station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+    {{- if .Values.station }}
+    {{- if .Values.station.stationId }}
+    station.verdantflare.com/station-id: {{ .Values.station.stationId | quote }}
+    {{- end }}
+    {{- if .Values.station.organizationId }}
+    station.verdantflare.com/organization-id: {{ .Values.station.organizationId | quote }}
+    {{- end }}
+    {{- if .Values.station.installationId }}
+    station.verdantflare.com/installation-id: {{ .Values.station.installationId | quote }}
+    {{- end }}
+    {{- if .Values.station.templateHash }}
+    station.verdantflare.com/template-hash: {{ .Values.station.templateHash | quote }}
+    {{- end }}
+    {{- end }}
 spec:
   progressDeadlineSeconds: 600
   replicas: {{ .Values.replicas | default 1 }}
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      app.kubernetes.io/name: video-fal-gateway
+      app.kubernetes.io/name: {{ .Values.workloadName | default "fal-channel" }}
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: video-fal-gateway
+        app.kubernetes.io/name: {{ .Values.workloadName | default "fal-channel" }}
     spec:
       automountServiceAccountToken: false
       containers:

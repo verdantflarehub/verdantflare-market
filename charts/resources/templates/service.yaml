@@ -5,6 +5,20 @@ metadata:
   namespace: {{ .Release.Namespace }}
   annotations:
     station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+    {{- if .Values.station }}
+    {{- if .Values.station.stationId }}
+    station.verdantflare.com/station-id: {{ .Values.station.stationId | quote }}
+    {{- end }}
+    {{- if .Values.station.organizationId }}
+    station.verdantflare.com/organization-id: {{ .Values.station.organizationId | quote }}
+    {{- end }}
+    {{- if .Values.station.installationId }}
+    station.verdantflare.com/installation-id: {{ .Values.station.installationId | quote }}
+    {{- end }}
+    {{- if .Values.station.templateHash }}
+    station.verdantflare.com/template-hash: {{ .Values.station.templateHash | quote }}
+    {{- end }}
+    {{- end }}
   labels:
     app.kubernetes.io/name: app-resources
     app.kubernetes.io/part-of: verdantflare

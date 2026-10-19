@@ -1,10 +1,24 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: video-higgsfield-gateway
+  name: {{ .Values.workloadName | default "higgsfield-channel" }}
   namespace: {{ .Release.Namespace }}
   annotations:
     station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+    {{- if .Values.station }}
+    {{- if .Values.station.stationId }}
+    station.verdantflare.com/station-id: {{ .Values.station.stationId | quote }}
+    {{- end }}
+    {{- if .Values.station.organizationId }}
+    station.verdantflare.com/organization-id: {{ .Values.station.organizationId | quote }}
+    {{- end }}
+    {{- if .Values.station.installationId }}
+    station.verdantflare.com/installation-id: {{ .Values.station.installationId | quote }}
+    {{- end }}
+    {{- if .Values.station.templateHash }}
+    station.verdantflare.com/template-hash: {{ .Values.station.templateHash | quote }}
+    {{- end }}
+    {{- end }}
 spec:
   ports:
   - name: http
@@ -16,5 +30,5 @@ spec:
     protocol: TCP
     targetPort: management
   selector:
-    app.kubernetes.io/name: video-higgsfield-gateway
+    app.kubernetes.io/name: {{ .Values.workloadName | default "higgsfield-channel" }}
   type: ClusterIP

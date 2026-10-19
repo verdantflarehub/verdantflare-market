@@ -5,6 +5,20 @@ metadata:
   namespace: {{ .Release.Namespace }}
   annotations:
     station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+    {{- if .Values.station }}
+    {{- if .Values.station.stationId }}
+    station.verdantflare.com/station-id: {{ .Values.station.stationId | quote }}
+    {{- end }}
+    {{- if .Values.station.organizationId }}
+    station.verdantflare.com/organization-id: {{ .Values.station.organizationId | quote }}
+    {{- end }}
+    {{- if .Values.station.installationId }}
+    station.verdantflare.com/installation-id: {{ .Values.station.installationId | quote }}
+    {{- end }}
+    {{- if .Values.station.templateHash }}
+    station.verdantflare.com/template-hash: {{ .Values.station.templateHash | quote }}
+    {{- end }}
+    {{- end }}
   labels:
     app.kubernetes.io/component: api
     app.kubernetes.io/name: image-mcp-server
@@ -37,6 +51,10 @@ spec:
           value: grok-imagine-image-2.0
         - name: ETCD_ENDPOINTS
           value: {{ (dig "etcdEndpoints" "http://etcd.verdantflare-station.svc.cluster.local:2379" (.Values.services | default dict)) | quote }}
+        - name: MCP_SERVICE_ENDPOINT
+          value: {{ (dig "mcpServiceEndpoint" (printf "http://image-mcp-server.%s.svc.cluster.local:8000/mcp" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: MCP_HEALTH_ENDPOINT
+          value: {{ (dig "mcpHealthEndpoint" (printf "http://image-mcp-server.%s.svc.cluster.local:8000/health" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: IMAGE_ARTIFACT_ROOT
           value: /data/projects/image
         - name: IMAGE_ASSET_IMPORT_ORIGINS

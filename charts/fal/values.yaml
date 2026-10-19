@@ -1,7 +1,7 @@
 appId: fal
 appVersion: 0.2.12
 namespace: verdantflare-app
-workloadName: video-fal-gateway
+workloadName: fal-channel
 station:
   stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
   organizationId: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781

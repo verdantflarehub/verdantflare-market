@@ -20,8 +20,8 @@ services:
   networkProxyUrl: http://app-network-egress.verdantflare-app.svc.cluster.local:3128
   interpolationRuntimeUrl: http://video-frame-interpolation-api.verdantflare-app.svc.cluster.local:8000
   h3RuntimeUrl: http://video-minimax-h3-singularity.verdantflare-app.svc.cluster.local:8000
-  higgsfieldGatewayUrl: http://video-higgsfield-gateway.verdantflare-app.svc.cluster.local:8000
-  falGatewayUrl: http://video-fal-gateway.verdantflare-app.svc.cluster.local:8001
+  higgsfieldGatewayUrl: http://higgsfield-channel.verdantflare-app.svc.cluster.local:8000
+  falGatewayUrl: http://fal-channel.verdantflare-app.svc.cluster.local:8001
   runtimeBaseUrl: http://video-mcp-server.verdantflare-app.svc.cluster.local:8000
   allowedHosts: 192.168.1.200:*,127.0.0.1:*,localhost:*,[::1]:*,video-mcp-server:*,video-mcp-server.verdantflare-app:*,video-mcp-server.verdantflare-app.svc.cluster.local:*,*.cluster.local:*
 storage:

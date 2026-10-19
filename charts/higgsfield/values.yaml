@@ -1,7 +1,7 @@
 appId: higgsfield
 appVersion: 0.5.8
 namespace: verdantflare-app
-workloadName: video-higgsfield-gateway
+workloadName: higgsfield-channel
 station:
   stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
   organizationId: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781

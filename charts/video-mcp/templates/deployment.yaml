@@ -5,6 +5,20 @@ metadata:
   namespace: {{ .Release.Namespace }}
   annotations:
     station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+    {{- if .Values.station }}
+    {{- if .Values.station.stationId }}
+    station.verdantflare.com/station-id: {{ .Values.station.stationId | quote }}
+    {{- end }}
+    {{- if .Values.station.organizationId }}
+    station.verdantflare.com/organization-id: {{ .Values.station.organizationId | quote }}
+    {{- end }}
+    {{- if .Values.station.installationId }}
+    station.verdantflare.com/installation-id: {{ .Values.station.installationId | quote }}
+    {{- end }}
+    {{- if .Values.station.templateHash }}
+    station.verdantflare.com/template-hash: {{ .Values.station.templateHash | quote }}
+    {{- end }}
+    {{- end }}
   labels:
     app.kubernetes.io/component: api
     app.kubernetes.io/name: video-mcp-server
@@ -115,12 +129,16 @@ spec:
               name: video-mcp-auth
         - name: ETCD_ENDPOINTS
           value: {{ (dig "etcdEndpoints" "http://etcd.verdantflare-station.svc.cluster.local:2379" (.Values.services | default dict)) | quote }}
+        - name: MCP_SERVICE_ENDPOINT
+          value: {{ (dig "mcpServiceEndpoint" (printf "http://video-mcp-server.%s.svc.cluster.local:8000/mcp" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: MCP_HEALTH_ENDPOINT
+          value: {{ (dig "mcpHealthEndpoint" (printf "http://video-mcp-server.%s.svc.cluster.local:8000/health" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: H3_RUNTIME_VERSION
           value: video-minimax-h3-singularity-v0.1.36
         - name: HIGGSFIELD_GATEWAY_URL
-          value: {{ (dig "higgsfieldGatewayUrl" (printf "http://video-higgsfield-gateway.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+          value: {{ (dig "higgsfieldGatewayUrl" (printf "http://higgsfield-channel.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: FAL_GATEWAY_URL
-          value: {{ (dig "falGatewayUrl" (printf "http://video-fal-gateway.%s.svc.cluster.local:8001" .Release.Namespace) (.Values.services | default dict)) | quote }}
+          value: {{ (dig "falGatewayUrl" (printf "http://fal-channel.%s.svc.cluster.local:8001" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: FAL_RESULT_PROXY_URL
           value: http://openclash.openclash.svc.cluster.local:1081
         - name: FAL_GATEWAY_TOKEN
