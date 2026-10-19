@@ -141,32 +141,57 @@ for layer in layers:
         print(layer.get("digest", ""))
         break
 ' "${manifest_body}")"
-      if [[ "${remote_pkg_digest}" != "${package_digest}" ]]; then
-        echo "ERROR: Refusing to overwrite ${chart_name}:${chart_version} (remote packageDigest=${remote_pkg_digest}, local=${package_digest})" >&2
+      rm -f "${VERIFY_DIR}/${chart_name}-${chart_version}.tgz"
+      HELM_REGISTRY_CONFIG="${ANON_REGISTRY_CONFIG}" helm pull "${transport_oci_ref}" \
+        --version "${chart_version}" \
+        --destination "${VERIFY_DIR}"
+      pulled_file="${VERIFY_DIR}/${chart_name}-${chart_version}.tgz"
+      pulled_digest="sha256:$(sha256sum "${pulled_file}" | awk '{print $1}')"
+      pulled_size="$(wc -c < "${pulled_file}" | tr -d ' ')"
+      if [[ "${pulled_digest}" != "${remote_pkg_digest}" ]]; then
+        echo "ERROR: Remote OCI layer digest (${remote_pkg_digest}) != pulled .tgz sha256 (${pulled_digest})" >&2
         exit 1
       fi
-      echo "Chart ${chart_name}:${chart_version} already published with matching packageDigest (${package_digest})"
+      python3 -c '
+import hashlib, sys, tarfile
+def archive_tree_hash(path):
+    items = {}
+    with tarfile.open(path, "r:gz") as tf:
+        for m in tf.getmembers():
+            if m.isfile():
+                data = tf.extractfile(m).read()
+                items[m.name] = hashlib.sha256(data).hexdigest()
+    return items
+remote_tree = archive_tree_hash(sys.argv[1])
+local_tree = archive_tree_hash(sys.argv[2])
+if remote_tree != local_tree:
+    sys.stderr.write(f"Archive content mismatch: remote={remote_tree} vs local={local_tree}\n")
+    sys.exit(1)
+' "${pulled_file}" "${pkg_file}" || {
+        echo "ERROR: Refusing to overwrite ${chart_name}:${chart_version} (chart content changed without version bump)" >&2
+        exit 1
+      }
+      package_digest="${pulled_digest}"
+      package_size="${pulled_size}"
+      cp -f "${pulled_file}" "${pkg_file}"
+      echo "Chart ${chart_name}:${chart_version} already published with matching content (packageDigest=${package_digest})"
     elif [[ "${http_code}" == "404" ]]; then
       echo "Pushing ${pkg_file} to oci://${REGISTRY_TRANSPORT_HOST}/charts ..."
       helm push "${pkg_file}" "oci://${REGISTRY_TRANSPORT_HOST}/charts"
+      rm -f "${VERIFY_DIR}/${chart_name}-${chart_version}.tgz"
+      HELM_REGISTRY_CONFIG="${ANON_REGISTRY_CONFIG}" helm pull "${transport_oci_ref}" \
+        --version "${chart_version}" \
+        --destination "${VERIFY_DIR}"
+      pulled_file="${VERIFY_DIR}/${chart_name}-${chart_version}.tgz"
+      pulled_digest="sha256:$(sha256sum "${pulled_file}" | awk '{print $1}')"
+      pulled_size="$(wc -c < "${pulled_file}" | tr -d ' ')"
+      if [[ "${pulled_digest}" != "${package_digest}" || "${pulled_size}" != "${package_size}" ]]; then
+        echo "ERROR: Anonymous pull verification failed for ${chart_name}:${chart_version}" >&2
+        exit 1
+      fi
     else
       echo "ERROR: Unexpected HTTP status ${http_code} checking ${manifest_url}" >&2
       cat "${manifest_body}" >&2 || true
-      exit 1
-    fi
-
-    # Anonymous pull and verification
-    rm -f "${VERIFY_DIR}/${chart_name}-${chart_version}.tgz"
-    HELM_REGISTRY_CONFIG="${ANON_REGISTRY_CONFIG}" helm pull "${transport_oci_ref}" \
-      --version "${chart_version}" \
-      --destination "${VERIFY_DIR}"
-
-    pulled_file="${VERIFY_DIR}/${chart_name}-${chart_version}.tgz"
-    pulled_digest="sha256:$(sha256sum "${pulled_file}" | awk '{print $1}')"
-    pulled_size="$(wc -c < "${pulled_file}" | tr -d ' ')"
-
-    if [[ "${pulled_digest}" != "${package_digest}" || "${pulled_size}" != "${package_size}" ]]; then
-      echo "ERROR: Anonymous pull verification failed for ${chart_name}:${chart_version}" >&2
       exit 1
     fi
 
