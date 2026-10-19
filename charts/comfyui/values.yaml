@@ -1,5 +1,5 @@
 appId: comfyui
-appVersion: 0.1.12
+appVersion: "0.1.15"
 namespace: verdantflare-app
 workloadName: comfyui-manager
 station:

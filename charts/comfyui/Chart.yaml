@@ -3,4 +3,4 @@ name: comfyui
 description: 独立 ComfyUI 基础环境，不包含模型和第三方节点。查看实例及资源占用。
 type: application
 version: 0.1.0
-appVersion: 0.1.12
+appVersion: "0.1.15"

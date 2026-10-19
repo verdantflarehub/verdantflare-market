@@ -6,7 +6,7 @@ station:
   stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
   organizationId: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
   installationId: 01a14da0-d0e5-784d-9d06-3dce02760d60
-  templateHash: ''
+  templateHash: ""
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
   tag: music-mcp-server-v0.9.18

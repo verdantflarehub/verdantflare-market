@@ -66,7 +66,7 @@ spec:
         - name: COMFYUI_ORGANIZATION_ID
           value: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
         - name: COMFYUI_APP_VERSION
-          value: 0.1.15
+          value: {{ .Values.appVersion | quote }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
         livenessProbe:
