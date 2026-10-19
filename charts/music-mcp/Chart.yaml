@@ -2,10 +2,10 @@ apiVersion: v2
 name: music-mcp
 description: 统一调用音乐生成、分轨、人声、歌词对齐与母带处理全流程。
 type: application
-version: 0.1.1
-appVersion: 0.10.0
+version: 0.1.2
+appVersion: 0.10.1
 annotations:
   verdantflare.com/app-id: music-mcp
-  verdantflare.com/capabilities: '["music.generate","stems.separate","voice.prepare","voice.train","voice.convert","lyrics.align","mix.master","production.capabilities","production.status","production.cancel","vocal.tune","vocal.process","instrument.render","mix.render"]'
+  verdantflare.com/capabilities: '["music.generate","stems.separate","voice.prepare","voice.train","voice.convert","lyrics.align","mix.master","music.production_capabilities","music.production_status","music.production_cancel","voice.tune","voice.process","music.instrument_render","mix.render"]'
   verdantflare.com/models: '[]'
-  verdantflare.com/images: '[{"component":"api","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:music-mcp-server-v0.10.0"}]'
+  verdantflare.com/images: '[{"component":"api","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:music-mcp-server-v0.10.1"}]'

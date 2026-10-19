@@ -1,5 +1,5 @@
 appId: music-mcp
-appVersion: 0.10.0
+appVersion: 0.10.1
 namespace: verdantflare-app
 workloadName: music-mcp-server
 station:
@@ -9,7 +9,7 @@ station:
   templateHash: ""
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: music-mcp-server-v0.10.0
+  tag: music-mcp-server-v0.10.1
   pullPolicy: Always
 replicas: 1
 gpuTask:
