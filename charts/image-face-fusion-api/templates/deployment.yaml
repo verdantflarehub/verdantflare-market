@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-face-fusion-api
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: image-face-fusion-api
+    app.kubernetes.io/version: 0.2.1
+    apps.verdantflare.com/managed: 'true'
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  progressDeadlineSeconds: 3600
+  selector:
+    matchLabels: &id001
+      app.kubernetes.io/name: image-face-fusion-api
+  template:
+    metadata:
+      labels: *id001
+    spec:
+      automountServiceAccountToken: false
+      {{- with .Values.runtimeClassName }}
+      runtimeClassName: {{ . | quote }}
+      {{- end }}
+      initContainers:
+      - name: prepare-models
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: Always
+        command:
+        - python
+        - -m
+        - src.prepare_models
+        env:
+        - &id002
+          name: FACEFUSION_MODEL_ROOT
+          value: /models/facefusion
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: void
+        - name: FACEFUSION_PROVIDER
+          value: cpu
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 2Gi
+        volumeMounts:
+        - name: models
+          mountPath: /models/facefusion
+      containers:
+      - name: api
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: Always
+        env:
+        - *id002
+        - name: FACEFUSION_PROVIDER
+          value: cuda
+        ports:
+        - name: http
+          containerPort: 8000
+        resources:
+          requests:
+            cpu: 250m
+            memory: 1Gi
+            nvidia.com/gpu: 1
+          limits:
+            memory: 16Gi
+            nvidia.com/gpu: 1
+        startupProbe:
+          httpGet:
+            path: /live
+            port: http
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 180
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          periodSeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /live
+            port: http
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+        volumeMounts:
+        - name: models
+          mountPath: /models/facefusion
+          readOnly: true
+        - name: projects
+          mountPath: /data/projects
+      volumes:
+      - name: models
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.modelsClaim | quote }}
+      - name: projects
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.projectsClaim | quote }}
+      terminationGracePeriodSeconds: 120
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

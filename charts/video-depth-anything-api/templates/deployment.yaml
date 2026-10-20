@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: video-depth-anything-api
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: video-depth-anything-api
+    app.kubernetes.io/version: 0.2.3
+    apps.verdantflare.com/managed: 'true'
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  progressDeadlineSeconds: 3600
+  selector:
+    matchLabels: &id001
+      app.kubernetes.io/name: video-depth-anything-api
+  template:
+    metadata:
+      labels: *id001
+    spec:
+      automountServiceAccountToken: false
+      {{- with .Values.runtimeClassName }}
+      runtimeClassName: {{ . | quote }}
+      {{- end }}
+      initContainers:
+      - name: prepare-models
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: Always
+        command:
+        - python3
+        - /app/download_model.py
+        env:
+        - &id002
+          name: DEPTH_MODEL_ROOT
+          value: /models/depth
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: void
+        - name: HF_ENDPOINT
+          value: {{ .Values.modelEndpoint | quote }}
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 2Gi
+        volumeMounts:
+        - name: models
+          mountPath: /models/depth
+      containers:
+      - name: api
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: Always
+        env:
+        - *id002
+        - name: DEPTH_GPU_MODE
+          value: native
+        - name: DEPTH_PROJECT_ROOT
+          value: /data/depth
+        - name: VIDEO_ARTIFACT_ROOT
+          value: /source/video-mcp
+        ports:
+        - name: http
+          containerPort: 8000
+        resources:
+          requests:
+            cpu: 250m
+            memory: 1Gi
+            nvidia.com/gpu: 1
+          limits:
+            memory: 16Gi
+            nvidia.com/gpu: 1
+        startupProbe:
+          httpGet:
+            path: /health
+            port: http
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 180
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          periodSeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+        volumeMounts:
+        - name: models
+          mountPath: /models/depth
+          readOnly: true
+        - name: projects
+          mountPath: /source/video-mcp
+          subPath: {{ .Values.storage.artifactSubPath | quote }}
+          readOnly: true
+        - name: output
+          mountPath: /data/depth
+      volumes:
+      - name: models
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.modelsClaim | quote }}
+      - name: projects
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.projectsClaim | quote }}
+      - name: output
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.outputClaim | quote }}
+      terminationGracePeriodSeconds: 120
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

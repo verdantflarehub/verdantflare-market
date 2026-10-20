@@ -1,0 +1,23 @@
+appId: video-depth-anything-api
+appVersion: 0.2.3
+workloadName: video-depth-anything-api
+station: {}
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: video-depth-anything-api-v0.2.3
+  pullPolicy: Always
+runtimeClassName: ''
+nodeSelector: {}
+storage:
+  create: true
+  storageClassName: ''
+  modelsClaim: models-depth-anything
+  modelsSize: 10Gi
+  projectsClaim: video-projects
+  outputClaim: depth-projects
+  outputSize: 100Gi
+  artifactSubPath: video
+modelEndpoint: https://hf-mirror.com
+networkPolicy:
+  enabled: true
+  clientName: video-mcp-server

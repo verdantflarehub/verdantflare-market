@@ -1,0 +1,12 @@
+apiVersion: v2
+name: video-depth-anything-api
+description: Internal Video Depth Anything API with native GPU support
+type: application
+version: 0.1.0
+appVersion: 0.2.3
+annotations:
+  verdantflare.com/models: '["Video Depth Anything Small"]'
+  verdantflare.com/capabilities: '["video.depth.extract"]'
+  verdantflare.com/app-id: video-depth-anything-api
+  verdantflare.com/images: '[{"component": "api", "image": "registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-depth-anything-api-v0.2.3"},
+    {"component": "prepare-models", "image": "registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-depth-anything-api-v0.2.3"}]'
