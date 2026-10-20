@@ -40,7 +40,18 @@
       "properties": {
         "enabled": {"type": "boolean"},
         "existingSecretName": {"type": "string", "minLength": 1},
-        "tokenKey": {"type": "string", "minLength": 1}
+        "tokenKey": {"type": "string", "minLength": 1},
+        "tls": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["enabled", "existingSecretName", "worldNamespace", "worldPodName"],
+          "properties": {
+            "enabled": {"type": "boolean"},
+            "existingSecretName": {"type": "string"},
+            "worldNamespace": {"type": "string", "minLength": 1},
+            "worldPodName": {"type": "string", "minLength": 1}
+          }
+        }
       }
     },
     "network": {

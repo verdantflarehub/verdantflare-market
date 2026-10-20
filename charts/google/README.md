@@ -34,3 +34,9 @@ helm template google charts/google --namespace verdantflare-app
 
 分析模型声明保留 `adapter_connected_unverified`，即使运行开关开启也不接受普通新调用。只有真实适配验证通过、声明随新 Chart 发布为 `enabled` 后才开放；源码和镜像交付不等于数字世界完整分析流程上线。安装时按中央契约核验实际来源网络边界，不能以旧策略的宽准入作为新增外部入口依据。
 
+### 4.1 分析专用 TLS
+
+`analysis.tls.enabled` 默认关闭。启用时必须提供 `analysis.tls.existingSecretName`，其 `tls.crt`／`tls.key` 只读挂载；独立分析令牌即使在新调用关闭时也必须存在，以便恢复原任务。固定 8002 端口只提供分析执行协议，旧 8000／8001 保持原协议。
+
+TLS 启用必须同时启用 NetworkPolicy。Chart 对 8002 只允许 `analysis.tls.worldNamespace` 中 `app.kubernetes.io/name=analysis.tls.worldPodName` 的工作负载；部署前核对集群其他策略的并集，宽泛的既有允许规则不能覆盖这一边界。World 使用实际内部服务 DNS 与 CA 校验连接，不关闭证书校验，不创建公网入口。
+

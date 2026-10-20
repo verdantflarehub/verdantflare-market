@@ -68,7 +68,13 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.analysis.existingSecretName | quote }}
                   key: {{ .Values.analysis.tokenKey | quote }}
-                  optional: {{ not .Values.analysis.enabled }}
+                  optional: {{ not (or .Values.analysis.enabled .Values.analysis.tls.enabled) }}
+            {{- if .Values.analysis.tls.enabled }}
+            - name: GOOGLE_ANALYSIS_TLS_CERT_FILE
+              value: /etc/verdantflare/analysis-tls/tls.crt
+            - name: GOOGLE_ANALYSIS_TLS_KEY_FILE
+              value: /etc/verdantflare/analysis-tls/tls.key
+            {{- end }}
             - name: GOOGLE_NETWORK_URL
               value: {{ .Values.network.url | quote }}
             - name: GOOGLE_NETWORK_TOKEN
@@ -86,6 +92,11 @@ spec:
             - name: execution
               containerPort: {{ .Values.service.executionPort }}
               protocol: TCP
+            {{- if .Values.analysis.tls.enabled }}
+            - name: analysis-tls
+              containerPort: 8002
+              protocol: TCP
+            {{- end }}
           readinessProbe:
             httpGet:
               path: /health
@@ -111,6 +122,11 @@ spec:
               drop:
                 - ALL
           volumeMounts:
+            {{- if .Values.analysis.tls.enabled }}
+            - name: analysis-tls
+              mountPath: /etc/verdantflare/analysis-tls
+              readOnly: true
+            {{- end }}
             - name: state
               mountPath: {{ .Values.storage.mountPath | quote }}
             - name: channel-metadata
@@ -120,6 +136,17 @@ spec:
             - name: tmp
               mountPath: /tmp
       volumes:
+        {{- if .Values.analysis.tls.enabled }}
+        - name: analysis-tls
+          secret:
+            secretName: {{ .Values.analysis.tls.existingSecretName | quote }}
+            defaultMode: 0440
+            items:
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
+        {{- end }}
         - name: state
           persistentVolumeClaim:
             claimName: {{ .Values.storage.existingClaim | default (include "google.fullname" .) | quote }}

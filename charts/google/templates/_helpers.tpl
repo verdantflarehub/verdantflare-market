@@ -19,6 +19,14 @@ app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
 {{- end -}}
 
 {{- define "google.validate" -}}
+{{- if .Values.analysis.tls.enabled -}}
+  {{- if not .Values.analysis.tls.existingSecretName -}}
+    {{- fail "Google analysis TLS requires an existing certificate Secret" -}}
+  {{- end -}}
+  {{- if not .Values.networkPolicy.enabled -}}
+    {{- fail "Google analysis TLS requires NetworkPolicy" -}}
+  {{- end -}}
+{{- end -}}
 {{- if and .Values.storage.create (not .Values.storage.storageClassName) -}}
   {{- fail "Google 渠道新建状态卷必须指定 StorageClass" -}}
 {{- end -}}

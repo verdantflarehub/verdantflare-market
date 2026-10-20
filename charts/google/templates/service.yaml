@@ -34,4 +34,10 @@ spec:
       port: {{ .Values.service.executionPort }}
       targetPort: execution
       protocol: TCP
+    {{- if .Values.analysis.tls.enabled }}
+    - name: analysis-tls
+      port: 8002
+      targetPort: analysis-tls
+      protocol: TCP
+    {{- end }}
 

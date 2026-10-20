@@ -29,4 +29,16 @@ spec:
           port: {{ .Values.service.managementPort }}
         - protocol: TCP
           port: {{ .Values.service.executionPort }}
+    {{- if .Values.analysis.tls.enabled }}
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.analysis.tls.worldNamespace | quote }}
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: {{ .Values.analysis.tls.worldPodName | quote }}
+      ports:
+        - protocol: TCP
+          port: 8002
+    {{- end }}
 {{- end }}
