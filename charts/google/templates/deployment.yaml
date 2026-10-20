@@ -61,6 +61,14 @@ spec:
               value: {{ .Values.storage.stateDbPath | quote }}
             - name: CHANNEL_METADATA_FILE
               value: /etc/verdantflare/channel.yaml
+            - name: GOOGLE_ANALYSIS_ENABLED
+              value: {{ .Values.analysis.enabled | quote }}
+            - name: GOOGLE_ANALYSIS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.analysis.existingSecretName | quote }}
+                  key: {{ .Values.analysis.tokenKey | quote }}
+                  optional: {{ not .Values.analysis.enabled }}
             - name: GOOGLE_NETWORK_URL
               value: {{ .Values.network.url | quote }}
             - name: GOOGLE_NETWORK_TOKEN

@@ -33,6 +33,16 @@
         "existingSecretName": {"type": "string", "minLength": 1}
       }
     },
+    "analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "existingSecretName", "tokenKey"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "existingSecretName": {"type": "string", "minLength": 1},
+        "tokenKey": {"type": "string", "minLength": 1}
+      }
+    },
     "network": {
       "type": "object",
       "required": ["url", "existingSecretName", "tokenKey"],

@@ -56,3 +56,42 @@ capabilities:
                 type: string
                 minLength: 1
 
+  - capability_id: analysis.analyze
+    type: analysis
+    model_id: gemini-3.1-pro-preview
+    operation: analysis.analyze
+    execution_state: adapter_connected_unverified
+    parameter_schema: &analysis_parameters
+      type: object
+      additionalProperties: false
+      required: [prompt]
+      anyOf:
+        - required: [source_text]
+        - required: [media]
+      properties:
+        prompt: {type: string, minLength: 1, maxLength: 64000}
+        source_text: {type: string, minLength: 1, maxLength: 256000}
+        video_fps: {type: number, minimum: 0.1, maximum: 8, default: 2}
+        max_output_tokens: {type: integer, minimum: 1024, maximum: 32768, default: 16384}
+        media:
+          type: object
+          additionalProperties: false
+          required: [mime_type, data, sha256]
+          properties:
+            mime_type:
+              type: string
+              enum: [video/mp4, audio/mpeg, audio/wav, image/png, image/jpeg, image/webp]
+            data: {type: string, minLength: 1, maxLength: 67108864}
+            sha256: {type: string, pattern: '^[a-f0-9]{64}$'}
+  - capability_id: analysis.analyze
+    type: analysis
+    model_id: gemini-2.5-pro
+    operation: analysis.analyze
+    execution_state: adapter_connected_unverified
+    parameter_schema: *analysis_parameters
+  - capability_id: analysis.analyze
+    type: analysis
+    model_id: gemini-3-flash-preview
+    operation: analysis.analyze
+    execution_state: adapter_connected_unverified
+    parameter_schema: *analysis_parameters

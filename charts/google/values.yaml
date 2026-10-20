@@ -3,7 +3,7 @@ namespace: verdantflare-app
 
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: google-channel-v0.1.11
+  tag: google-channel-v0.1.14
   digest: ""
   pullPolicy: Always
 
@@ -11,6 +11,11 @@ replicaCount: 1
 
 auth:
   existingSecretName: google-channel-auth
+
+analysis:
+  enabled: false
+  existingSecretName: google-analysis-access
+  tokenKey: token
 
 network:
   url: http://app-network.verdantflare-app.svc.cluster.local:8080
