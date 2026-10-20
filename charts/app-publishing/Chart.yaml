@@ -1,0 +1,11 @@
+apiVersion: v2
+name: app-publishing
+description: Studio 管理员应用发布中继。
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+annotations:
+  verdantflare.com/app-id: app-publishing
+  verdantflare.com/capabilities: '["app_publish.list","app_publish.get","app_publish.readiness","app_publish.organizations","app_publish.publish"]'
+  verdantflare.com/models: '[]'
+  verdantflare.com/images: '[{"component":"app","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:app-publishing-v0.1.0"}]'

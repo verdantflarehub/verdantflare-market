@@ -1,0 +1,14 @@
+appId: app-publishing
+appVersion: 0.1.0
+namespace: verdantflare-app
+workloadName: app-publishing-relay
+station:
+  stationId: ''
+  organizationId: ''
+  installationId: ''
+  templateHash: ''
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: app-publishing-v0.1.0
+  pullPolicy: Always
+replicas: 1
