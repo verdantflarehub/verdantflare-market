@@ -72,6 +72,17 @@ capabilities:
         prompt: {type: string, minLength: 1, maxLength: 64000}
         source_text: {type: string, minLength: 1, maxLength: 256000}
         video_fps: {type: number, minimum: 0.1, maximum: 8, default: 2}
+        video_range:
+          type: object
+          additionalProperties: false
+          required: [start_ms, end_ms]
+          properties:
+            start_ms: {type: integer, minimum: 0, maximum: 86399999}
+            end_ms: {type: integer, minimum: 1, maximum: 86400000}
+          description: Original video timeline in milliseconds; end must exceed start by at most 300000 ms.
+        response_schema:
+          type: object
+          description: Bounded structured output schema; no references, composition or external schema loading.
         max_output_tokens: {type: integer, minimum: 1024, maximum: 32768, default: 16384}
         media:
           type: object
