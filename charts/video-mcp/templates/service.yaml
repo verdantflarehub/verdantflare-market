@@ -28,10 +28,6 @@ spec:
     port: 8000
     protocol: TCP
     targetPort: http
-  - name: authority
-    port: 8001
-    protocol: TCP
-    targetPort: authority
   selector:
     app.kubernetes.io/name: video-mcp-server
   type: ClusterIP
