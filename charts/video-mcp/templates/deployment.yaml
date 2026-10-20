@@ -193,6 +193,32 @@ spec:
               key: active-password
               name: etcd-client-video
               optional: true
+        - name: VIDEO_GROK_CHANNEL_URL
+          value: {{ (dig "grokChannelUrl" (printf "http://grok-channel.%s.svc.cluster.local:8001" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: VIDEO_GOOGLE_CHANNEL_URL
+          value: {{ (dig "googleChannelUrl" (printf "http://google-channel.%s.svc.cluster.local:8001" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: STATION_ORGANIZATION_ID
+          value: {{ (dig "organizationId" "01a0fbf9-0a33-7c31-90d0-a51e3b0a9781" (.Values.station | default dict)) | quote }}
+        - name: IMAGE_CHATGPT_CHANNEL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: IMAGE_CHATGPT_CHANNEL_TOKEN
+              name: image-channel-authority
+        - name: IMAGE_GOOGLE_CHANNEL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: IMAGE_GOOGLE_CHANNEL_TOKEN
+              name: image-channel-authority
+        - name: IMAGE_GROK_CHANNEL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: IMAGE_GROK_CHANNEL_TOKEN
+              name: image-channel-authority
+        - name: IMAGE_PROJECT_SERVICE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: IMAGE_PROJECT_SERVICE_TOKEN
+              name: image-channel-authority
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
         livenessProbe:
@@ -230,77 +256,6 @@ spec:
         - mountPath: /etc/video-model-catalog
           name: model-catalog
           readOnly: true
-      - command:
-        - python
-        - -m
-        - uvicorn
-        - app.artifact_authority:app
-        - --host
-        - 0.0.0.0
-        - --port
-        - '8001'
-        - --ssl-certfile
-        - /etc/video-authority-tls/tls.crt
-        - --ssl-keyfile
-        - /etc/video-authority-tls/tls.key
-        - --no-access-log
-        env:
-        - name: HIGGSFIELD_ENABLED
-          value: 'true'
-        - name: VIDEO_ARTIFACT_ROOT
-          value: /data/projects/video
-        - name: VIDEO_PROJECT_SERVICE_URL
-          value: {{ (dig "projectServiceUrl" (printf "https://app-project.%s.svc.cluster.local:8443" .Release.Namespace) (.Values.services | default dict)) | quote }}
-        - name: VIDEO_PROJECT_SERVICE_TOKEN
-          valueFrom:
-            secretKeyRef:
-              key: VIDEO_PROJECT_SERVICE_TOKEN
-              name: video-app-project-service
-        - name: VIDEO_PROJECT_CA_FILE
-          value: /etc/video-project-ca/ca.crt
-        - name: HIGGSFIELD_ORGANIZATION_ID
-          valueFrom:
-            secretKeyRef:
-              key: HIGGSFIELD_ORGANIZATION_ID
-              name: video-higgsfield-binding
-        - name: VIDEO_ARTIFACT_AUTHORITY_TOKEN
-          valueFrom:
-            secretKeyRef:
-              key: VIDEO_ARTIFACT_AUTHORITY_TOKEN
-              name: video-artifact-authority
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: Always
-        name: artifact-authority
-        ports:
-        - containerPort: 8001
-          name: authority
-          protocol: TCP
-        readinessProbe:
-          failureThreshold: 3
-          periodSeconds: 5
-          successThreshold: 1
-          tcpSocket:
-            port: authority
-          timeoutSeconds: 1
-        resources: {}
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          readOnlyRootFilesystem: true
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-        volumeMounts:
-        - mountPath: /etc/video-project-ca
-          name: project-ca
-          readOnly: true
-        - mountPath: /data/projects
-          name: projects
-          readOnly: true
-        - mountPath: /etc/video-authority-tls
-          name: authority-tls
-          readOnly: true
       dnsPolicy: ClusterFirst
       nodeSelector:
         kubernetes.io/hostname: verdentflare-5090
@@ -316,10 +271,6 @@ spec:
       - name: projects
         persistentVolumeClaim:
           claimName: {{ .Values.storage.existingClaim | default "video-projects" }}
-      - name: authority-tls
-        secret:
-          defaultMode: 420
-          secretName: video-artifact-authority-tls
       - name: model-catalog
         projected:
           defaultMode: 420
