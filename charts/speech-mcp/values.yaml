@@ -1,0 +1,19 @@
+appId: speech-mcp
+appVersion: 0.2.0
+namespace: verdantflare-app
+workloadName: speech-mcp-server
+station:
+  stationId: ""
+  organizationId: ""
+  installationId: ""
+  templateHash: ""
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: speech-mcp-server-v0.2.0
+  pullPolicy: Always
+replicas: 1
+gpuTask:
+  serviceAccount: speech-mcp-gpu
+  role: indextts2
+  deployment: speech-indextts2-api
+  idleSeconds: "600"

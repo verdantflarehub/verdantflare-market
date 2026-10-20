@@ -1,0 +1,11 @@
+apiVersion: v2
+name: speech-mcp
+description: 统一调用角色对白与旁白生成、声线与情感控制、音频质量测量与听审归档。
+type: application
+version: 0.1.0
+appVersion: 0.2.0
+annotations:
+  verdantflare.com/app-id: speech-mcp
+  verdantflare.com/capabilities: '["speech.capabilities","speech.voices","speech.create","speech.status","speech.result"]'
+  verdantflare.com/models: '["indextts2@2.0.0"]'
+  verdantflare.com/images: '[{"component":"speech-mcp-server","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:speech-mcp-server-v0.2.0"}]'
