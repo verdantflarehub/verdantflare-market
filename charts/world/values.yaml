@@ -1,0 +1,24 @@
+appId: world
+appVersion: 0.1.28
+namespace: verdantflare-app
+workloadName: app-world
+# Runtime replaces station.* with the authenticated installation identity.
+# Shared secrets (app-world-secret, app-world-tls, etcd-client-world) and the
+# allow-speech-mcp-to-world policy are referenced, never created by this Chart.
+station:
+  stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
+  organizationId: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
+  installationId: 01a130a5-8000-7000-8000-000000000009
+  templateHash: ''
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: world-v0.1.28
+  pullPolicy: Always
+replicas: 1
+services:
+  artifactUrl: https://artifact.verdantflare-station.svc.cluster.local:8094
+  etcdEndpoints: http://etcd.verdantflare-station.svc.cluster.local:2379
+  projectServiceUrl: https://app-project.verdantflare-app.svc.cluster.local:8443
+  mcpAdvertiseUrl: https://app-world.verdantflare-app.svc.cluster.local:8444/mcp
+  analysisUrl: https://google-channel.verdantflare-app.svc.cluster.local:8002
+  analysisDispatchEnabled: "true"
