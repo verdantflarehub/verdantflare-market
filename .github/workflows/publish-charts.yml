@@ -52,7 +52,8 @@ jobs:
           if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
             echo "charts=$REQUESTED_CHARTS" >> "$GITHUB_OUTPUT"
           else
-            charts=$(git diff --name-only "$BEFORE_SHA" HEAD -- charts/ | awk -F/ 'NF >= 3 {print $2}' | sort -u | tr '\n' ' ')
+            # Removed charts stay immutable in the registry; only publish charts that still exist.
+            charts=$(git diff --name-only "$BEFORE_SHA" HEAD -- charts/ | awk -F/ 'NF >= 3 {print $2}' | sort -u | while read -r chart; do if [[ -d "charts/$chart" ]]; then printf '%s ' "$chart"; fi; done)
             echo "charts=$charts" >> "$GITHUB_OUTPUT"
             if [[ -z "$charts" ]]; then echo "skip=true" >> "$GITHUB_OUTPUT"; fi
           fi
