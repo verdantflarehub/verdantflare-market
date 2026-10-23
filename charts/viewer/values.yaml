@@ -1,0 +1,21 @@
+appId: viewer
+appVersion: 0.1.0
+namespace: verdantflare-app
+workloadName: app-viewer
+# Runtime replaces station.* with the authenticated installation identity.
+# Shared secrets (app-viewer-secret, app-viewer-tls) and internal CA ConfigMap
+# are referenced, never created by this Chart.
+station:
+  stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
+  organizationId: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
+  installationId: 01a16960-8000-7000-8000-000000000010
+  templateHash: ''
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: viewer-v0.1.0
+  pullPolicy: Always
+replicas: 1
+services:
+  artifactUrl: https://artifact.verdantflare-station.svc.cluster.local:8094
+  projectServiceUrl: https://app-project.verdantflare-app.svc.cluster.local:8443
+  worldServiceUrl: https://app-world.verdantflare-app.svc.cluster.local:8443

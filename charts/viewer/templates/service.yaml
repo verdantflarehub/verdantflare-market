@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-viewer
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+    {{- with .Values.station }}
+    {{- with .stationId }}
+    station.verdantflare.com/station-id: {{ . | quote }}
+    {{- end }}
+    {{- with .organizationId }}
+    station.verdantflare.com/organization-id: {{ . | quote }}
+    {{- end }}
+    {{- with .installationId }}
+    station.verdantflare.com/installation-id: {{ . | quote }}
+    {{- end }}
+    {{- with .templateHash }}
+    station.verdantflare.com/template-hash: {{ . | quote }}
+    {{- end }}
+    {{- end }}
+  labels:
+    app.kubernetes.io/name: app-viewer
+    app.kubernetes.io/part-of: verdantflare
+spec:
+  ports:
+    - name: business
+      port: 8443
+      protocol: TCP
+      targetPort: business
+  selector:
+    app.kubernetes.io/name: app-viewer
+  type: ClusterIP

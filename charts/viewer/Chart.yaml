@@ -1,0 +1,11 @@
+apiVersion: v2
+name: viewer
+description: 网页片场查看器系统应用，提供 Studio Set Package v1.0 三维浏览、机位校对与视口导出。
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+annotations:
+  verdantflare.com/app-id: viewer
+  verdantflare.com/capabilities: '["viewer.set"]'
+  verdantflare.com/models: '[]'
+  verdantflare.com/images: '[{"component":"app","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:viewer-v0.1.0"}]'
