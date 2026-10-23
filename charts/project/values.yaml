@@ -1,5 +1,5 @@
 appId: project
-appVersion: 0.1.48
+appVersion: 0.1.50
 namespace: verdantflare-app
 workloadName: app-project
 station:
@@ -9,7 +9,7 @@ station:
   templateHash: ''
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: project-v0.1.48
+  tag: project-v0.1.50
   pullPolicy: Always
 replicas: 1
 services:
