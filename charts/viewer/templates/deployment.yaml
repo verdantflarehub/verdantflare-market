@@ -40,80 +40,38 @@ spec:
       automountServiceAccountToken: false
       containers:
         - env:
-            - name: ARTIFACT_CA_FILE
+            - name: INTERNAL_CA_FILE
               value: /etc/app/ca/ca.crt
-            - name: ARTIFACT_URL
-              value: {{ (dig "artifactUrl" "https://artifact.verdantflare-station.svc.cluster.local:8094" (.Values.services | default dict)) | quote }}
-            - name: PROJECT_CA_FILE
+            - name: SSL_CERT_FILE
               value: /etc/app/ca/ca.crt
             - name: PROJECT_SERVICE_URL
               value: {{ (dig "projectServiceUrl" "https://app-project.verdantflare-app.svc.cluster.local:8443" (.Values.services | default dict)) | quote }}
-            - name: WORLD_CA_FILE
-              value: /etc/app/ca/ca.crt
             - name: WORLD_SERVICE_URL
               value: {{ (dig "worldServiceUrl" "https://app-world.verdantflare-app.svc.cluster.local:8443" (.Values.services | default dict)) | quote }}
-            - name: SSL_CERT_FILE
-              value: /etc/app/ca/ca.crt
-            - name: VIEWER_DASHBOARD_DIR
-              value: /app/dashboard
+            - name: VIEWER_ASSETS_DIR
+              value: /app/frontend/dist
             - name: VIEWER_LISTEN
-              value: 0.0.0.0:8443
-            - name: VIEWER_TLS_CERT
-              value: /etc/app/tls/tls.crt
-            - name: VIEWER_TLS_KEY
-              value: /etc/app/tls/tls.key
-            - name: VIEWER_SERVICE_TOKEN
+              value: 0.0.0.0:8000
+            - name: STATION_ID
               valueFrom:
                 secretKeyRef:
-                  key: VIEWER_SERVICE_TOKEN
+                  key: STATION_ID
                   name: app-viewer-secret
-            - name: VIEWER_COORD_TOKEN
+            - name: APP_SERVICE_TOKEN
               valueFrom:
                 secretKeyRef:
-                  key: VIEWER_COORD_TOKEN
-                  name: app-viewer-secret
-            - name: VIEWER_COORD_FENCE
-              valueFrom:
-                secretKeyRef:
-                  key: VIEWER_COORD_FENCE
+                  key: APP_SERVICE_TOKEN
                   name: app-viewer-secret
             - name: PROJECT_SERVICE_TOKEN
               valueFrom:
                 secretKeyRef:
                   key: PROJECT_SERVICE_TOKEN
                   name: app-viewer-secret
-            - name: PROJECT_COORD_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  key: PROJECT_COORD_TOKEN
-                  name: app-viewer-secret
-            - name: PROJECT_COORD_FENCE
-              valueFrom:
-                secretKeyRef:
-                  key: PROJECT_COORD_FENCE
-                  name: app-viewer-secret
             - name: WORLD_SERVICE_TOKEN
               valueFrom:
                 secretKeyRef:
                   key: WORLD_SERVICE_TOKEN
                   name: app-viewer-secret
-            - name: WORLD_COORD_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  key: WORLD_COORD_TOKEN
-                  name: app-viewer-secret
-            - name: WORLD_COORD_FENCE
-              valueFrom:
-                secretKeyRef:
-                  key: WORLD_COORD_FENCE
-                  name: app-viewer-secret
-            - name: ARTIFACT_SERVICE_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  key: ARTIFACT_SERVICE_TOKEN
-                  name: app-viewer-secret
-            - name: TMPDIR
-              value: /dev/shm
           image: {{ printf "%s:%s" .Values.image.repository .Values.image.tag | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
           livenessProbe:
@@ -126,7 +84,7 @@ spec:
             timeoutSeconds: 2
           name: app
           ports:
-            - containerPort: 8443
+            - containerPort: 8000
               name: business
               protocol: TCP
           readinessProbe:
@@ -134,7 +92,7 @@ spec:
             httpGet:
               path: /healthz
               port: business
-              scheme: HTTPS
+              scheme: HTTP
             initialDelaySeconds: 3
             periodSeconds: 5
             successThreshold: 1
@@ -155,9 +113,6 @@ spec:
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           volumeMounts:
-            - mountPath: /etc/app/tls
-              name: tls
-              readOnly: true
             - mountPath: /etc/app/ca
               name: ca
               readOnly: true
@@ -174,15 +129,6 @@ spec:
           type: RuntimeDefault
       terminationGracePeriodSeconds: 30
       volumes:
-        - name: tls
-          secret:
-            defaultMode: 420
-            items:
-              - key: tls.crt
-                path: tls.crt
-              - key: tls.key
-                path: tls.key
-            secretName: app-viewer-tls
         - configMap:
             defaultMode: 420
             items:

@@ -25,7 +25,7 @@ metadata:
 spec:
   ports:
     - name: business
-      port: 8443
+      port: 8000
       protocol: TCP
       targetPort: business
   selector:
