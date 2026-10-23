@@ -1,0 +1,22 @@
+appId: image-moss-api
+appVersion: 0.1.0
+workloadName: image-moss-api
+replicas: 0
+station: {}
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: image-moss-api-v0.1.0
+  pullPolicy: Always
+runtimeClassName: ''
+nodeSelector:
+  nvidia.com/gpu.present: "true"
+  nvidia.com/gpu.sharing-strategy: time-slicing
+storage:
+  create: false
+  storageClassName: local-nvme
+  modelsClaim: models-moss-image
+  modelsSize: 40Gi
+modelEndpoint: https://www.modelscope.cn
+networkPolicy:
+  enabled: true
+  clientName: image-mcp-server

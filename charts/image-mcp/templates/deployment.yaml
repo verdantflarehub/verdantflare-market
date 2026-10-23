@@ -41,10 +41,21 @@ spec:
       labels:
         app.kubernetes.io/name: image-mcp-server
     spec:
+      {{- if and .Values.serviceAccount .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name | quote }}
+      {{- end }}
       containers:
       - env:
         - name: SERVICE_VERSION
-          value: v0.2.26
+          value: v0.2.27
+        - name: MOSS_IMAGE_API_URL
+          value: {{ (dig "mossImageApiUrl" (printf "http://image-moss-api.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: MOSS_GPU_LEASE_NAME
+          value: gpu-task-moss-image
+        - name: MOSS_GPU_DEPLOYMENT_NAME
+          value: image-moss-api
+        - name: MOSS_GPU_NAMESPACE
+          value: {{ .Release.Namespace | quote }}
         - name: XAI_IMAGE_ENABLED
           value: 'true'
         - name: XAI_IMAGE_MODEL

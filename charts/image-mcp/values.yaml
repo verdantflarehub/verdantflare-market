@@ -1,7 +1,9 @@
 appId: image-mcp
-appVersion: 0.2.26
+appVersion: 0.2.27
 namespace: verdantflare-app
 workloadName: image-mcp-server
+serviceAccount:
+  name: image-mcp-gpu
 station:
   stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
   organizationId: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
@@ -9,7 +11,7 @@ station:
   templateHash: ''
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: image-mcp-server-v0.2.26
+  tag: image-mcp-server-v0.2.27
   pullPolicy: Always
 replicas: 1
 services:
@@ -20,6 +22,7 @@ services:
   chatgptChannelUrl: http://chatgpt-channel.verdantflare-app.svc.cluster.local:8001
   grokChannelUrl: http://grok-channel.verdantflare-app.svc.cluster.local:8001
   googleChannelUrl: http://google-channel.verdantflare-app.svc.cluster.local:8001
+  mossImageApiUrl: http://image-moss-api.verdantflare-app.svc.cluster.local:8000
   allowedHosts: mcp.dev.verdantflarehub.com,mcp.dev.verdantflarehub.com:*,studio.dev.verdantflarehub.com,studio.dev.verdantflarehub.com:*,192.168.1.200:*,127.0.0.1:*,localhost:*,[::1]:*,image-mcp-server:*,image-mcp-server.verdantflare-app:*,image-mcp-server.verdantflare-app.svc.cluster.local:*,*.cluster.local:*
 storage:
   create: false

@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.workloadName | default "image-moss-api" }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/part-of: verdantflare-image
+    app.kubernetes.io/name: {{ .Values.workloadName | default "image-moss-api" }}
+    app.kubernetes.io/version: {{ .Values.appVersion | default .Chart.AppVersion | quote }}
+    app.kubernetes.io/component: worker
+    apps.verdantflare.com/managed: 'true'
+    apps.verdantflare.com/group: image
+    apps.verdantflare.com/brand: openmoss
+  annotations:
+    apps.verdantflare.com/display-name: MOSS-Image SFT INT8 API
+    apps.verdantflare.com/models: MOSS-Image-SFT INT8-ConvRot
+spec:
+  replicas: {{ .Values.replicas | default 0 }}
+  strategy:
+    type: Recreate
+  progressDeadlineSeconds: 1800
+  selector:
+    matchLabels: &selectorLabels
+      app.kubernetes.io/name: {{ .Values.workloadName | default "image-moss-api" }}
+  template:
+    metadata:
+      labels:
+        <<: *selectorLabels
+        app.kubernetes.io/part-of: verdantflare-image
+    spec:
+      automountServiceAccountToken: false
+      {{- with .Values.runtimeClassName }}
+      runtimeClassName: {{ . | quote }}
+      {{- end }}
+      containers:
+      - name: api
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
+        env:
+        - name: MOSS_MODEL_ROOT
+          value: /models/moss-image
+        - name: MOSS_COMFYUI_HOST
+          value: 127.0.0.1
+        - name: MOSS_COMFYUI_PORT
+          value: "8188"
+        - name: TRITON_CACHE_DIR
+          value: /tmp/triton
+        ports:
+        - name: http
+          containerPort: 8000
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 500m
+            memory: 4Gi
+            nvidia.com/gpu: 1
+          limits:
+            memory: 24Gi
+            nvidia.com/gpu: 1
+        startupProbe:
+          httpGet:
+            path: /live
+            port: http
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 60
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          periodSeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /live
+            port: http
+          periodSeconds: 15
+          timeoutSeconds: 5
+          failureThreshold: 6
+        volumeMounts:
+        - name: models
+          mountPath: /models/moss-image
+          readOnly: true
+        - name: dshm
+          mountPath: /dev/shm
+      volumes:
+      - name: models
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.modelsClaim | default "models-moss-image" | quote }}
+          readOnly: true
+      - name: dshm
+        emptyDir:
+          medium: Memory
+          sizeLimit: 8Gi
+      terminationGracePeriodSeconds: 60
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
