@@ -2,10 +2,10 @@ apiVersion: v2
 name: world
 description: World 概念、设定规则、实体关系与不可变资产图谱管理。
 type: application
-version: 0.1.10
-appVersion: 0.1.39
+version: 0.1.11
+appVersion: 0.1.40
 annotations:
   verdantflare.com/app-id: world
   verdantflare.com/capabilities: '["world.content"]'
   verdantflare.com/models: '[]'
-  verdantflare.com/images: '[{"component":"app","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:world-v0.1.39"}]'
+  verdantflare.com/images: '[{"component":"app","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:world-v0.1.40"}]'
