@@ -104,5 +104,5 @@ capabilities:
     type: analysis
     model_id: gemini-3-flash-preview
     operation: analysis.analyze
-    execution_state: adapter_connected_unverified
+    execution_state: enabled
     parameter_schema: *analysis_parameters
