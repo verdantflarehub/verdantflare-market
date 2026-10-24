@@ -52,6 +52,8 @@ spec:
               value: {{ (dig "projectServiceUrl" "https://app-project.verdantflare-app.svc.cluster.local:8443" (.Values.services | default dict)) | quote }}
             - name: SSL_CERT_FILE
               value: /etc/app/ca/ca.crt
+            - name: WORLD_PRODUCER_URL
+              value: http://studio-blender-content.verdantflare-station.svc.cluster.local:8001
             - name: WORLD_DASHBOARD_DIR
               value: /app/dashboard
             - name: WORLD_LISTEN
