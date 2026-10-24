@@ -15,6 +15,7 @@ DEFAULT_STATION_CHARTS=(
   grok
   higgsfield
   image-mcp
+  image-moss-api
   music-mcp
   network
   project

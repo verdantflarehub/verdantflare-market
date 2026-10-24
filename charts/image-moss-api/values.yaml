@@ -1,7 +1,7 @@
 appId: image-moss-api
 appVersion: 0.1.0
 workloadName: image-moss-api
-replicas: 0
+replicas: 1
 station: {}
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
@@ -20,3 +20,4 @@ modelEndpoint: https://www.modelscope.cn
 networkPolicy:
   enabled: true
   clientName: image-mcp-server
+

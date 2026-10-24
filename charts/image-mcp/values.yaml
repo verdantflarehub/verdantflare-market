@@ -1,5 +1,5 @@
 appId: image-mcp
-appVersion: 0.2.27
+appVersion: 0.2.28
 namespace: verdantflare-app
 workloadName: image-mcp-server
 serviceAccount:
@@ -11,7 +11,7 @@ station:
   templateHash: ''
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: image-mcp-server-v0.2.27
+  tag: image-mcp-server-v0.2.28
   pullPolicy: Always
 replicas: 1
 services:

@@ -16,3 +16,4 @@ spec:
     requests:
       storage: {{ .Values.storage.modelsSize | default "40Gi" }}
 {{- end }}
+

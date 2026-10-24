@@ -15,7 +15,7 @@ metadata:
     apps.verdantflare.com/display-name: MOSS-Image SFT INT8 API
     apps.verdantflare.com/models: MOSS-Image-SFT INT8-ConvRot
 spec:
-  replicas: {{ .Values.replicas | default 0 }}
+  replicas: {{ .Values.replicas | default 1 }}
   strategy:
     type: Recreate
   progressDeadlineSeconds: 1800
@@ -32,6 +32,28 @@ spec:
       {{- with .Values.runtimeClassName }}
       runtimeClassName: {{ . | quote }}
       {{- end }}
+      initContainers:
+      - name: prepare-models
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
+        command:
+        - python
+        - -m
+        - src.prepare_models
+        env:
+        - name: MOSS_MODEL_ROOT
+          value: /models/moss-image
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: void
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 2Gi
+        volumeMounts:
+        - name: models
+          mountPath: /models/moss-image
       containers:
       - name: api
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -87,7 +109,6 @@ spec:
       - name: models
         persistentVolumeClaim:
           claimName: {{ .Values.storage.modelsClaim | default "models-moss-image" | quote }}
-          readOnly: true
       - name: dshm
         emptyDir:
           medium: Memory
@@ -97,3 +118,4 @@ spec:
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+
