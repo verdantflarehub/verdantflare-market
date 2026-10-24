@@ -1,5 +1,5 @@
 appId: viewer
-appVersion: 0.1.0
+appVersion: 0.1.4
 namespace: verdantflare-app
 workloadName: app-viewer
 # Runtime replaces station.* with the authenticated installation identity.
@@ -12,7 +12,7 @@ station:
   templateHash: ''
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: viewer-v0.1.0
+  tag: viewer-v0.1.4
   pullPolicy: Always
 replicas: 1
 services:

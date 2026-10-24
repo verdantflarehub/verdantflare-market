@@ -55,7 +55,11 @@ spec:
         env:
         - *id002
         - name: FACEFUSION_PROVIDER
-          value: cuda
+          value: {{ .Values.provider | default "cuda" | quote }}
+        {{- if eq (.Values.provider | default "cuda") "cpu" }}
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: void
+        {{- end }}
         ports:
         - name: http
           containerPort: 8000
@@ -63,10 +67,14 @@ spec:
           requests:
             cpu: 250m
             memory: 1Gi
+            {{- if ne (.Values.provider | default "cuda") "cpu" }}
             nvidia.com/gpu: 1
+            {{- end }}
           limits:
             memory: 16Gi
+            {{- if ne (.Values.provider | default "cuda") "cpu" }}
             nvidia.com/gpu: 1
+            {{- end }}
         startupProbe:
           httpGet:
             path: /live
