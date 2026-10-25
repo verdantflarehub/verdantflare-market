@@ -1,12 +1,21 @@
 schema_version: 1
 channel_id: google
+channel_name: Google
+channel_logo: logo.svg
 capabilities:
-  - capability_id: image.generate
+  - capability_id: image.generate.nano_banana_2_1
     type: image
-    model_id: gemini-3.1-flash-image
+    model_id: gemini-nano-banana-2.1
+    display_name: Nano Banana 2.1
+    model_logo: nano-banana.png
+    model_logo_mime: image/png
     operation: image.generate
-    execution_state: adapter_connected_unverified
-    parameter_schema:
+    execution_state: enabled
+    card_group: nano-banana-2-1
+    card_title: Nano Banana 2.1
+    input_summary: 提示词
+    output_summary: PNG 图像 · $0.0336/张
+    parameter_schema: &image_generate_parameters
       type: object
       additionalProperties: false
       required:
@@ -16,15 +25,32 @@ capabilities:
           type: string
           minLength: 1
           maxLength: 32000
+        aspect_ratio:
+          type: string
+          enum:
+            - "1:1"
+            - "2:3"
+            - "3:2"
+            - "3:4"
+            - "4:3"
+            - "9:16"
+            - "16:9"
         images:
           type: array
           maxItems: 0
-  - capability_id: image.edit
+  - capability_id: image.edit.nano_banana_2_1
     type: image
-    model_id: gemini-3.1-flash-image
+    model_id: gemini-nano-banana-2.1
+    display_name: Nano Banana 2.1
+    model_logo: nano-banana.png
+    model_logo_mime: image/png
     operation: image.edit
-    execution_state: adapter_connected_unverified
-    parameter_schema:
+    execution_state: enabled
+    card_group: nano-banana-2-1
+    card_title: Nano Banana 2.1
+    input_summary: 提示词 · 1–6 张参考图（0 张蒙版）
+    output_summary: PNG 图像 · $0.0336/张
+    parameter_schema: &image_edit_parameters
       type: object
       additionalProperties: false
       required:
@@ -35,10 +61,20 @@ capabilities:
           type: string
           minLength: 1
           maxLength: 32000
+        aspect_ratio:
+          type: string
+          enum:
+            - "1:1"
+            - "2:3"
+            - "3:2"
+            - "3:4"
+            - "4:3"
+            - "9:16"
+            - "16:9"
         images:
           type: array
           minItems: 1
-          maxItems: 12
+          maxItems: 6
           items:
             type: object
             additionalProperties: false
@@ -55,6 +91,87 @@ capabilities:
               data:
                 type: string
                 minLength: 1
+
+  - capability_id: image.generate.nano_banana_pro
+    type: image
+    model_id: gemini-3-pro-image
+    display_name: Nano Banana Pro
+    model_logo: nano-banana.png
+    model_logo_mime: image/png
+    operation: image.generate
+    execution_state: enabled
+    card_group: nano-banana-pro
+    card_title: Nano Banana Pro
+    input_summary: 提示词
+    output_summary: PNG 图像 · $0.134/张
+    parameter_schema: *image_generate_parameters
+  - capability_id: image.edit.nano_banana_pro
+    type: image
+    model_id: gemini-3-pro-image
+    display_name: Nano Banana Pro
+    model_logo: nano-banana.png
+    model_logo_mime: image/png
+    operation: image.edit
+    execution_state: enabled
+    card_group: nano-banana-pro
+    card_title: Nano Banana Pro
+    input_summary: 提示词 · 1–6 张参考图（0 张蒙版）
+    output_summary: PNG 图像 · $0.134/张
+    parameter_schema: *image_edit_parameters
+
+  - capability_id: image.generate.nano_banana_2
+    type: image
+    model_id: gemini-3.1-flash-image
+    display_name: Nano Banana 2
+    model_logo: nano-banana.png
+    model_logo_mime: image/png
+    operation: image.generate
+    execution_state: enabled
+    card_group: nano-banana-2
+    card_title: Nano Banana 2
+    input_summary: 提示词
+    output_summary: PNG 图像 · $0.0672/张
+    parameter_schema: *image_generate_parameters
+  - capability_id: image.edit.nano_banana_2
+    type: image
+    model_id: gemini-3.1-flash-image
+    display_name: Nano Banana 2
+    model_logo: nano-banana.png
+    model_logo_mime: image/png
+    operation: image.edit
+    execution_state: enabled
+    card_group: nano-banana-2
+    card_title: Nano Banana 2
+    input_summary: 提示词 · 1–6 张参考图（0 张蒙版）
+    output_summary: PNG 图像 · $0.0672/张
+    parameter_schema: *image_edit_parameters
+
+  - capability_id: image.generate.nano_banana_2_lite
+    type: image
+    model_id: gemini-3.1-flash-lite-image
+    display_name: Nano Banana 2 Lite
+    model_logo: nano-banana.png
+    model_logo_mime: image/png
+    operation: image.generate
+    execution_state: enabled
+    card_group: nano-banana-2-lite
+    card_title: Nano Banana 2 Lite
+    input_summary: 提示词
+    output_summary: PNG 图像 · $0.0336/张
+    parameter_schema: *image_generate_parameters
+  - capability_id: image.edit.nano_banana_2_lite
+    type: image
+    model_id: gemini-3.1-flash-lite-image
+    display_name: Nano Banana 2 Lite
+    model_logo: nano-banana.png
+    model_logo_mime: image/png
+    operation: image.edit
+    execution_state: enabled
+    card_group: nano-banana-2-lite
+    card_title: Nano Banana 2 Lite
+    input_summary: 提示词 · 1–6 张参考图（0 张蒙版）
+    output_summary: PNG 图像 · $0.0336/张
+    parameter_schema: *image_edit_parameters
 
   - capability_id: analysis.analyze
     type: analysis

@@ -47,7 +47,7 @@ spec:
       containers:
       - env:
         - name: SERVICE_VERSION
-          value: v0.2.36
+          value: v0.2.37
         - name: MOSS_IMAGE_API_URL
           value: {{ (dig "mossImageApiUrl" (printf "http://image-moss-api.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: MOSS_GPU_LEASE_NAME

@@ -2,8 +2,8 @@ apiVersion: v2
 name: google
 description: Google AI Studio channel account and execution service for a VerdantFlare Station
 type: application
-version: 0.1.6
-appVersion: "0.1.21"
+version: 0.1.7
+appVersion: "0.1.23"
 icon: https://cache.ali.wodcloud.com/vscode/verdantflare-design/docs/assets/brands/google.svg
 annotations:
   verdantflare.com/app-id: google
@@ -12,6 +12,6 @@ annotations:
   verdantflare.com/access-scope: studio-only
   verdantflare.com/source-repo: verdantflarehub/verdantflare-app-google
   verdantflare.com/capabilities: '["google.channel.manage"]'
-  verdantflare.com/models: '[]'
-  verdantflare.com/images: '[{"component":"gateway","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:google-channel-v0.1.21"}]'
+  verdantflare.com/models: '["gemini-nano-banana-2.1","gemini-3-pro-image","gemini-3.1-flash-image","gemini-3.1-flash-lite-image"]'
+  verdantflare.com/images: '[{"component":"gateway","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:google-channel-v0.1.23"}]'
 
