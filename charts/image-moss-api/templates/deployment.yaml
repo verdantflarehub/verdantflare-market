@@ -12,8 +12,8 @@ metadata:
     apps.verdantflare.com/group: image
     apps.verdantflare.com/brand: openmoss
   annotations:
-    apps.verdantflare.com/display-name: MOSS-Image SFT INT8 API
-    apps.verdantflare.com/models: MOSS-Image-SFT INT8-ConvRot
+    apps.verdantflare.com/display-name: MOSS Image
+    apps.verdantflare.com/models: MOSS Image
 spec:
   replicas: {{ .Values.replicas | default 1 }}
   strategy:

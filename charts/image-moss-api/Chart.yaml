@@ -1,11 +1,11 @@
 apiVersion: v2
 name: image-moss-api
-description: Internal MOSS-Image-SFT INT8-ConvRot API backed by headless ComfyUI 0.42.0
+description: Internal MOSS Image (INT8-ConvRot) API backed by headless ComfyUI 0.42.0
 type: application
 version: 0.1.0
 appVersion: 0.1.0
 annotations:
-  verdantflare.com/models: '["MOSS-Image-SFT INT8-ConvRot", "Qwen3.5-9B INT8-ConvRot", "FLUX.2-VAE-Small"]'
+  verdantflare.com/models: '["MOSS Image", "Qwen3.5-9B INT8-ConvRot", "FLUX.2-VAE-Small"]'
   verdantflare.com/capabilities: '["image.generate"]'
   verdantflare.com/app-id: image-moss-api
   verdantflare.com/images: '[{"component": "api", "image": "registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:image-moss-api-v0.1.0"}, {"component": "prepare-models", "image": "registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:image-moss-api-v0.1.0"}]'
