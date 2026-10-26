@@ -8,6 +8,7 @@ on:
       - packaging/registry-nginx/**
 permissions:
   contents: read
+  packages: write
 concurrency:
   group: market-registry-infrastructure-release
   cancel-in-progress: false
@@ -31,19 +32,16 @@ jobs:
       - name: Configure destination
         id: destination
         env:
-          REGISTRY_ENDPOINT: ${{ secrets.REGISTRY_ENDPOINT_ALIYUN }}
           IMAGE_VERSION: ${{ matrix.version }}
         shell: bash
         run: |
           set -euo pipefail
-          endpoint="${REGISTRY_ENDPOINT%/}"
-          [[ "$endpoint" =~ ^[a-zA-Z0-9.-]+(:[0-9]+)?$ ]]
-          echo "image=$endpoint/wod/verdantflare:$IMAGE_VERSION" >> "$GITHUB_OUTPUT"
+          echo "image=ghcr.io/verdantflarehub/verdantflare-market:$IMAGE_VERSION" >> "$GITHUB_OUTPUT"
       - uses: docker/login-action@v3
         with:
-          registry: ${{ secrets.REGISTRY_ENDPOINT_ALIYUN }}
-          username: ${{ secrets.REGISTRY_USER_ALIYUN }}
-          password: ${{ secrets.REGISTRY_PASSWORD_ALIYUN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Refuse existing versions and fail closed on registry errors
         env:
           IMAGE: ${{ steps.destination.outputs.image }}
