@@ -4,6 +4,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: app-project-media-cache
   namespace: {{ .Release.Namespace }}
+  annotations:
+    helm.sh/resource-policy: keep
   labels:
     app.kubernetes.io/name: app-project
 spec:
