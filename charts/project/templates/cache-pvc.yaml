@@ -1,0 +1,17 @@
+{{- if not .Values.cache.existingClaim }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: app-project-media-cache
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: app-project
+spec:
+  accessModes: [ReadWriteOnce]
+  {{- if .Values.cache.storageClass }}
+  storageClassName: {{ .Values.cache.storageClass | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.cache.size | quote }}
+{{- end }}

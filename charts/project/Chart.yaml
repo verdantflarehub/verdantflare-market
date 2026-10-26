@@ -2,10 +2,10 @@ apiVersion: v2
 name: project
 description: Studio 工程版本、工作空间与产物修订管理中心。
 type: application
-version: 0.1.8
-appVersion: 0.1.52
+version: 0.1.9
+appVersion: 0.1.55
 annotations:
   verdantflare.com/app-id: project
   verdantflare.com/capabilities: '["project.create","project.read","project.write","project.revision"]'
   verdantflare.com/models: '[]'
-  verdantflare.com/images: '[{"component":"app","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:project-v0.1.52"}]'
+  verdantflare.com/images: '[{"component":"app","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:project-v0.1.55"}]'

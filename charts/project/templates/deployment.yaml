@@ -46,6 +46,12 @@ spec:
           value: {{ (dig "artifactUrl" "https://artifact.verdantflare-station.svc.cluster.local:8094" (.Values.services | default dict)) | quote }}
         - name: ETCD_ENDPOINTS
           value: {{ (dig "etcdEndpoints" "http://etcd.verdantflare-station.svc.cluster.local:2379" (.Values.services | default dict)) | quote }}
+        - name: PROJECT_CONTENT_CACHE_DIR
+          value: /var/cache/project
+        - name: PROJECT_CONTENT_CACHE_BYTES
+          value: {{ .Values.cache.bytes | int64 | quote }}
+        - name: TMPDIR
+          value: /tmp
         - name: PROJECT_DASHBOARD_DIR
           value: /app/dashboard/dist
         - name: PROJECT_LISTEN
@@ -169,6 +175,10 @@ spec:
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
+        - mountPath: /var/cache/project
+          name: media-cache
+        - mountPath: /tmp
+          name: preview-tmp
         - mountPath: /etc/app/tls
           name: tls
           readOnly: true
@@ -181,6 +191,8 @@ spec:
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext:
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
         runAsGroup: 65532
         runAsNonRoot: true
         runAsUser: 65532
@@ -188,6 +200,12 @@ spec:
           type: RuntimeDefault
       terminationGracePeriodSeconds: 30
       volumes:
+      - name: media-cache
+        persistentVolumeClaim:
+          claimName: {{ .Values.cache.existingClaim | default "app-project-media-cache" | quote }}
+      - name: preview-tmp
+        emptyDir:
+          sizeLimit: 512Mi
       - name: tls
         secret:
           defaultMode: 420
