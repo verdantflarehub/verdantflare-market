@@ -1,5 +1,7 @@
 appId: higgsfield
-appVersion: 0.5.8
+channelDiscovery:
+  executionUrl: http://higgsfield-channel.verdantflare-app.svc.cluster.local:8000
+appVersion: 0.5.10
 namespace: verdantflare-app
 workloadName: higgsfield-channel
 station:
@@ -9,7 +11,7 @@ station:
   templateHash: ''
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: video-higgsfield-gateway-v0.5.8
+  tag: video-higgsfield-gateway-v0.5.10
   pullPolicy: Always
 replicas: 1
 network:

@@ -139,6 +139,12 @@ spec:
               name: video-mcp-auth
         - name: ETCD_ENDPOINTS
           value: {{ (dig "etcdEndpoints" "http://etcd.verdantflare-station.svc.cluster.local:2379" (.Values.services | default dict)) | quote }}
+        - name: CHANNEL_DISCOVERY_ETCD_URL
+          value: {{ .Values.channelDiscovery.etcdUrl | quote }}
+        - name: CHANNEL_DISCOVERY_SCOPE_ID
+          value: {{ .Values.channelDiscovery.scopeId | quote }}
+        - name: VIDEO_CHANNEL_ALLOW_UNVERIFIED
+          value: {{ join "," .Values.channelDiscovery.allowUnverified | quote }}
         - name: MCP_SERVICE_ENDPOINT
           value: {{ (dig "mcpServiceEndpoint" (printf "http://video-mcp-server.%s.svc.cluster.local:8000/mcp" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: MCP_HEALTH_ENDPOINT

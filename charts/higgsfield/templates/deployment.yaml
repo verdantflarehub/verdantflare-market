@@ -40,6 +40,8 @@ spec:
       - env:
         - name: CHANNEL_METADATA_FILE
           value: /etc/verdantflare/channel.yaml
+        - name: CHANNEL_EXECUTION_URL
+          value: {{ .Values.channelDiscovery.executionUrl | quote }}
         envFrom:
         - configMapRef:
             name: video-higgsfield-gateway

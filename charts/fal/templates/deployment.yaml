@@ -42,6 +42,8 @@ spec:
           value: {{ .Values.storage.stateDbPath | default "/data/fal/state.sqlite3" | quote }}
         - name: CHANNEL_METADATA_FILE
           value: /etc/verdantflare/channel.yaml
+        - name: CHANNEL_DISCOVERY_EXECUTION_URL
+          value: {{ .Values.channelDiscovery.executionUrl | quote }}
         - name: HTTPS_PROXY
           value: http://openclash.openclash.svc.cluster.local:1081
         - name: NO_PROXY

@@ -1,5 +1,5 @@
 appId: grok
-appVersion: 0.1.10
+appVersion: 0.1.14
 namespace: verdantflare-app
 workloadName: grok-channel
 station:
@@ -9,7 +9,7 @@ station:
   templateHash: ''
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: grok-channel-v0.1.10
+  tag: grok-channel-v0.1.14
   pullPolicy: Always
 replicas: 1
 network:
