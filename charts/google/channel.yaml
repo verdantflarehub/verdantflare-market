@@ -3,6 +3,79 @@ channel_id: google
 channel_name: Google
 channel_logo: logo.svg
 capabilities:
+  - capability_id: video.generate.omni_1_1_flash
+    type: video
+    model_id: gemini-omni-1.1-flash
+    display_name: Omni 1.1 Flash
+    operation: video.generate
+    execution_state: enabled
+    card_group: omni-1-1-flash
+    card_title: Omni 1.1 Flash
+    input_summary: 提示词 · 可选 1 张首帧 · 暂不支持视频或音频输入
+    output_summary: 720p · 3–10 秒（团队暂定准入，真实能力待验收）
+    parameter_schema:
+      type: object
+      additionalProperties: false
+      required: [prompt, duration_seconds]
+      properties:
+        prompt: {type: string, minLength: 1, maxLength: 16000}
+        duration_seconds:
+          type: integer
+          minimum: 3
+          maximum: 10
+          description: 团队首批暂定准入范围，非供应商极限；按原秒数发送，不折算时长。实际受理及输出时长须验收。
+        resolution: {type: string, enum: [720p], default: 720p}
+        aspect_ratio: {type: string, enum: ["16:9", "9:16"], default: "16:9"}
+        mode: {type: string, enum: [text_to_video, image_to_video], default: text_to_video}
+        image:
+          type: object
+          additionalProperties: false
+          required: [mime_type, data]
+          description: image_to_video 恰好 1 张首帧；text_to_video 不允许图片。24 MiB 解码大小为本地接入保护上限，非供应商规格。
+          properties:
+            mime_type: {type: string, enum: [image/png, image/jpeg, image/webp]}
+            data: {type: string, minLength: 1, maxLength: 33554432}
+  - capability_id: video.generate.veo_3_1_lite
+    type: video
+    model_id: veo-3.1-lite-generate-preview
+    display_name: Veo 3.1 Lite
+    operation: video.generate
+    execution_state: disabled
+    reason_code: model_retired
+    retired_on: "2026-10-22"
+    source_url: https://ai.google.dev/gemini-api/docs/deprecations
+    input_summary: 供应商已关闭，新请求不可用
+    output_summary: 仅保留原调用查询与恢复
+    parameter_schema: &retired_video_parameters
+      type: object
+      additionalProperties: false
+      required: [prompt]
+      properties:
+        prompt: {type: string, minLength: 1, maxLength: 16000}
+  - capability_id: video.generate.veo_3_1_fast
+    type: video
+    model_id: veo-3.1-fast-generate-preview
+    display_name: Veo 3.1 Fast
+    operation: video.generate
+    execution_state: disabled
+    reason_code: model_retired
+    retired_on: "2026-10-22"
+    source_url: https://ai.google.dev/gemini-api/docs/deprecations
+    input_summary: 供应商已关闭，新请求不可用
+    output_summary: 仅保留原调用查询与恢复
+    parameter_schema: *retired_video_parameters
+  - capability_id: video.generate.veo_3_1
+    type: video
+    model_id: veo-3.1-generate-preview
+    display_name: Veo 3.1
+    operation: video.generate
+    execution_state: disabled
+    reason_code: model_retired
+    retired_on: "2026-10-22"
+    source_url: https://ai.google.dev/gemini-api/docs/deprecations
+    input_summary: 供应商已关闭，新请求不可用
+    output_summary: 仅保留原调用查询与恢复
+    parameter_schema: *retired_video_parameters
   - capability_id: image.generate.nano_banana_2_1
     type: image
     model_id: gemini-nano-banana-2.1
