@@ -1,14 +1,226 @@
-schemaVersion: 1
-appId: grok
-providerId: grok
-displayName: Grok
-category: channel
-version: 0.1.10
-logo: logo.svg
+schema_version: 1
+channel_id: grok
+channel_name: Grok
 capabilities:
-- image.generate
-- video.generate
-- text.generate
-service:
-  name: grok-channel
-  port: 8000
+- capability_id: image.generate.grok_imagine_image
+  type: image
+  model_id: grok-imagine-image
+  display_name: Grok Imagine Image
+  operation: image.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+  execution_state: adapter_connected_unverified
+- capability_id: image.edit.grok_imagine_image
+  type: image
+  model_id: grok-imagine-image
+  display_name: Grok Imagine Image
+  operation: image.edit
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+  execution_state: adapter_connected_unverified
+- capability_id: image.generate
+  type: image
+  model_id: grok-imagine-image-2.0
+  display_name: Grok Imagine Image 2.0
+  operation: image.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+  execution_state: enabled
+- capability_id: image.edit
+  type: image
+  model_id: grok-imagine-image-2.0
+  display_name: Grok Imagine Image 2.0
+  operation: image.edit
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+  execution_state: enabled
+- capability_id: image.generate.grok_imagine_image_quality
+  type: image
+  model_id: grok-imagine-image-quality
+  display_name: Grok Imagine Image Quality
+  operation: image.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+  execution_state: adapter_connected_unverified
+- capability_id: image.edit.grok_imagine_image_quality
+  type: image
+  model_id: grok-imagine-image-quality
+  display_name: Grok Imagine Image Quality
+  operation: image.edit
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+  execution_state: adapter_connected_unverified
+- capability_id: video.generate.grok_imagine_video
+  type: video
+  model_id: grok-imagine-video
+  display_name: Grok Imagine Video
+  operation: video.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+        minLength: 1
+        maxLength: 16000
+      duration_seconds:
+        type: integer
+        minimum: 1
+        maximum: 15
+      mode:
+        enum:
+        - text_to_video
+        - image_to_video
+        - reference_to_video
+      resolution:
+        enum:
+        - 480p
+        - 720p
+      aspect_ratio:
+        enum:
+        - '16:9'
+        - '9:16'
+        - '1:1'
+        - '4:3'
+        - '3:4'
+        - '3:2'
+        - '2:3'
+      references:
+        type: array
+        minItems: 1
+        maxItems: 7
+  execution_state: adapter_connected_unverified
+- capability_id: video.generate.grok_imagine_video_1.5
+  type: video
+  model_id: grok-imagine-video-1.5
+  display_name: Grok Imagine Video 1.5
+  operation: video.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+        minLength: 1
+        maxLength: 16000
+      duration_seconds:
+        type: integer
+        minimum: 1
+        maximum: 15
+      mode:
+        enum:
+        - text_to_video
+        - image_to_video
+        - reference_to_video
+      resolution:
+        enum:
+        - 480p
+        - 720p
+      aspect_ratio:
+        enum:
+        - '16:9'
+        - '9:16'
+        - '1:1'
+        - '4:3'
+        - '3:4'
+        - '3:2'
+        - '2:3'
+      references:
+        type: array
+        minItems: 1
+        maxItems: 7
+  execution_state: adapter_connected_unverified
+- capability_id: video.generate.grok_imagine_video_1.5_lite
+  type: video
+  model_id: grok-imagine-video-1.5-lite
+  display_name: Grok Imagine Video 1.5 Lite
+  operation: video.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+        minLength: 1
+        maxLength: 16000
+      duration_seconds:
+        type: integer
+        minimum: 1
+        maximum: 15
+      mode:
+        enum:
+        - text_to_video
+        - image_to_video
+        - reference_to_video
+      resolution:
+        enum:
+        - 480p
+        - 720p
+      aspect_ratio:
+        enum:
+        - '16:9'
+        - '9:16'
+        - '1:1'
+        - '4:3'
+        - '3:4'
+        - '3:2'
+        - '2:3'
+      references:
+        type: array
+        minItems: 1
+        maxItems: 7
+  execution_state: adapter_connected_unverified
+- capability_id: video.generate.grok_video_v15_lite
+  type: video
+  model_id: grok_video_v15_lite
+  display_name: Grok Imagine 1.5 Lite · 兼容入口
+  operation: video.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+        minLength: 1
+        maxLength: 16000
+      duration_seconds:
+        type: integer
+        minimum: 1
+        maximum: 15
+      mode:
+        enum:
+        - text_to_video
+        - image_to_video
+        - reference_to_video
+      resolution:
+        enum:
+        - 480p
+        - 720p
+      aspect_ratio:
+        enum:
+        - '16:9'
+        - '9:16'
+        - '1:1'
+        - '4:3'
+        - '3:4'
+        - '3:2'
+        - '2:3'
+      references:
+        type: array
+        minItems: 1
+        maxItems: 7
+  execution_state: adapter_connected_unverified

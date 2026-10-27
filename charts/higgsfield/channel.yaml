@@ -1,12 +1,129 @@
-schemaVersion: 1
-appId: higgsfield
-providerId: higgsfield
-displayName: Higgsfield
-category: channel
-version: 0.5.8
-logo: logo.svg
+schema_version: 1
+channel_id: higgsfield
+channel_name: Higgsfield
 capabilities:
-- video.generate
-service:
-  name: video-higgsfield-gateway
-  port: 8000
+- capability_id: video.generate.seedance_2_5
+  type: video
+  model_id: seedance_2_5
+  display_name: Seedance 2.5
+  operation: video.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+        minLength: 1
+        maxLength: 10000
+      duration_seconds:
+        type: integer
+        minimum: 4
+        maximum: 15
+      mode:
+        enum:
+        - text_to_video
+      resolution:
+        enum:
+        - 720p
+      aspect_ratio:
+        enum:
+        - '16:9'
+        - '9:16'
+        - '4:3'
+        - '3:4'
+        - '1:1'
+        - '21:9'
+  execution_state: adapter_connected_unverified
+- capability_id: video.generate.seedance_2_5_draft
+  type: video
+  model_id: seedance_2_5_draft
+  display_name: Seedance 2.5 Draft
+  operation: video.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+        minLength: 1
+        maxLength: 10000
+      duration_seconds:
+        type: integer
+        minimum: 4
+        maximum: 15
+      mode:
+        enum:
+        - reference_to_video
+      resolution:
+        enum:
+        - 480p
+      aspect_ratio:
+        enum:
+        - '16:9'
+        - '9:16'
+        - '4:3'
+        - '3:4'
+        - '1:1'
+        - '21:9'
+  execution_state: adapter_connected_unverified
+- capability_id: video.generate.wan3_0
+  type: video
+  model_id: wan3_0
+  display_name: Wan 3.0
+  operation: video.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+        minLength: 1
+        maxLength: 10000
+      duration_seconds:
+        type: integer
+        minimum: 2
+        maximum: 30
+      mode:
+        enum:
+        - text_to_video
+        - reference_to_video
+      resolution:
+        enum:
+        - 480p
+        - 720p
+      aspect_ratio:
+        enum:
+        - '16:9'
+        - '9:16'
+        - '4:3'
+        - '3:4'
+        - '1:1'
+  execution_state: adapter_connected_unverified
+- capability_id: video.generate.grok_video_v15_lite
+  type: video
+  model_id: grok_video_v15_lite
+  display_name: Grok Imagine 1.5 Lite
+  operation: video.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+        minLength: 1
+        maxLength: 10000
+      duration_seconds:
+        type: integer
+        minimum: 2
+        maximum: 15
+      mode:
+        enum:
+        - text_to_video
+      resolution:
+        enum:
+        - 480p
+        - 720p
+      aspect_ratio:
+        enum:
+        - '16:9'
+        - '9:16'
+        - '4:3'
+        - '3:4'
+        - '1:1'
+  execution_state: adapter_connected_unverified

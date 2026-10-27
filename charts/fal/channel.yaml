@@ -52,7 +52,7 @@ capabilities:
     type: video
     model_id: minimax/h3-max
     endpoint_id: minimax/h3-max/3d-to-video
-    display_name: 3D to Video
+    display_name: MiniMax H3 Max · 3D 预演转视频
     operation: video.transform.3d_to_video
     parameter_schema: {}
     execution_state: catalog_only
@@ -67,7 +67,7 @@ capabilities:
     type: video
     model_id: minimax/h3-max
     endpoint_id: minimax/h3-max/camera-controls
-    display_name: Camera Controls
+    display_name: MiniMax H3 Max · 镜头控制
     operation: video.generate.camera_controls
     parameter_schema: {}
     execution_state: catalog_only
@@ -82,7 +82,7 @@ capabilities:
     type: video
     model_id: minimax/h3-max
     endpoint_id: minimax/h3-max/director
-    display_name: Director
+    display_name: MiniMax H3 Max · 连续导演
     operation: video.session.director
     parameter_schema: {}
     execution_state: catalog_only
@@ -97,7 +97,7 @@ capabilities:
     type: video
     model_id: minimax/h3-max
     endpoint_id: minimax/h3-max/extend-video
-    display_name: Extend Video Max
+    display_name: MiniMax H3 Max · 视频延长
     operation: video.transform.extend
     parameter_schema: {}
     execution_state: catalog_only
@@ -112,7 +112,7 @@ capabilities:
     type: video
     model_id: minimax/h3-max
     endpoint_id: minimax/h3-max/image-to-video
-    display_name: Image to Video Max
+    display_name: MiniMax H3 Max · 标准视频生成
     operation: video.generate.image_to_video
     parameter_schema: {}
     execution_state: catalog_only
@@ -127,7 +127,7 @@ capabilities:
     type: video
     model_id: minimax/h3-max
     endpoint_id: minimax/h3-max/insert-video
-    display_name: Insert Video Max
+    display_name: MiniMax H3 Max · 视频插入
     operation: video.transform.insert
     parameter_schema: {}
     execution_state: catalog_only
@@ -142,7 +142,7 @@ capabilities:
     type: video
     model_id: minimax/h3-max
     endpoint_id: minimax/h3-max/lip-sync/image-to-video
-    display_name: Lip Sync Max
+    display_name: MiniMax H3 Max · 口型同步
     operation: video.transform.lip_sync
     parameter_schema: {}
     execution_state: catalog_only
@@ -157,7 +157,7 @@ capabilities:
     type: video
     model_id: minimax/h3-max
     endpoint_id: minimax/h3-max/recast
-    display_name: Recast Max
+    display_name: MiniMax H3 Max · 人物替换
     operation: video.transform.recast
     parameter_schema: {}
     execution_state: catalog_only
@@ -172,7 +172,7 @@ capabilities:
     type: video
     model_id: minimax/h3-max
     endpoint_id: minimax/h3-max/reference-director
-    display_name: Reference Director
+    display_name: MiniMax H3 Max · 参考导演
     operation: video.session.reference_director
     parameter_schema: {}
     execution_state: catalog_only
@@ -187,7 +187,7 @@ capabilities:
     type: video
     model_id: minimax/h3-max
     endpoint_id: minimax/h3-max/reference-to-video
-    display_name: Reference to Video Max
+    display_name: MiniMax H3 Max · 标准视频生成
     operation: video.generate.reference_to_video
     parameter_schema: {}
     execution_state: catalog_only
@@ -202,7 +202,7 @@ capabilities:
     type: video
     model_id: minimax/h3-max
     endpoint_id: minimax/h3-max/relight
-    display_name: Relight Max
+    display_name: MiniMax H3 Max · 视频重光照
     operation: video.transform.relight
     parameter_schema: {}
     execution_state: catalog_only
@@ -217,7 +217,7 @@ capabilities:
     type: video
     model_id: minimax/h3-max
     endpoint_id: minimax/h3-max/text-to-video
-    display_name: Text to Video Max
+    display_name: MiniMax H3 Max · 标准视频生成
     operation: video.generate.text_to_video
     parameter_schema: {}
     execution_state: catalog_only
