@@ -3,7 +3,7 @@ channelDiscovery:
   etcdUrl: http://etcd.verdantflare-station.svc.cluster.local:2379
   scopeId: ""
   allowUnverified: []
-appVersion: 0.17.53
+appVersion: 0.17.54
 namespace: verdantflare-app
 workloadName: video-mcp-server
 station:
@@ -13,7 +13,7 @@ station:
   templateHash: ''
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: video-mcp-server-v0.17.53
+  tag: video-mcp-server-v0.17.54
   pullPolicy: Always
 replicas: 1
 gpuTask:
