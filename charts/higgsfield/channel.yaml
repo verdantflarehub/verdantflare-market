@@ -63,7 +63,8 @@ capabilities:
         - '3:4'
         - '1:1'
         - '21:9'
-  execution_state: adapter_connected_unverified
+  execution_state: disabled
+  reason_code: provider_not_found
 - capability_id: video.generate.wan3_0
   type: video
   model_id: wan3_0
