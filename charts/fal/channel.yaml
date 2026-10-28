@@ -144,12 +144,21 @@ capabilities:
     endpoint_id: minimax/h3-max/lip-sync/image-to-video
     display_name: MiniMax H3 Max · 口型同步
     operation: video.transform.lip_sync
-    parameter_schema: {}
-    execution_state: catalog_only
+    parameter_schema:
+      type: object
+      additionalProperties: false
+      required: [image_url, audio_url, resolution, enable_transcription, enable_safety_checker]
+      properties:
+        image_url: {type: string}
+        audio_url: {type: string}
+        resolution: {type: string, enum: [480P, 768P]}
+        enable_transcription: {const: true}
+        enable_safety_checker: {const: true}
+    execution_state: adapter_connected_unverified
     card_group: lip-sync
     card_title: 口型同步
-    input_summary: 人物图像 · 音频
-    output_summary: 口型与音频同步的视频
+    input_summary: VF适配：一张人物图 · 一段5–15秒PCM WAV音频
+    output_summary: 与音轨等长的视频 · VF适配480P／768P
     protocol: queue
     output_resolutions: [480P, 768P, 1080P, 2K]
     source_url: https://fal.ai/models/minimax/h3-max/lip-sync/image-to-video/api
