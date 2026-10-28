@@ -3,7 +3,7 @@ namespace: verdantflare-app
 
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: google-channel-v0.1.26
+  tag: google-channel-v0.1.27
   digest: ""
   pullPolicy: Always
 
