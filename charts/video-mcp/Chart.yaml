@@ -2,10 +2,10 @@ apiVersion: v2
 name: video-mcp
 description: 统一视频工具与渠道。安装后查看能力，按需连接本地模型服务。
 type: application
-version: 0.1.13
-appVersion: 0.17.56
+version: 0.1.14
+appVersion: 0.17.57
 annotations:
   verdantflare.com/app-id: video-mcp
   verdantflare.com/capabilities: '["video.generate","video.status","video.result"]'
   verdantflare.com/models: '[]'
-  verdantflare.com/images: '[{"component":"api","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-mcp-server-v0.17.56"}]'
+  verdantflare.com/images: '[{"component":"api","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-mcp-server-v0.17.57"}]'
