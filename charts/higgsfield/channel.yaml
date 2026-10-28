@@ -21,8 +21,10 @@ capabilities:
       mode:
         enum:
         - text_to_video
+        - reference_to_video
       resolution:
         enum:
+        - 480p
         - 720p
       aspect_ratio:
         enum:
@@ -63,8 +65,7 @@ capabilities:
         - '3:4'
         - '1:1'
         - '21:9'
-  execution_state: disabled
-  reason_code: provider_not_found
+  execution_state: adapter_connected_unverified
 - capability_id: video.generate.wan3_0
   type: video
   model_id: wan3_0
