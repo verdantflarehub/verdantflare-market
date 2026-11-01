@@ -40,6 +40,20 @@ spec:
             - name: http
               containerPort: 8000
           env:
+            - name: ETCD_ENDPOINTS
+              value: {{ required "registry.endpoints is required" .Values.registry.endpoints | quote }}
+            - name: MCP_SERVICE_ENDPOINT
+              value: {{ printf "http://%s.%s.svc.cluster.local:8000/mcp" (include "tryon.name" .) .Release.Namespace | quote }}
+            - name: ETCD_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "registry.existingSecret is required" .Values.registry.existingSecret }}
+                  key: {{ .Values.registry.usernameKey }}
+            - name: ETCD_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.registry.existingSecret }}
+                  key: {{ .Values.registry.passwordKey }}
             - name: PORT
               value: "8000"
             - name: TRYON_DB_PATH

@@ -12,6 +12,11 @@ image:
   pullPolicy: Always
 imagePullSecrets: []
 replicas: 1
+registry:
+  endpoints: http://etcd.verdantflare-station.svc.cluster.local:2379
+  existingSecret: etcd-client-tryon
+  usernameKey: active-username
+  passwordKey: active-password
 credentials:
   existingSecret: tryon-credentials
   serviceTokenKey: TRYON_MCP_BEARER_TOKEN
