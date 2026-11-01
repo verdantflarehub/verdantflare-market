@@ -5,7 +5,13 @@ metadata:
   name: {{ include "tryon.name" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "tryon.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ .Values.appId | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/part-of: verdantflare
+    app.kubernetes.io/version: {{ .Values.appVersion | quote }}
+    apps.verdantflare.com/managed: "true"
+    apps.verdantflare.com/group: image
+    apps.verdantflare.com/brand: vf
   annotations:
     {{- include "tryon.annotations" . | nindent 4 }}
 spec:
