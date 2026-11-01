@@ -1,5 +1,5 @@
 appId: tryon
-appVersion: 0.1.7
+appVersion: 0.1.8
 workloadName: tryon-mcp-server
 station:
   stationId: ''
@@ -8,7 +8,7 @@ station:
   templateHash: ''
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: tryon-v0.1.7
+  tag: tryon-v0.1.8
   pullPolicy: Always
 imagePullSecrets: []
 replicas: 1
