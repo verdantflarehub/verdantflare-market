@@ -1,0 +1,102 @@
+{{- if ne (int .Values.replicas) 1 }}{{ fail "Tryon SQLite requires exactly one replica" }}{{ end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tryon.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "tryon.labels" . | nindent 4 }}
+  annotations:
+    {{- include "tryon.annotations" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "tryon.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "tryon.labels" . | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 90
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: tryon
+          image: {{ printf "%s:%s" .Values.image.repository .Values.image.tag | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: PORT
+              value: "8000"
+            - name: TRYON_DB_PATH
+              value: /data/tryon/tasks.sqlite
+            - name: TRYON_DASHBOARD_DIR
+              value: /app/dashboard
+            - name: TRYON_STUDIO_CREDENTIALS_FILE
+              value: /etc/tryon/callers.json
+            - name: TRYON_MCP_BEARER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "credentials.existingSecret is required" .Values.credentials.existingSecret }}
+                  key: {{ .Values.credentials.serviceTokenKey }}
+            - name: STUDIO_MCP_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.credentials.existingSecret }}
+                  key: {{ .Values.credentials.studioUrlKey }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+            seccompProfile:
+              type: RuntimeDefault
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 5
+            failureThreshold: 24
+          volumeMounts:
+            - name: data
+              mountPath: /data/tryon
+            - name: credentials
+              mountPath: /etc/tryon
+              readOnly: true
+            - name: temporary
+              mountPath: /tmp
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "tryon.claim" . }}
+        - name: credentials
+          secret:
+            secretName: {{ .Values.credentials.existingSecret }}
+            defaultMode: 0440
+            items:
+              - key: {{ .Values.credentials.callersKey }}
+                path: callers.json
+        - name: temporary
+          emptyDir:
+            sizeLimit: 64Mi

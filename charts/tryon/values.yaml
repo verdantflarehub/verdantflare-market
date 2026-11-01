@@ -1,0 +1,35 @@
+appId: tryon
+appVersion: 0.1.0
+workloadName: tryon-mcp-server
+station:
+  stationId: ''
+  organizationId: ''
+  installationId: ''
+  templateHash: ''
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: tryon-v0.1.0
+  pullPolicy: Always
+imagePullSecrets: []
+replicas: 1
+credentials:
+  existingSecret: tryon-credentials
+  serviceTokenKey: TRYON_MCP_BEARER_TOKEN
+  studioUrlKey: STUDIO_MCP_URL
+  callersKey: callers.json
+storage:
+  create: true
+  existingClaim: ''
+  storageClassName: ''
+  size: 10Gi
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: '1'
+    memory: 1Gi
+studio:
+  namespace: verdantflare-station
+  podLabels:
+    app.kubernetes.io/name: verdantflare-studio

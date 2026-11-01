@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "tryon.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "tryon.labels" . | nindent 4 }}
+  annotations:
+    {{- include "tryon.annotations" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "tryon.labels" . | nindent 4 }}
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
