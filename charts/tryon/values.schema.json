@@ -4,14 +4,14 @@
   "required": ["appId", "appVersion", "replicas", "image", "credentials", "storage", "studio"],
   "properties": {
     "appId": {"const": "tryon"},
-    "appVersion": {"const": "0.1.14"},
+    "appVersion": {"const": "0.1.15"},
     "replicas": {"type": "integer", "const": 1},
     "workloadName": {"type": "string", "pattern": "^[a-z][a-z0-9-]*[a-z0-9]$", "maxLength": 50},
     "image": {
       "type": "object", "required": ["repository", "tag", "pullPolicy"],
       "properties": {
         "repository": {"type": "string", "minLength": 1, "pattern": "^[a-zA-Z0-9./:_-]+$"},
-        "tag": {"const": "tryon-v0.1.14"},
+        "tag": {"const": "tryon-v0.1.15"},
         "pullPolicy": {"const": "Always"}
       }
     },
