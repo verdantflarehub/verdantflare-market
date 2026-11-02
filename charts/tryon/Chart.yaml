@@ -2,10 +2,10 @@ apiVersion: v2
 name: tryon
 description: Persistent wardrobe try-on orchestration and Studio Dashboard.
 type: application
-version: 0.1.17
-appVersion: 0.1.17
+version: 0.1.18
+appVersion: 0.1.18
 annotations:
   verdantflare.com/app-id: tryon
   verdantflare.com/capabilities: '["tryon.create","tryon.get","tryon.list","tryon.retry","tryon.capabilities","tryon.delete_upload"]'
   verdantflare.com/models: '[]'
-  verdantflare.com/images: '[{"component":"app","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:tryon-v0.1.17"}]'
+  verdantflare.com/images: '[{"component":"app","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:tryon-v0.1.18"}]'
