@@ -2,12 +2,12 @@ apiVersion: v2
 name: higgsfield
 description: 管理 Higgsfield 会员授权与用量，为 Video 提供会员视频渠道。
 type: application
-version: 0.1.6
-appVersion: 0.5.15
+version: 0.1.7
+appVersion: 0.5.16
 annotations:
   verdantflare.com/app-id: higgsfield
   verdantflare.com/logo-file: logo.svg
   verdantflare.com/channel-file: channel.yaml
   verdantflare.com/capabilities: '["higgsfield.membership"]'
   verdantflare.com/models: '[]'
-  verdantflare.com/images: '[{"component":"gateway","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-higgsfield-gateway-v0.5.15"}]'
+  verdantflare.com/images: '[{"component":"gateway","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-higgsfield-gateway-v0.5.16"}]'
