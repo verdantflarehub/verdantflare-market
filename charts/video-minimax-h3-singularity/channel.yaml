@@ -3,7 +3,7 @@ appId: video-minimax-h3-singularity
 providerId: singularity
 displayName: MiniMax H3 · Singularity
 category: local-channel
-version: 0.1.36
+version: 0.1.37
 logo: logo.svg
 capabilities:
 - video.generate

@@ -150,7 +150,7 @@ spec:
         - name: MCP_HEALTH_ENDPOINT
           value: {{ (dig "mcpHealthEndpoint" (printf "http://video-mcp-server.%s.svc.cluster.local:8000/health" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: H3_RUNTIME_VERSION
-          value: video-minimax-h3-singularity-v0.1.36
+          value: video-minimax-h3-singularity-v0.1.37
         - name: HIGGSFIELD_GATEWAY_URL
           value: {{ (dig "higgsfieldGatewayUrl" (printf "http://higgsfield-channel.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: FAL_GATEWAY_URL

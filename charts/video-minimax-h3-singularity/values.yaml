@@ -1,5 +1,5 @@
 appId: video-minimax-h3-singularity
-appVersion: 0.1.36
+appVersion: 0.1.37
 namespace: verdantflare-app
 workloadName: video-minimax-h3-singularity
 station:
@@ -9,7 +9,7 @@ station:
   templateHash: ''
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: video-minimax-h3-singularity-v0.1.36
+  tag: video-minimax-h3-singularity-v0.1.37
   pullPolicy: Always
 replicas: 1
 storage:
