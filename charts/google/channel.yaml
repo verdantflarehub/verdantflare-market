@@ -108,6 +108,12 @@ capabilities:
             - "4:3"
             - "9:16"
             - "16:9"
+        resolution:
+          type: string
+          enum:
+            - "1k"
+            - "2k"
+            - "4k"
         images:
           type: array
           maxItems: 0
@@ -144,6 +150,12 @@ capabilities:
             - "4:3"
             - "9:16"
             - "16:9"
+        resolution:
+          type: string
+          enum:
+            - "1k"
+            - "2k"
+            - "4k"
         images:
           type: array
           minItems: 1
