@@ -3,14 +3,14 @@ channel_id: google
 channel_name: Google
 channel_logo: logo.svg
 capabilities:
-  - capability_id: video.generate.omni_1_1_flash
+  - capability_id: video.generate.omni_1_2_flash
     type: video
-    model_id: gemini-omni-1.1-flash
-    display_name: Omni 1.1 Flash
+    model_id: gemini-omni-1.2-flash
+    display_name: Omni 1.2 Flash
     operation: video.generate
     execution_state: enabled
-    card_group: omni-1-1-flash
-    card_title: Omni 1.1 Flash
+    card_group: omni-1-2-flash
+    card_title: Omni 1.2 Flash
     input_summary: 提示词 · 可选 1 张首帧 · 暂不支持视频或音频输入
     output_summary: 720p · 3–10 秒（团队暂定准入，真实能力待验收）
     parameter_schema:
