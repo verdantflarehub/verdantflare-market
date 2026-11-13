@@ -23,7 +23,7 @@ metadata:
     app.kubernetes.io/component: engine
     app.kubernetes.io/name: video-minimax-h3-singularity
     app.kubernetes.io/part-of: verdantflare-video
-    app.kubernetes.io/version: 0.1.37
+    app.kubernetes.io/version: 0.1.38
     apps.verdantflare.com/brand: minimax
     apps.verdantflare.com/group: video
     apps.verdantflare.com/managed: 'true'
@@ -111,7 +111,7 @@ spec:
         - name: SINGULARITY_MODEL_DOWNLOAD_WORKERS
           value: '16'
         - name: SINGULARITY_RUNTIME_VERSION
-          value: video-minimax-h3-singularity-v0.1.37
+          value: video-minimax-h3-singularity-v0.1.38
         - name: SINGULARITY_RUNTIME_TOKEN
           valueFrom:
             secretKeyRef:
