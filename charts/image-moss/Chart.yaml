@@ -2,7 +2,7 @@ apiVersion: v2
 name: image-moss
 description: Internal MOSS Image (INT8-ConvRot) runtime backed by headless ComfyUI
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: 0.2.2
 annotations:
   verdantflare.com/models: '["MOSS Image", "Qwen3.5-9B INT8-ConvRot", "FLUX.2-VAE-Small"]'

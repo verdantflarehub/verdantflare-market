@@ -68,12 +68,12 @@ spec:
             cpu: 250m
             memory: 1Gi
             {{- if ne (.Values.provider | default "cuda") "cpu" }}
-            nvidia.com/gpu: 1
+            nvidia.com/gpu: "1"
             {{- end }}
           limits:
             memory: 16Gi
             {{- if ne (.Values.provider | default "cuda") "cpu" }}
-            nvidia.com/gpu: 1
+            nvidia.com/gpu: "1"
             {{- end }}
         startupProbe:
           httpGet:
