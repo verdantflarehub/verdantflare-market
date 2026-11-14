@@ -21,6 +21,8 @@ DEFAULT_STATION_CHARTS=(
   project
   resources
   video-mcp
+  video-minimax-h3-fasth3
+  video-minimax-h3-regenerate-2k
   video-minimax-h3-singularity
 )
 

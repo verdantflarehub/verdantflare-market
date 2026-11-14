@@ -1,0 +1,35 @@
+appId: video-minimax-h3-fasth3
+appVersion: 0.1.0
+namespace: verdantflare-app
+workloadName: video-minimax-h3-fasth3
+station:
+  stationId: ""
+  organizationId: ""
+  installationId: ""
+  templateHash: ""
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: video-minimax-h3-fasth3-v0.1.0
+  pullPolicy: Always
+replicas: 1
+networkPolicy:
+  enabled: true
+  clientName: video-mcp-server
+runtime:
+  minFreeVramMib: "28672"
+storage:
+  create: false
+  existingClaim: models-minimax-h3
+  projectsClaim: video-projects
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 200Gi
+persistence:
+  create: false
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 200Gi
+pvcs: []
+
+# Must match Video MCP VIDEO_MCP_RUNTIME_BASE_URL exactly; enforced by runtime origin validation.
+referenceBaseUrl: ""
