@@ -125,9 +125,9 @@ spec:
         - name: VIDEO_PROJECT_CA_FILE
           value: /etc/video-project-ca/ca.crt
         - name: VIDEO_INTERPOLATION_RUNTIME_URL
-          value: {{ (dig "interpolationRuntimeUrl" (printf "http://video-frame-interpolation-api.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+          value: {{ (dig "interpolationRuntimeUrl" (printf "http://video-frame-interpolation.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: VIDEO_INTERPOLATION_RUNTIME_VERSION
-          value: video-frame-interpolation-api-v0.2.5
+          value: video-frame-interpolation-v0.2.6
         {{- $singularityUrl := dig "h3SingularityRuntimeUrl" (printf "http://video-minimax-h3-singularity.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict) }}
         - name: H3_RUNTIME_URL
           value: {{ (dig "h3RuntimeUrl" (printf "http://video-minimax-h3-fasth3.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
