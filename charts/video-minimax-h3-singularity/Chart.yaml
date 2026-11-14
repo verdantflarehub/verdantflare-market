@@ -1,13 +1,13 @@
 apiVersion: v2
 name: video-minimax-h3-singularity
-description: 现行生产主力：单卡独占 RTX 5090，为 Video MCP 提供参考素材驱动的音视频生成能力（Ref2VA INT8 DiT）。
+description: 现行生产主力：单卡时分复用 RTX 5090，为 Video MCP 提供参考驱动音视频生成（FastH3 NVFP4 / Singularity）与 2K IC 潜空间重生成能力。
 type: application
-version: 0.1.3
-appVersion: 0.1.38
+version: 0.1.4
+appVersion: 0.1.39
 annotations:
   verdantflare.com/app-id: video-minimax-h3-singularity
   verdantflare.com/logo-file: logo.svg
   verdantflare.com/channel-file: channel.yaml
-  verdantflare.com/capabilities: '["video.generate"]'
-  verdantflare.com/models: '["MiniMax H3 Ref2VA · Singularity"]'
-  verdantflare.com/images: '[{"component":"runtime","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-minimax-h3-singularity-v0.1.38"}]'
+  verdantflare.com/capabilities: '["video.generate","video.regenerate_2k"]'
+  verdantflare.com/models: '["MiniMax H3 Ref2VA · Singularity","Open-H3-Regenerate-2K-IC"]'
+  verdantflare.com/images: '[{"component":"runtime","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-minimax-h3-singularity-v0.1.39"}]'
