@@ -1,5 +1,5 @@
 appId: image-moss
-appVersion: 0.2.2
+appVersion: 0.2.3
 workloadName: image-moss
 replicas: 1
 station: {}
