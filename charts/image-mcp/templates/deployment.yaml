@@ -23,7 +23,7 @@ metadata:
     app.kubernetes.io/component: api
     app.kubernetes.io/name: image-mcp-server
     app.kubernetes.io/part-of: verdantflare-image
-    app.kubernetes.io/version: 0.2.16
+    app.kubernetes.io/version: {{ .Values.appVersion | default .Chart.AppVersion | quote }}
     apps.verdantflare.com/brand: vf
     apps.verdantflare.com/group: image
     apps.verdantflare.com/managed: 'true'
@@ -47,13 +47,17 @@ spec:
       containers:
       - env:
         - name: SERVICE_VERSION
-          value: v0.2.37
+          value: {{ printf "v%s" (.Values.appVersion | default .Chart.AppVersion) | quote }}
         - name: MOSS_IMAGE_API_URL
-          value: {{ (dig "mossImageApiUrl" (printf "http://image-moss-api.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+          value: {{ (dig "mossImageApiUrl" (printf "http://image-moss.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: IMAGE_FACE_FUSION_API_URL
+          value: {{ (dig "faceFusionApiUrl" (printf "http://image-face-fusion.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: MOSS_GPU_LEASE_NAME
           value: gpu-task-moss-image
         - name: MOSS_GPU_DEPLOYMENT_NAME
-          value: image-moss-api
+          value: {{ (dig "mossGpuDeploymentName" "image-moss" (.Values.services | default dict)) | quote }}
+        - name: MOSS_GPU_TASK_DEPLOYMENT
+          value: {{ (dig "mossGpuDeploymentName" "image-moss" (.Values.services | default dict)) | quote }}
         - name: MOSS_GPU_NAMESPACE
           value: {{ .Release.Namespace | quote }}
         - name: XAI_IMAGE_ENABLED

@@ -14,12 +14,14 @@ DEFAULT_STATION_CHARTS=(
   google
   grok
   higgsfield
+  image-face-fusion
   image-mcp
-  image-moss-api
+  image-moss
   music-mcp
   network
   project
   resources
+  speech-mcp
   video-mcp
   video-minimax-h3-fasth3
   video-minimax-h3-regenerate-2k
