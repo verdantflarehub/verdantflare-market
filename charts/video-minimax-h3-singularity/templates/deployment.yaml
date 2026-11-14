@@ -23,7 +23,7 @@ metadata:
     app.kubernetes.io/component: engine
     app.kubernetes.io/name: video-minimax-h3-singularity
     app.kubernetes.io/part-of: verdantflare-video
-    app.kubernetes.io/version: {{ .Values.appVersion | default "0.1.39" | quote }}
+    app.kubernetes.io/version: {{ .Values.appVersion | default "0.1.40" | quote }}
     apps.verdantflare.com/brand: minimax
     apps.verdantflare.com/group: video
     apps.verdantflare.com/managed: 'true'
@@ -34,7 +34,7 @@ metadata:
     verdantflare.io/route: h3-singularity
 spec:
   progressDeadlineSeconds: 600
-  replicas: {{ .Values.replicas | default 1 }}
+  replicas: {{ if kindIs "invalid" .Values.replicas }}1{{ else }}{{ .Values.replicas }}{{ end }}
   revisionHistoryLimit: 10
   selector:
     matchLabels:
@@ -106,10 +106,6 @@ spec:
           value: '64'
         - name: SINGULARITY_TASK_ROOT
           value: /data/projects/singularity/tasks
-        - name: SINGULARITY_ARTIFACT_ROOT
-          value: {{ (dig "artifactRoot" "/source/video" (.Values.runtime | default dict)) | quote }}
-        - name: SINGULARITY_DEFAULT_QUALITY_PROFILE
-          value: {{ (dig "defaultQualityProfile" "fasth3-nvfp4" (.Values.runtime | default dict)) | quote }}
         - name: SINGULARITY_MIN_FREE_VRAM_MIB
           value: {{ (dig "minFreeVramMib" "28672" (.Values.runtime | default dict)) | quote }}
         - name: SINGULARITY_MODEL_ENDPOINT
@@ -117,7 +113,7 @@ spec:
         - name: SINGULARITY_MODEL_DOWNLOAD_WORKERS
           value: '16'
         - name: SINGULARITY_RUNTIME_VERSION
-          value: {{ printf "video-minimax-h3-singularity-v%s" (.Values.appVersion | default "0.1.39") | quote }}
+          value: {{ printf "video-minimax-h3-singularity-v%s" (.Values.appVersion | default "0.1.40") | quote }}
         - name: SINGULARITY_RUNTIME_TOKEN
           valueFrom:
             secretKeyRef:
@@ -169,11 +165,9 @@ spec:
         volumeMounts:
         - mountPath: /models/MiniMax-H3
           name: models
+          readOnly: true
         - mountPath: /data/projects
           name: projects
-        - mountPath: /source
-          name: projects
-          readOnly: true
         - mountPath: /etc/verdantflare/channel.yaml
           name: channel-metadata
           readOnly: true

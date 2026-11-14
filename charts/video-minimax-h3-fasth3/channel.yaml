@@ -1,0 +1,12 @@
+schemaVersion: 1
+appId: video-minimax-h3-fasth3
+providerId: fasth3
+displayName: MiniMax H3 · FastH3
+category: local-channel
+version: 0.1.0
+logo: logo.svg
+capabilities:
+- video.generate
+service:
+  name: video-minimax-h3-fasth3
+  port: 8000

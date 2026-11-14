@@ -1,0 +1,27 @@
+{{- if (dig "enabled" true (.Values.networkPolicy | default dict)) }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Values.workloadName | default "video-minimax-h3-fasth3" }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.workloadName | default "video-minimax-h3-fasth3" }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: {{ (dig "clientName" "video-mcp-server" (.Values.networkPolicy | default dict)) }}
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: verdantflare-station
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: station-runtime
+      ports:
+        - protocol: TCP
+          port: 8000
+{{- end }}

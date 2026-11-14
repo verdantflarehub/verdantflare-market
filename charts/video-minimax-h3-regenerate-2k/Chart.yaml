@@ -1,0 +1,13 @@
+apiVersion: v2
+name: video-minimax-h3-regenerate-2k
+description: 本地 RTX 5090 潜空间 2K 重生成引擎：基于 Open-H3-Regenerate-2K-IC（INT8 convrot + up3 3 步 LoRA）为 Video MCP 提供 2K 重生成能力。
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+annotations:
+  verdantflare.com/app-id: video-minimax-h3-regenerate-2k
+  verdantflare.com/logo-file: logo.svg
+  verdantflare.com/channel-file: channel.yaml
+  verdantflare.com/capabilities: '["video.regenerate_2k"]'
+  verdantflare.com/models: '["Open-H3-Regenerate-2K-IC"]'
+  verdantflare.com/images: '[{"component":"runtime","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-minimax-h3-regenerate-2k-v0.1.0"}]'
