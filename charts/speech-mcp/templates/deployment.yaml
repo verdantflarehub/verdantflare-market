@@ -71,7 +71,7 @@ spec:
             - name: GPU_TASK_ROLE
               value: {{ (dig "role" "indextts2" (.Values.gpuTask | default dict)) | quote }}
             - name: GPU_TASK_DEPLOYMENT
-              value: {{ (dig "deployment" "speech-indextts2-api" (.Values.gpuTask | default dict)) | quote }}
+              value: {{ (dig "deployment" "speech-indextts2" (.Values.gpuTask | default dict)) | quote }}
             - name: GPU_IDLE_SECONDS
               value: {{ (dig "idleSeconds" "600" (.Values.gpuTask | default dict)) | quote }}
             - name: SPEECH_RUNTIME_TOKEN
@@ -114,6 +114,8 @@ spec:
             - name: platform-ca
               mountPath: /etc/speech/platform
               readOnly: true
+            - name: tmp
+              mountPath: /tmp
       volumes:
         - name: platform-ca
           configMap:
@@ -122,3 +124,5 @@ spec:
             items:
               - key: ca.crt
                 path: ca.crt
+        - name: tmp
+          emptyDir: {}

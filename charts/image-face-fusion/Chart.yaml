@@ -1,0 +1,12 @@
+apiVersion: v2
+name: image-face-fusion
+description: Internal FaceFusion runtime with verified model preparation
+type: application
+version: 0.1.0
+appVersion: 0.2.3
+annotations:
+  verdantflare.com/models: '["FaceFusion 3.9.0"]'
+  verdantflare.com/capabilities: '["image.faceswap"]'
+  verdantflare.com/app-id: image-face-fusion
+  verdantflare.com/images: '[{"component": "api", "image": "registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:image-face-fusion-v0.2.3"},
+    {"component": "prepare-models", "image": "registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:image-face-fusion-v0.2.3"}]'

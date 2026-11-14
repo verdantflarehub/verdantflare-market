@@ -1,0 +1,20 @@
+appId: image-face-fusion
+appVersion: 0.2.3
+workloadName: image-face-fusion
+station: {}
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: image-face-fusion-v0.2.3
+  pullPolicy: Always
+runtimeClassName: ''
+nodeSelector: {}
+storage:
+  create: true
+  storageClassName: ''
+  modelsClaim: models-facefusion
+  modelsSize: 20Gi
+  projectsClaim: image-projects
+modelEndpoint: https://hf-mirror.com
+networkPolicy:
+  enabled: true
+  clientName: image-mcp-server

@@ -1,5 +1,5 @@
 appId: music-mcp
-appVersion: 0.10.1
+appVersion: 0.12.5
 namespace: verdantflare-app
 workloadName: music-mcp-server
 station:
@@ -9,13 +9,13 @@ station:
   templateHash: ""
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: music-mcp-server-v0.10.1
+  tag: music-mcp-server-v0.12.5
   pullPolicy: Always
 replicas: 1
 gpuTask:
   serviceAccount: music-mcp-gpu
   role: music3
-  deployment: music-minimax-music3-api
+  deployment: music-minimax-music3
   idleSeconds: "600"
 services:
   etcdEndpoints: http://etcd.verdantflare-station.svc.cluster.local:2379
@@ -25,17 +25,17 @@ services:
   mcpServiceEndpoint: http://music-mcp-server.verdantflare-app.svc.cluster.local:8000/mcp
   mcpHealthEndpoint: http://music-mcp-server.verdantflare-app.svc.cluster.local:8000/health
   allowedHosts: 192.168.1.200:*,127.0.0.1:*,localhost:*,[::1]:*,music-mcp-server:*,music-mcp-server.verdantflare-app:*,music-mcp-server.verdantflare-app.svc.cluster.local:*,*.cluster.local:*
-  music3Url: http://music-minimax-music3-api.verdantflare-app.svc.cluster.local:8000
-  uvr5Url: http://music-uvr5-api.verdantflare-app.svc.cluster.local:8000
+  music3Url: http://music-minimax-music3.verdantflare-app.svc.cluster.local:8000
+  uvr5Url: http://music-uvr5.verdantflare-app.svc.cluster.local:8000
   uvrUrl: http://music-uvr-api.verdantflare-app.svc.cluster.local:8000
-  rvcUrl: http://music-rvc-api.verdantflare-app.svc.cluster.local:8000
+  rvcUrl: http://music-rvc.verdantflare-app.svc.cluster.local:8000
   applioUrl: http://music-applio-api.verdantflare-app.svc.cluster.local:8000
-  lyricsAlignerUrl: http://music-lyrics-aligner-api.verdantflare-app.svc.cluster.local:8000
-  mixerUrl: http://music-audio-mixer-api.verdantflare-app.svc.cluster.local:8000
+  lyricsAlignerUrl: http://music-lyrics-aligner.verdantflare-app.svc.cluster.local:8000
+  mixerUrl: http://music-audio-mixer.verdantflare-app.svc.cluster.local:8000
   matcheringUrl: http://music-matchering-api.verdantflare-app.svc.cluster.local:8000
-  musicEditorUrl: http://music-ace-step-api.verdantflare-app.svc.cluster.local:8001
+  musicEditorUrl: http://music-ace-step.verdantflare-app.svc.cluster.local:8001
   acestep15Url: http://music-acestep15-api.verdantflare-app.svc.cluster.local:8000
-  acestepUrl: http://music-acestep-api.verdantflare-app.svc.cluster.local:8000
+  acestepUrl: http://music-ace-step.verdantflare-app.svc.cluster.local:8000
 storage:
   create: false
   existingClaim: music-projects
