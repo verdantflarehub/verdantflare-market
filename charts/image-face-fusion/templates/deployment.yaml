@@ -72,6 +72,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.uid
+        - name: CONTAINER_ID
+          value: pod-$(POD_UID)-runtime
         {{- if eq (.Values.provider | default "cuda") "cpu" }}
         - name: NVIDIA_VISIBLE_DEVICES
           value: void

@@ -71,6 +71,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.uid
+        - name: CONTAINER_ID
+          value: pod-$(POD_UID)-runtime
         - name: DEPTH_PROJECT_ROOT
           value: /data/depth
         - name: VIDEO_ARTIFACT_ROOT

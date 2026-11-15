@@ -2,7 +2,7 @@ apiVersion: v2
 name: video-minimax-h3-singularity
 description: 本地 RTX 5090 冷备生成引擎：基于 Singularity（du-0 4 步 INT8）为 Video MCP 提供参考驱动音视频生成能力。
 type: application
-version: 0.1.6
+version: 0.1.7
 appVersion: 0.1.41
 annotations:
   verdantflare.com/app-id: video-minimax-h3-singularity

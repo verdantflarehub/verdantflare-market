@@ -70,8 +70,8 @@ spec:
             secretKeyRef:
               key: APP_SERVICE_TOKEN
               name: app-resources-secret
-        image: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:resources-v0.1.7
-        imagePullPolicy: Always
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
         livenessProbe:
           failureThreshold: 3
           initialDelaySeconds: 15
