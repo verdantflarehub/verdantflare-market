@@ -40,6 +40,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: image-mcp-server
+        verdantflare.io/gpu-scheduler-client: 'true'
     spec:
       {{- if and .Values.serviceAccount .Values.serviceAccount.name }}
       serviceAccountName: {{ .Values.serviceAccount.name | quote }}
@@ -54,8 +55,6 @@ spec:
           value: {{ (dig "mossImageApiUrl" (printf "http://image-moss.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: IMAGE_FACE_FUSION_API_URL
           value: {{ (dig "faceFusionApiUrl" (printf "http://image-face-fusion.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
-        - name: MOSS_GPU_TASK_ROLE
-          value: moss-image
         - name: MOSS_GPU_LEASE_NAME
           value: gpu-task-moss-image
         - name: MOSS_GPU_DEPLOYMENT_NAME
@@ -64,6 +63,30 @@ spec:
           value: {{ (dig "mossGpuDeploymentName" "image-moss" (.Values.services | default dict)) | quote }}
         - name: MOSS_GPU_NAMESPACE
           value: {{ .Release.Namespace | quote }}
+        - name: MOSS_GPU_TASK_ROLE
+          value: {{ (dig "role" "moss-image" (.Values.gpuTask | default dict)) | quote }}
+        - name: STATION_GPU_SCHEDULER_URL
+          value: {{ (dig "url" "http://station-runtime.verdantflare-station.svc.cluster.local:5056" (.Values.gpuScheduler | default dict)) | quote }}
+        - name: STATION_GPU_HOLDER_APP_ID
+          value: {{ .Values.appId | default "image-mcp" | quote }}
+        - name: STATION_GPU_PENDING_RELEASES_PATH
+          value: /data/projects/.image_mcp_gpu_pending_releases.json
+        - name: STATION_GPU_SCHEDULER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: {{ (dig "secretName" "image-mcp-gpu-scheduler-auth" (.Values.gpuScheduler | default dict)) | quote }}
+              optional: true
+        - name: IMAGE_RUNTIME_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: gpu-worker-residency-auth
+              optional: true
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
         - name: XAI_IMAGE_ENABLED
           value: 'true'
         - name: XAI_IMAGE_MODEL
@@ -148,6 +171,24 @@ spec:
             secretKeyRef:
               key: IMAGE_GOOGLE_CHANNEL_TOKEN
               name: image-channel-authority
+        - name: STATION_ORGANIZATION_ID
+          value: {{ (dig "organizationId" "01a0fbf9-0a33-7c31-90d0-a51e3b0a9781" (.Values.station | default dict)) | quote }}
+        - name: COMFYUI_INTERNAL_ORIGIN
+          value: {{ (dig "comfyuiInternalOrigin" (printf "http://comfyui-manager.%s.svc.cluster.local:8091" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: COMFYUI_INTERNAL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: app-token
+              name: {{ (dig "comfyuiSecretName" "comfyui-dashboard-access" (.Values.services | default dict)) | quote }}
+              optional: true
+        - name: IMAGE_ARTIFACT_SERVICE_URL
+          value: {{ (dig "artifactServiceUrl" "https://artifact.verdantflare-station.svc.cluster.local:8094" (.Values.services | default dict)) | quote }}
+        - name: IMAGE_ARTIFACT_SERVICE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: IMAGE_ARTIFACT_SERVICE_TOKEN
+              name: {{ (dig "artifactSecretName" "image-artifact-client" (.Values.services | default dict)) | quote }}
+              optional: true
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
         livenessProbe:

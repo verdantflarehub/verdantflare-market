@@ -1,10 +1,10 @@
 appId: video-depth-anything
-appVersion: 0.2.4
+appVersion: 0.2.5
 workloadName: video-depth-anything
 station: {}
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: video-depth-anything-v0.2.4
+  tag: video-depth-anything-v0.2.5
   pullPolicy: Always
 runtimeClassName: ''
 nodeSelector: {}

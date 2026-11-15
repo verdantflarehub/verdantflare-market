@@ -40,6 +40,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: video-mcp-server
+        verdantflare.io/gpu-scheduler-client: 'true'
     spec:
       {{- with (dig "serviceAccount" "" (.Values.gpuTask | default dict)) }}
       serviceAccountName: {{ . | quote }}
@@ -57,6 +58,28 @@ spec:
         - name: GPU_QUEUE_SECONDS
           value: {{ .queueSeconds | default "1200" | quote }}
         {{- end }}
+        - name: STATION_GPU_SCHEDULER_URL
+          value: {{ (dig "url" "http://station-runtime.verdantflare-station.svc.cluster.local:5056" (.Values.gpuScheduler | default dict)) | quote }}
+        - name: STATION_GPU_HOLDER_APP_ID
+          value: {{ .Values.appId | default "video-mcp" | quote }}
+        - name: STATION_GPU_PENDING_RELEASES_PATH
+          value: /data/projects/.video_mcp_gpu_pending_releases.json
+        - name: STATION_GPU_SCHEDULER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: {{ (dig "secretName" "video-mcp-gpu-scheduler-auth" (.Values.gpuScheduler | default dict)) | quote }}
+              optional: true
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        - name: VIDEO_SUPER_RESOLUTION_RUNTIME_URL
+          value: {{ (dig "superResolutionRuntimeUrl" (printf "http://video-super-resolution.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: VIDEO_SR_RUNTIME_VERSION
+          value: video-super-resolution-v0.1.5
+        - name: VIDEO_DEPTH_RUNTIME_URL
+          value: {{ (dig "depthRuntimeUrl" (printf "http://video-depth-anything.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: XAI_BASE_URL
           valueFrom:
             secretKeyRef:
@@ -127,14 +150,26 @@ spec:
         - name: VIDEO_INTERPOLATION_RUNTIME_URL
           value: {{ (dig "interpolationRuntimeUrl" (printf "http://video-frame-interpolation.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: VIDEO_INTERPOLATION_RUNTIME_VERSION
-          value: video-frame-interpolation-v0.2.6
+          value: video-frame-interpolation-v0.2.7
+        - name: VIDEO_RUNTIME_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: gpu-worker-residency-auth
+              optional: true
+        - name: VIDEO_DEPTH_RUNTIME_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: gpu-worker-residency-auth
+              optional: true
         {{- $singularityUrl := dig "h3SingularityRuntimeUrl" (printf "http://video-minimax-h3-singularity.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict) }}
         - name: H3_RUNTIME_URL
           value: {{ (dig "h3RuntimeUrl" (printf "http://video-minimax-h3-fasth3.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: H3_RUNTIME_ROUTE
           value: h3-fasth3
         - name: H3_RUNTIME_ROUTES
-          value: {{ dict "h3-singularity" (dict "url" $singularityUrl "version" "video-minimax-h3-singularity-v0.1.40" "requires_token" true) | toJson | quote }}
+          value: {{ dict "h3-singularity" (dict "url" $singularityUrl "version" "video-minimax-h3-singularity-v0.1.41" "requires_token" true) | toJson | quote }}
         - name: H3_FASTH3_RUNTIME_TOKEN
           valueFrom:
             secretKeyRef:
@@ -148,7 +183,7 @@ spec:
         - name: VIDEO_REGENERATE_2K_RUNTIME_URL
           value: {{ (dig "regenerate2kRuntimeUrl" (printf "http://video-minimax-h3-regenerate-2k.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: VIDEO_REGENERATE_2K_RUNTIME_VERSION
-          value: video-minimax-h3-regenerate-2k-v0.1.0
+          value: video-minimax-h3-regenerate-2k-v0.1.3
         - name: VIDEO_REGENERATE_2K_RUNTIME_TOKEN
           valueFrom:
             secretKeyRef:
@@ -167,7 +202,7 @@ spec:
         - name: MCP_HEALTH_ENDPOINT
           value: {{ (dig "mcpHealthEndpoint" (printf "http://video-mcp-server.%s.svc.cluster.local:8000/health" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: H3_RUNTIME_VERSION
-          value: video-minimax-h3-fasth3-v0.1.0
+          value: video-minimax-h3-fasth3-v0.1.1
         - name: HIGGSFIELD_GATEWAY_URL
           value: {{ (dig "higgsfieldGatewayUrl" (printf "http://higgsfield-channel.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: FAL_GATEWAY_URL
@@ -222,6 +257,14 @@ spec:
           value: {{ (dig "googleChannelUrl" (printf "http://google-channel.%s.svc.cluster.local:8001" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: STATION_ORGANIZATION_ID
           value: {{ (dig "organizationId" "01a0fbf9-0a33-7c31-90d0-a51e3b0a9781" (.Values.station | default dict)) | quote }}
+        - name: COMFYUI_INTERNAL_ORIGIN
+          value: {{ (dig "comfyuiInternalOrigin" (printf "http://comfyui-manager.%s.svc.cluster.local:8091" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: COMFYUI_INTERNAL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: app-token
+              name: {{ (dig "comfyuiSecretName" "comfyui-dashboard-access" (.Values.services | default dict)) | quote }}
+              optional: true
         - name: IMAGE_CHATGPT_CHANNEL_TOKEN
           valueFrom:
             secretKeyRef:

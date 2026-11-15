@@ -22,7 +22,7 @@ metadata:
   labels:
     app.kubernetes.io/name: video-frame-interpolation
     app.kubernetes.io/part-of: verdantflare-video
-    app.kubernetes.io/version: {{ .Values.appVersion | default "0.2.6" | quote }}
+    app.kubernetes.io/version: {{ .Values.appVersion | default "0.2.7" | quote }}
     apps.verdantflare.com/brand: github
     apps.verdantflare.com/group: video
     apps.verdantflare.com/managed: 'true'
@@ -38,6 +38,7 @@ spec:
       labels:
         app.kubernetes.io/name: video-frame-interpolation
         app.kubernetes.io/part-of: verdantflare-video
+        verdantflare.io/gpu-residency-target: 'true'
     spec:
       automountServiceAccountToken: false
       {{- with .Values.nodeSelector }}
@@ -59,6 +60,20 @@ spec:
           value: {{ (dig "maxEdge" "3072" (.Values.runtime | default dict)) | quote }}
         - name: VIDEO_GPU_SHARING_STRATEGY
           value: {{ (dig "gpuSharingStrategy" "time-slicing" (.Values.runtime | default dict)) | quote }}
+        - name: VIDEO_GPU_GRANT_POLICY
+          value: {{ (dig "gpuGrantPolicy" "permissive" (.Values.runtime | default dict)) | quote }}
+        - name: VF_GPU_GUARD_STATE_PATH
+          value: /data/interpolate/.gpu_guard_state.json
+        - name: STATION_GPU_SCHEDULER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: gpu-worker-residency-auth
+              key: token
+              optional: true
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
         ports:
         - name: http
           containerPort: 8000

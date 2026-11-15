@@ -36,6 +36,7 @@ spec:
       labels:
         app.kubernetes.io/name: app-resources
         app.kubernetes.io/part-of: verdantflare
+        verdantflare.io/gpu-scheduler-client: 'true'
     spec:
       automountServiceAccountToken: false
       containers:
@@ -46,6 +47,14 @@ spec:
           value: 0.0.0.0:8000
         - name: STATION_URL
           value: {{ (dig "stationCoreUrl" "http://station-core.verdantflare-station.svc.cluster.local:5050" (.Values.services | default dict)) | quote }}
+        - name: STATION_GPU_SCHEDULER_URL
+          value: {{ (dig "url" "http://station-runtime.verdantflare-station.svc.cluster.local:5056" (.Values.gpuScheduler | default dict)) | quote }}
+        - name: STATION_GPU_SCHEDULER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: {{ (dig "secretName" "resources-gpu-scheduler-auth" (.Values.gpuScheduler | default dict)) | quote }}
+              optional: true
         - name: STATION_ID
           valueFrom:
             secretKeyRef:

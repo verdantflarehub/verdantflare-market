@@ -1,5 +1,5 @@
 appId: music-mcp
-appVersion: 0.12.5
+appVersion: 0.12.6
 namespace: verdantflare-app
 workloadName: music-mcp-server
 station:
@@ -9,7 +9,7 @@ station:
   templateHash: ""
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: music-mcp-server-v0.12.5
+  tag: music-mcp-server-v0.12.6
   pullPolicy: Always
 replicas: 1
 gpuTask:
@@ -17,6 +17,9 @@ gpuTask:
   role: music3
   deployment: music-minimax-music3
   idleSeconds: "600"
+gpuScheduler:
+  url: http://station-runtime.verdantflare-station.svc.cluster.local:5056
+  secretName: music-mcp-gpu-scheduler-auth
 services:
   etcdEndpoints: http://etcd.verdantflare-station.svc.cluster.local:2379
   projectServiceUrl: https://app-project.verdantflare-app.svc.cluster.local:8443

@@ -42,6 +42,7 @@ spec:
       labels:
         <<: *selectorLabels
         app.kubernetes.io/part-of: verdantflare-image
+        verdantflare.io/gpu-residency-target: 'true'
     spec:
       automountServiceAccountToken: false
       {{- with .Values.runtimeClassName }}
@@ -82,6 +83,20 @@ spec:
           value: "8188"
         - name: TRITON_CACHE_DIR
           value: /tmp/triton
+        - name: IMAGE_GPU_GRANT_POLICY
+          value: {{ .Values.gpuGrantPolicy | default "permissive" | quote }}
+        - name: VF_GPU_GUARD_STATE_PATH
+          value: /var/lib/verdantflare-guard/gpu_guard_state.json
+        - name: IMAGE_RUNTIME_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: gpu-worker-residency-auth
+              key: token
+              optional: true
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
         ports:
         - name: http
           containerPort: 8000
@@ -120,6 +135,8 @@ spec:
           readOnly: true
         - name: dshm
           mountPath: /dev/shm
+        - name: guard-state
+          mountPath: /var/lib/verdantflare-guard
       volumes:
       - name: models
         persistentVolumeClaim:
@@ -128,6 +145,9 @@ spec:
         emptyDir:
           medium: Memory
           sizeLimit: 8Gi
+      - name: guard-state
+        emptyDir:
+          sizeLimit: 64Mi
       terminationGracePeriodSeconds: 60
       {{- with .Values.nodeSelector }}
       nodeSelector:

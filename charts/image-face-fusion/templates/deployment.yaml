@@ -17,7 +17,9 @@ spec:
       app.kubernetes.io/name: {{ .Values.workloadName | default "image-face-fusion" }}
   template:
     metadata:
-      labels: *id001
+      labels:
+        <<: *id001
+        verdantflare.io/gpu-residency-target: 'true'
     spec:
       automountServiceAccountToken: false
       {{- with .Values.runtimeClassName }}
@@ -56,6 +58,20 @@ spec:
         - *id002
         - name: FACEFUSION_PROVIDER
           value: {{ .Values.provider | default "cuda" | quote }}
+        - name: IMAGE_GPU_GRANT_POLICY
+          value: {{ .Values.gpuGrantPolicy | default "permissive" | quote }}
+        - name: VF_GPU_GUARD_STATE_PATH
+          value: /data/projects/.face_fusion_gpu_guard_state.json
+        - name: IMAGE_RUNTIME_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: gpu-worker-residency-auth
+              key: token
+              optional: true
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
         {{- if eq (.Values.provider | default "cuda") "cpu" }}
         - name: NVIDIA_VISIBLE_DEVICES
           value: void

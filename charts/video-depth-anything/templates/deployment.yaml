@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/name: video-depth-anything
-    app.kubernetes.io/version: 0.2.4
+    app.kubernetes.io/version: {{ .Values.appVersion | default "0.2.5" | quote }}
     apps.verdantflare.com/managed: 'true'
 spec:
   replicas: 1
@@ -17,7 +17,9 @@ spec:
       app.kubernetes.io/name: video-depth-anything
   template:
     metadata:
-      labels: *id001
+      labels:
+        <<: *id001
+        verdantflare.io/gpu-residency-target: 'true'
     spec:
       automountServiceAccountToken: false
       {{- with .Values.runtimeClassName }}
@@ -55,6 +57,20 @@ spec:
         - *id002
         - name: DEPTH_GPU_MODE
           value: native
+        - name: DEPTH_GPU_GRANT_POLICY
+          value: {{ .Values.gpuGrantPolicy | default "permissive" | quote }}
+        - name: VF_GPU_GUARD_STATE_PATH
+          value: /data/depth/.gpu_guard_state.json
+        - name: STATION_GPU_SCHEDULER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: gpu-worker-residency-auth
+              key: token
+              optional: true
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
         - name: DEPTH_PROJECT_ROOT
           value: /data/depth
         - name: VIDEO_ARTIFACT_ROOT

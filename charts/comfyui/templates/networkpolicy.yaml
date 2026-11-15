@@ -31,6 +31,12 @@ spec:
       podSelector:
         matchLabels:
           app.kubernetes.io/name: station-core
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: image-mcp-server
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: video-mcp-server
     ports:
     - protocol: TCP
       port: 8091
@@ -55,6 +61,25 @@ spec:
     ports:
     - protocol: TCP
       port: 5055
+    - protocol: TCP
+      port: 5056
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: verdantflare-station
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: station-artifact
+    ports:
+    - protocol: TCP
+      port: 8094
+  - to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: app-project
+    ports:
+    - protocol: TCP
+      port: 8443
   - to:
     - podSelector:
         matchExpressions:
@@ -110,5 +135,49 @@ spec:
     - protocol: TCP
       port: 8188
   egress: []
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: comfyui-managed-gpu-workers-scheduler
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchExpressions:
+    - key: station.verdantflare.com/instance-id
+      operator: Exists
+    - key: station.verdantflare.com/start-operation-id
+      operator: Exists
+    - key: app.kubernetes.io/name
+      operator: DoesNotExist
+    - key: verdantflare.io/gpu-scheduler-client
+      operator: In
+      values:
+      - "true"
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: verdantflare-station
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: station-runtime
+    ports:
+    - protocol: TCP
+      port: 5056
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
 {{- end }}
 

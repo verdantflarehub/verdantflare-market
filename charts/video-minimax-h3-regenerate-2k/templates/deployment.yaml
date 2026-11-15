@@ -48,6 +48,7 @@ spec:
         app.kubernetes.io/part-of: verdantflare-video
         verdantflare.io/channel: regenerate-2k
         verdantflare.io/gpu-device: rtx-5090
+        verdantflare.io/gpu-residency-target: 'true'
         verdantflare.io/route: h3-regenerate-2k
     spec:
       automountServiceAccountToken: false
@@ -66,7 +67,7 @@ spec:
         - name: REGENERATE_2K_MIN_FREE_VRAM_MIB
           value: {{ (dig "minFreeVramMib" "26624" (.Values.runtime | default dict)) | quote }}
         - name: REGENERATE_2K_RUNTIME_VERSION
-          value: "video-minimax-h3-regenerate-2k-v0.1.0"
+          value: {{ printf "video-minimax-h3-regenerate-2k-v%s" (.Values.appVersion | default "0.1.3") | quote }}
         - name: REGENERATE_2K_RUNTIME_TOKEN
           valueFrom:
             secretKeyRef:
@@ -74,6 +75,20 @@ spec:
               name: video-mcp-auth
         - name: PYTORCH_CUDA_ALLOC_CONF
           value: expandable_segments:True
+        - name: VIDEO_GPU_GRANT_POLICY
+          value: {{ (dig "gpuGrantPolicy" "permissive" (.Values.runtime | default dict)) | quote }}
+        - name: VF_GPU_GUARD_STATE_PATH
+          value: /data/projects/regenerate-2k/.gpu_guard_state.json
+        - name: STATION_GPU_SCHEDULER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: gpu-worker-residency-auth
+              key: token
+              optional: true
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
         livenessProbe:

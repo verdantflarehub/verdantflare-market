@@ -41,6 +41,7 @@ spec:
       labels:
         app.kubernetes.io/name: music-mcp-server
         app.kubernetes.io/part-of: verdantflare-music
+        verdantflare.io/gpu-scheduler-client: 'true'
     spec:
       {{- with (dig "serviceAccount" "" (.Values.gpuTask | default dict)) }}
       serviceAccountName: {{ . | quote }}
@@ -80,6 +81,28 @@ spec:
         - name: GPU_IDLE_SECONDS
           value: {{ .idleSeconds | default "600" | quote }}
         {{- end }}
+        - name: STATION_GPU_SCHEDULER_URL
+          value: {{ (dig "url" "http://station-runtime.verdantflare-station.svc.cluster.local:5056" (.Values.gpuScheduler | default dict)) | quote }}
+        - name: STATION_GPU_HOLDER_APP_ID
+          value: {{ .Values.appId | default "music-mcp" | quote }}
+        - name: STATION_GPU_PENDING_RELEASES_PATH
+          value: /data/projects/.music_mcp_gpu_pending_releases.json
+        - name: STATION_GPU_SCHEDULER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: {{ (dig "secretName" "music-mcp-gpu-scheduler-auth" (.Values.gpuScheduler | default dict)) | quote }}
+              optional: true
+        - name: MUSIC_RUNTIME_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: gpu-worker-residency-auth
+              optional: true
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
         - name: UVR5_URL
           value: {{ (dig "uvr5Url" (printf "http://music-uvr5.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: RVC_URL

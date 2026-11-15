@@ -67,6 +67,38 @@ spec:
           value: {{ .Values.station.organizationId | quote }}
         - name: COMFYUI_APP_VERSION
           value: {{ .Values.appVersion | quote }}
+        - name: COMFYUI_ENABLE_GPU_PROFILES
+          value: {{ ternary "1" "0" (default false .Values.enableGpuProfiles) | quote }}
+        {{- if (dig "artifactOrigin" "" (.Values.services | default dict)) }}
+        - name: COMFYUI_ARTIFACT_ORIGIN
+          value: {{ .Values.services.artifactOrigin | quote }}
+        {{- end }}
+        - name: COMFYUI_ARTIFACT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: artifact-token
+              name: {{ (dig "secretName" "comfyui-dashboard-access" (.Values.services | default dict)) | quote }}
+              optional: true
+        - name: COMFYUI_ARTIFACT_CA_PEM
+          valueFrom:
+            configMapKeyRef:
+              key: ca.crt
+              name: {{ (dig "projectCaConfigMap" "image-project-ca-v1" (.Values.services | default dict)) | quote }}
+              optional: true
+        {{- if (dig "headlessWorkspaceDir" "" (.Values.services | default dict)) }}
+        - name: COMFYUI_HEADLESS_WORKSPACE_DIR
+          value: {{ .Values.services.headlessWorkspaceDir | quote }}
+        {{- end }}
+        {{- if (dig "headlessWorkerOrigin" "" (.Values.services | default dict)) }}
+        - name: COMFYUI_HEADLESS_WORKER_ORIGIN
+          value: {{ .Values.services.headlessWorkerOrigin | quote }}
+        {{- end }}
+        - name: COMFYUI_HEADLESS_WORKER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: headless-worker-token
+              name: {{ (dig "secretName" "comfyui-dashboard-access" (.Values.services | default dict)) | quote }}
+              optional: true
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
         livenessProbe:

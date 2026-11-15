@@ -1,5 +1,6 @@
 appId: comfyui
-appVersion: "0.1.15"
+appVersion: "0.1.17"
+enableGpuProfiles: false
 namespace: verdantflare-app
 workloadName: comfyui-manager
 station:
@@ -9,9 +10,14 @@ station:
   templateHash: ''
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: comfyui-v0.1.15
+  tag: comfyui-v0.1.17
   pullPolicy: Always
 replicas: 1
+services:
+  artifactOrigin: ""
+  headlessWorkspaceDir: ""
+  secretName: comfyui-dashboard-access
+  projectCaConfigMap: image-project-ca-v1
 storage:
   create: false
   existingClaim: comfyui-app-state

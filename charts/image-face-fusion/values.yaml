@@ -1,10 +1,10 @@
 appId: image-face-fusion
-appVersion: 0.2.4
+appVersion: 0.2.5
 workloadName: image-face-fusion
 station: {}
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: image-face-fusion-v0.2.3
+  tag: image-face-fusion-v0.2.5
   pullPolicy: Always
 runtimeClassName: ''
 nodeSelector: {}

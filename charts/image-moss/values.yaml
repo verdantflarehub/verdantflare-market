@@ -1,11 +1,11 @@
 appId: image-moss
-appVersion: 0.2.4
+appVersion: 0.2.5
 workloadName: image-moss
 replicas: 1
 station: {}
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: image-moss-v0.2.4
+  tag: image-moss-v0.2.5
   pullPolicy: Always
 runtimeClassName: ''
 nodeSelector:

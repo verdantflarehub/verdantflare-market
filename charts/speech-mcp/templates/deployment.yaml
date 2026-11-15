@@ -39,6 +39,7 @@ spec:
       labels:
         app.kubernetes.io/name: speech-mcp-server
         app.kubernetes.io/part-of: verdantflare-speech
+        verdantflare.io/gpu-scheduler-client: "true"
     spec:
       serviceAccountName: {{ (dig "serviceAccount" "speech-mcp-gpu" (.Values.gpuTask | default dict)) | quote }}
       automountServiceAccountToken: true
@@ -74,6 +75,22 @@ spec:
               value: {{ (dig "deployment" "speech-indextts2" (.Values.gpuTask | default dict)) | quote }}
             - name: GPU_IDLE_SECONDS
               value: {{ (dig "idleSeconds" "600" (.Values.gpuTask | default dict)) | quote }}
+            - name: STATION_GPU_SCHEDULER_URL
+              value: {{ (dig "url" "http://station-runtime.verdantflare-station.svc.cluster.local:5056" (.Values.gpuScheduler | default dict)) | quote }}
+            - name: STATION_GPU_HOLDER_APP_ID
+              value: {{ .Values.appId | default "speech-mcp" | quote }}
+            - name: STATION_GPU_PENDING_RELEASES_BACKEND
+              value: postgres
+            - name: STATION_GPU_SCHEDULER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ (dig "secretName" "speech-mcp-gpu-scheduler-auth" (.Values.gpuScheduler | default dict)) | quote }}
+                  key: token
+                  optional: true
+            - name: POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
             - name: SPEECH_RUNTIME_TOKEN
               valueFrom:
                 secretKeyRef:
