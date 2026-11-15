@@ -1,5 +1,5 @@
 appId: video-minimax-h3-regenerate-2k
-appVersion: 0.1.1
+appVersion: 0.1.2
 namespace: verdantflare-app
 workloadName: video-minimax-h3-regenerate-2k
 station:
@@ -17,7 +17,7 @@ networkPolicy:
   clientName: video-mcp-server
 runtime:
   minFreeVramMib: "26624"
-  artifactRoot: /source/video
+  artifactRoot: /data/projects/video
 storage:
   create: false
   existingClaim: models-minimax-h3

@@ -62,7 +62,7 @@ spec:
         - name: REGENERATE_2K_TASK_ROOT
           value: /data/projects/regenerate-2k/tasks
         - name: REGENERATE_2K_ARTIFACT_ROOT
-          value: {{ (dig "artifactRoot" "/source/video" (.Values.runtime | default dict)) | quote }}
+          value: {{ (dig "artifactRoot" "/data/projects/video" (.Values.runtime | default dict)) | quote }}
         - name: REGENERATE_2K_MIN_FREE_VRAM_MIB
           value: {{ (dig "minFreeVramMib" "26624" (.Values.runtime | default dict)) | quote }}
         - name: REGENERATE_2K_RUNTIME_VERSION
@@ -121,9 +121,6 @@ spec:
           readOnly: true
         - mountPath: /data/projects
           name: projects
-        - mountPath: /source
-          name: sources
-          readOnly: true
         - mountPath: /etc/verdantflare/channel.yaml
           name: channel-metadata
           readOnly: true
@@ -142,9 +139,6 @@ spec:
         persistentVolumeClaim:
           claimName: {{ .Values.storage.existingClaim | default "models-minimax-h3" }}
       - name: projects
-        persistentVolumeClaim:
-          claimName: {{ .Values.storage.projectsClaim | default "video-projects" }}
-      - name: sources
         persistentVolumeClaim:
           claimName: {{ .Values.storage.projectsClaim | default "video-projects" }}
       - configMap:
