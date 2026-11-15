@@ -66,7 +66,7 @@ spec:
         - name: REGENERATE_2K_MIN_FREE_VRAM_MIB
           value: {{ (dig "minFreeVramMib" "26624" (.Values.runtime | default dict)) | quote }}
         - name: REGENERATE_2K_RUNTIME_VERSION
-          value: {{ printf "video-minimax-h3-regenerate-2k-v%s" (.Values.appVersion | default "0.1.0") | quote }}
+          value: "video-minimax-h3-regenerate-2k-v0.1.0"
         - name: REGENERATE_2K_RUNTIME_TOKEN
           valueFrom:
             secretKeyRef:
@@ -122,7 +122,7 @@ spec:
         - mountPath: /data/projects
           name: projects
         - mountPath: /source
-          name: projects
+          name: sources
           readOnly: true
         - mountPath: /etc/verdantflare/channel.yaml
           name: channel-metadata
@@ -142,6 +142,9 @@ spec:
         persistentVolumeClaim:
           claimName: {{ .Values.storage.existingClaim | default "models-minimax-h3" }}
       - name: projects
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.projectsClaim | default "video-projects" }}
+      - name: sources
         persistentVolumeClaim:
           claimName: {{ .Values.storage.projectsClaim | default "video-projects" }}
       - configMap:

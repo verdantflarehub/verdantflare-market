@@ -1,5 +1,5 @@
 appId: video-minimax-h3-regenerate-2k
-appVersion: 0.1.0
+appVersion: 0.1.1
 namespace: verdantflare-app
 workloadName: video-minimax-h3-regenerate-2k
 station:
