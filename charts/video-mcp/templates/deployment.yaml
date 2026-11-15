@@ -183,7 +183,7 @@ spec:
         - name: VIDEO_REGENERATE_2K_RUNTIME_URL
           value: {{ (dig "regenerate2kRuntimeUrl" (printf "http://video-minimax-h3-regenerate-2k.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: VIDEO_REGENERATE_2K_RUNTIME_VERSION
-          value: video-minimax-h3-regenerate-2k-v0.1.3
+          value: video-minimax-h3-regenerate-2k-v0.1.4
         - name: VIDEO_REGENERATE_2K_RUNTIME_TOKEN
           valueFrom:
             secretKeyRef:
