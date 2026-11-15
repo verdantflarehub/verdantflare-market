@@ -2,10 +2,10 @@ apiVersion: v2
 name: image-mcp
 description: 生成图像、编辑画面与局部重绘。
 type: application
-version: 0.1.10
-appVersion: 0.2.62
+version: 0.1.11
+appVersion: 0.2.63
 annotations:
   verdantflare.com/app-id: image-mcp
   verdantflare.com/capabilities: '["image.generate","image.edit","image.inpaint","image.faceswap","image.rate_content"]'
   verdantflare.com/models: '["MOSS Image"]'
-  verdantflare.com/images: '[{"component":"api","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:image-mcp-server-v0.2.62"}]'
+  verdantflare.com/images: '[{"component":"api","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:image-mcp-server-v0.2.63"}]'
