@@ -16,7 +16,7 @@ networkPolicy:
   enabled: true
   clientName: video-mcp-server
 runtime:
-  minFreeVramMib: "28672"
+  minFreeVramMib: "26624"
   artifactRoot: /source/video
 storage:
   create: false

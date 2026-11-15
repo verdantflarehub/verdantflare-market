@@ -1,0 +1,43 @@
+{{- if or .Values.storage.create (dig "create" false (.Values.persistence | default dict)) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.storage.modelsClaim | default "video-rife-models" }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    helm.sh/resource-policy: keep
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+  labels:
+    app.kubernetes.io/name: video-frame-interpolation
+    app.kubernetes.io/part-of: verdantflare-video
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.storage.storageClassName }}
+  storageClassName: {{ .Values.storage.storageClassName | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.modelsSize | default "1Gi" | quote }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.storage.tasksClaim | default "video-rife-tasks" }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    helm.sh/resource-policy: keep
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+  labels:
+    app.kubernetes.io/name: video-frame-interpolation
+    app.kubernetes.io/part-of: verdantflare-video
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.storage.storageClassName }}
+  storageClassName: {{ .Values.storage.storageClassName | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.tasksSize | default "50Gi" | quote }}
+{{- end }}

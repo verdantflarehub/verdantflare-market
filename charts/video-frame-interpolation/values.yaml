@@ -1,0 +1,37 @@
+appId: video-frame-interpolation
+appVersion: 0.2.6
+namespace: verdantflare-app
+workloadName: video-frame-interpolation
+station:
+  stationId: ""
+  organizationId: ""
+  installationId: ""
+  templateHash: ""
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: video-frame-interpolation-v0.2.6
+  pullPolicy: Always
+replicas: 1
+runtime:
+  maxEdge: "3072"
+  gpuSharingStrategy: "time-slicing"
+  artifactRoot: /source/video
+nodeSelector:
+  nvidia.com/gpu.present: "true"
+  nvidia.com/gpu.sharing-strategy: time-slicing
+networkPolicy:
+  enabled: true
+  clientName: video-mcp-server
+storage:
+  create: false
+  storageClassName: local-nvme
+  modelsClaim: video-rife-models
+  modelsSize: 1Gi
+  tasksClaim: video-rife-tasks
+  tasksSize: 50Gi
+  projectsClaim: video-projects
+persistence:
+  create: false
+  storageClassName: local-nvme
+  size: 50Gi
+pvcs: []

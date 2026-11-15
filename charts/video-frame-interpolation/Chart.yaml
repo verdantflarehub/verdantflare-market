@@ -1,0 +1,11 @@
+apiVersion: v2
+name: video-frame-interpolation
+description: 本地 RTX 5090 视频插帧服务：基于 Practical-RIFE IFNet 为 Video MCP 提供 24→48 FPS 二倍补帧与最高 3072 2K 画幅支持。
+type: application
+version: 0.1.0
+appVersion: 0.2.6
+annotations:
+  verdantflare.com/app-id: video-frame-interpolation
+  verdantflare.com/capabilities: '["video.interpolate"]'
+  verdantflare.com/models: '["RIFE IFNet"]'
+  verdantflare.com/images: '[{"component":"api","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-frame-interpolation-v0.2.6"}]'

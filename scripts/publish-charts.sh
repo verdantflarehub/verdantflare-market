@@ -22,6 +22,7 @@ DEFAULT_STATION_CHARTS=(
   project
   resources
   speech-mcp
+  video-frame-interpolation
   video-mcp
   video-minimax-h3-fasth3
   video-minimax-h3-regenerate-2k
