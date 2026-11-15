@@ -1,0 +1,154 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: video-minimax-h3-fasth3
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+    {{- if .Values.station }}
+    {{- if .Values.station.stationId }}
+    station.verdantflare.com/station-id: {{ .Values.station.stationId | quote }}
+    {{- end }}
+    {{- if .Values.station.organizationId }}
+    station.verdantflare.com/organization-id: {{ .Values.station.organizationId | quote }}
+    {{- end }}
+    {{- if .Values.station.installationId }}
+    station.verdantflare.com/installation-id: {{ .Values.station.installationId | quote }}
+    {{- end }}
+    {{- if .Values.station.templateHash }}
+    station.verdantflare.com/template-hash: {{ .Values.station.templateHash | quote }}
+    {{- end }}
+    {{- end }}
+  labels:
+    app.kubernetes.io/component: engine
+    app.kubernetes.io/name: video-minimax-h3-fasth3
+    app.kubernetes.io/part-of: verdantflare-video
+    app.kubernetes.io/version: {{ .Values.appVersion | default "0.1.0" | quote }}
+    apps.verdantflare.com/brand: minimax
+    apps.verdantflare.com/group: video
+    apps.verdantflare.com/managed: 'true'
+    verdantflare.io/channel: fasth3
+    verdantflare.io/gpu-device: rtx-5090
+    verdantflare.io/route: h3-fasth3
+spec:
+  progressDeadlineSeconds: 600
+  replicas: {{ if kindIs "invalid" .Values.replicas }}1{{ else }}{{ .Values.replicas }}{{ end }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: video-minimax-h3-fasth3
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        checksum/channel-metadata: {{ .Files.Get "channel.yaml" | sha256sum }}
+      labels:
+        app.kubernetes.io/name: video-minimax-h3-fasth3
+        app.kubernetes.io/part-of: verdantflare-video
+        verdantflare.io/channel: fasth3
+        verdantflare.io/gpu-device: rtx-5090
+        verdantflare.io/route: h3-fasth3
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - env:
+        - name: CHANNEL_METADATA_FILE
+          value: /etc/verdantflare/channel.yaml
+        - name: FASTH3_REFERENCE_BASE_URL
+          value: {{ .Values.referenceBaseUrl | default (printf "http://video-mcp-server.%s.svc.cluster.local:8000" .Release.Namespace) | quote }}
+        - name: FASTH3_MODEL_ROOT
+          value: /models/MiniMax-H3
+        - name: H3_BASE_MODEL_ROOT
+          value: /models/MiniMax-H3
+        - name: FASTH3_COMPONENT_MODEL_ROOT
+          value: /models/MiniMax-H3/singularity
+        - name: FASTH3_AUDIO_VAE_NAME
+          value: minimax_h3_audio_vae_fp32.safetensors
+        - name: FASTH3_TASK_ROOT
+          value: /data/projects/fasth3/tasks
+        - name: FASTH3_MIN_FREE_VRAM_MIB
+          value: {{ (dig "minFreeVramMib" "28672" (.Values.runtime | default dict)) | quote }}
+        - name: FASTH3_RUNTIME_VERSION
+          value: {{ printf "video-minimax-h3-fasth3-v%s" (.Values.appVersion | default "0.1.0") | quote }}
+        - name: FASTH3_RUNTIME_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: VIDEO_MCP_BEARER_TOKEN
+              name: video-mcp-auth
+        - name: PYTORCH_CUDA_ALLOC_CONF
+          value: expandable_segments:True
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /live
+            port: http
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: runtime
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: http
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          limits:
+            nvidia.com/gpu: '1'
+          requests:
+            nvidia.com/gpu: '1'
+        startupProbe:
+          failureThreshold: 2880
+          httpGet:
+            path: /live
+            port: http
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 5
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /models/MiniMax-H3
+          name: models
+          readOnly: true
+        - mountPath: /data/projects
+          name: projects
+        - mountPath: /etc/verdantflare/channel.yaml
+          name: channel-metadata
+          readOnly: true
+          subPath: channel.yaml
+        - mountPath: /dev/shm
+          name: shared-memory
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        kubernetes.io/hostname: verdentflare-5090
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: models
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.existingClaim | default "models-minimax-h3" }}
+      - name: projects
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.projectsClaim | default "video-projects" }}
+      - configMap:
+          name: {{ .Values.workloadName | default "video-minimax-h3-fasth3" }}-metadata
+        name: channel-metadata
+      - emptyDir:
+          medium: Memory
+          sizeLimit: 32Gi
+        name: shared-memory

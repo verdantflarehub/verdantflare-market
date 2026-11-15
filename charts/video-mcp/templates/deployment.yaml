@@ -54,6 +54,8 @@ spec:
           value: {{ .role | quote }}
         - name: GPU_IDLE_SECONDS
           value: {{ .idleSeconds | default "600" | quote }}
+        - name: GPU_QUEUE_SECONDS
+          value: {{ .queueSeconds | default "1200" | quote }}
         {{- end }}
         - name: XAI_BASE_URL
           valueFrom:
@@ -123,16 +125,31 @@ spec:
         - name: VIDEO_PROJECT_CA_FILE
           value: /etc/video-project-ca/ca.crt
         - name: VIDEO_INTERPOLATION_RUNTIME_URL
-          value: {{ (dig "interpolationRuntimeUrl" (printf "http://video-frame-interpolation-api.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+          value: {{ (dig "interpolationRuntimeUrl" (printf "http://video-frame-interpolation.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: VIDEO_INTERPOLATION_RUNTIME_VERSION
-          value: video-frame-interpolation-api-v0.2.4
+          value: video-frame-interpolation-v0.2.6
+        {{- $singularityUrl := dig "h3SingularityRuntimeUrl" (printf "http://video-minimax-h3-singularity.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict) }}
         - name: H3_RUNTIME_URL
-          value: {{ (dig "h3RuntimeUrl" (printf "http://video-minimax-h3-singularity.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+          value: {{ (dig "h3RuntimeUrl" (printf "http://video-minimax-h3-fasth3.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: H3_RUNTIME_ROUTE
-          value: h3-singularity
+          value: h3-fasth3
         - name: H3_RUNTIME_ROUTES
-          value: '{}'
+          value: {{ dict "h3-singularity" (dict "url" $singularityUrl "version" "video-minimax-h3-singularity-v0.1.40" "requires_token" true) | toJson | quote }}
+        - name: H3_FASTH3_RUNTIME_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: VIDEO_MCP_BEARER_TOKEN
+              name: video-mcp-auth
         - name: H3_SINGULARITY_RUNTIME_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: VIDEO_MCP_BEARER_TOKEN
+              name: video-mcp-auth
+        - name: VIDEO_REGENERATE_2K_RUNTIME_URL
+          value: {{ (dig "regenerate2kRuntimeUrl" (printf "http://video-minimax-h3-regenerate-2k.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: VIDEO_REGENERATE_2K_RUNTIME_VERSION
+          value: video-minimax-h3-regenerate-2k-v0.1.0
+        - name: VIDEO_REGENERATE_2K_RUNTIME_TOKEN
           valueFrom:
             secretKeyRef:
               key: VIDEO_MCP_BEARER_TOKEN
@@ -150,7 +167,7 @@ spec:
         - name: MCP_HEALTH_ENDPOINT
           value: {{ (dig "mcpHealthEndpoint" (printf "http://video-mcp-server.%s.svc.cluster.local:8000/health" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: H3_RUNTIME_VERSION
-          value: video-minimax-h3-singularity-v0.1.38
+          value: video-minimax-h3-fasth3-v0.1.0
         - name: HIGGSFIELD_GATEWAY_URL
           value: {{ (dig "higgsfieldGatewayUrl" (printf "http://higgsfield-channel.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
         - name: FAL_GATEWAY_URL
@@ -285,25 +302,25 @@ spec:
               items:
               - key: channels.yaml
                 path: channels.yaml
-              name: video-model-channels-v0-1-4
+              name: {{ (dig "channelsConfigMap" "video-model-channels-v0-1-6" (.Values.modelCatalog | default dict)) | quote }}
           - configMap:
               items:
               - key: channel-catalog.yaml
                 path: local/channel-catalog.yaml
               - key: review.yaml
                 path: local/review.yaml
-              name: video-models-local-v0-1-1
+              name: {{ (dig "localConfigMap" "video-models-local-v0-1-3" (.Values.modelCatalog | default dict)) | quote }}
           - configMap:
               items:
               - key: channel-catalog.yaml
                 path: higgsfield/channel-catalog.yaml
               - key: review.yaml
                 path: higgsfield/review.yaml
-              name: video-models-higgsfield-v0-1-2
+              name: {{ (dig "higgsfieldConfigMap" "video-models-higgsfield-v0-1-2" (.Values.modelCatalog | default dict)) | quote }}
           - configMap:
               items:
               - key: channel-catalog.yaml
                 path: fal/channel-catalog.yaml
               - key: review.yaml
                 path: fal/review.yaml
-              name: video-models-fal-v0-1-1
+              name: {{ (dig "falConfigMap" "video-models-fal-v0-1-1" (.Values.modelCatalog | default dict)) | quote }}

@@ -1,0 +1,12 @@
+schemaVersion: 1
+appId: video-minimax-h3-regenerate-2k
+providerId: regenerate-2k
+displayName: H3-Regenerate-2K
+category: local-channel
+version: 0.1.0
+logo: logo.svg
+capabilities:
+- video.regenerate_2k
+service:
+  name: video-minimax-h3-regenerate-2k
+  port: 8000

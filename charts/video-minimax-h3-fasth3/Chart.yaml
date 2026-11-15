@@ -1,0 +1,13 @@
+apiVersion: v2
+name: video-minimax-h3-fasth3
+description: 本地 RTX 5090 参考驱动音视频生成主引擎：基于 FastH3 Omni NVFP4 QAD（8 NFE）为 Video MCP 提供 768p @ 24 FPS 生成能力。
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+annotations:
+  verdantflare.com/app-id: video-minimax-h3-fasth3
+  verdantflare.com/logo-file: logo.svg
+  verdantflare.com/channel-file: channel.yaml
+  verdantflare.com/capabilities: '["video.generate"]'
+  verdantflare.com/models: '["MiniMax H3 Ref2VA · FastH3"]'
+  verdantflare.com/images: '[{"component":"runtime","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-minimax-h3-fasth3-v0.1.0"}]'

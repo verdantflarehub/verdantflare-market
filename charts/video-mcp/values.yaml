@@ -3,7 +3,7 @@ channelDiscovery:
   etcdUrl: http://etcd.verdantflare-station.svc.cluster.local:2379
   scopeId: ""
   allowUnverified: []
-appVersion: 0.17.65
+appVersion: 0.17.70
 namespace: verdantflare-app
 workloadName: video-mcp-server
 station:
@@ -13,21 +13,29 @@ station:
   templateHash: ''
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: video-mcp-server-v0.17.65
+  tag: video-mcp-server-v0.17.70
   pullPolicy: Always
 replicas: 1
 gpuTask:
   serviceAccount: video-mcp-gpu
   role: h3
   idleSeconds: "600"
+  queueSeconds: "1200"
+modelCatalog:
+  channelsConfigMap: video-model-channels-v0-1-6
+  localConfigMap: video-models-local-v0-1-3
+  higgsfieldConfigMap: video-models-higgsfield-v0-1-2
+  falConfigMap: video-models-fal-v0-1-1
 services:
   etcdEndpoints: http://etcd.verdantflare-station.svc.cluster.local:2379
   artifactServiceUrl: https://artifact.verdantflare-station.svc.cluster.local:8094
   projectServiceUrl: https://app-project.verdantflare-app.svc.cluster.local:8443
   projectGrpcAddr: app-project.verdantflare-app.svc.cluster.local:9092
   networkProxyUrl: http://app-network-egress.verdantflare-app.svc.cluster.local:3128
-  interpolationRuntimeUrl: http://video-frame-interpolation-api.verdantflare-app.svc.cluster.local:8000
-  h3RuntimeUrl: http://video-minimax-h3-singularity.verdantflare-app.svc.cluster.local:8000
+  interpolationRuntimeUrl: http://video-frame-interpolation.verdantflare-app.svc.cluster.local:8000
+  h3RuntimeUrl: http://video-minimax-h3-fasth3.verdantflare-app.svc.cluster.local:8000
+  h3SingularityRuntimeUrl: http://video-minimax-h3-singularity.verdantflare-app.svc.cluster.local:8000
+  regenerate2kRuntimeUrl: http://video-minimax-h3-regenerate-2k.verdantflare-app.svc.cluster.local:8000
   higgsfieldGatewayUrl: http://higgsfield-channel.verdantflare-app.svc.cluster.local:8000
   falGatewayUrl: http://fal-channel.verdantflare-app.svc.cluster.local:8001
   runtimeBaseUrl: http://video-mcp-server.verdantflare-app.svc.cluster.local:8000
