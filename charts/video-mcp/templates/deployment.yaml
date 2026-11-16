@@ -52,7 +52,9 @@ spec:
           value: {{ printf "v%s" .Values.appVersion | quote }}
         {{- with .Values.gpuTask }}
         - name: GPU_TASK_ROLE
+          {{- if .role }}
           value: {{ .role | quote }}
+          {{- end }}
         - name: GPU_IDLE_SECONDS
           value: {{ .idleSeconds | default "600" | quote }}
         - name: GPU_QUEUE_SECONDS
