@@ -1,5 +1,5 @@
 appId: speech-mcp
-appVersion: 0.2.6
+appVersion: 0.2.9
 namespace: verdantflare-app
 workloadName: speech-mcp-server
 station:
@@ -9,7 +9,7 @@ station:
   templateHash: ""
 image:
   repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
-  tag: speech-mcp-server-v0.2.6
+  tag: speech-mcp-server-v0.2.9
   pullPolicy: Always
 replicas: 1
 gpuTask:
