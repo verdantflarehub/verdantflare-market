@@ -69,8 +69,11 @@ spec:
                   name: etcd-client-speech
                   key: active-password
                   optional: true
+            {{- $gpuRole := (dig "role" "" (.Values.gpuTask | default dict)) }}
+            {{- if $gpuRole }}
             - name: GPU_TASK_ROLE
-              value: {{ (dig "role" "indextts2" (.Values.gpuTask | default dict)) | quote }}
+              value: {{ $gpuRole | quote }}
+            {{- end }}
             - name: GPU_TASK_DEPLOYMENT
               value: {{ (dig "deployment" "speech-indextts2" (.Values.gpuTask | default dict)) | quote }}
             - name: GPU_IDLE_SECONDS
