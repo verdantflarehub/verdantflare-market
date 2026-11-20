@@ -32,7 +32,7 @@ metadata:
     verdantflare.io/route: h3-regenerate-2k
 spec:
   progressDeadlineSeconds: 600
-  replicas: {{ if kindIs "invalid" .Values.replicas }}1{{ else }}{{ .Values.replicas }}{{ end }}
+  replicas: {{ if kindIs "invalid" .Values.replicas }}0{{ else }}{{ .Values.replicas }}{{ end }}
   revisionHistoryLimit: 10
   selector:
     matchLabels:

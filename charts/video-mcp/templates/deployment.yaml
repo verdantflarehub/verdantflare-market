@@ -191,6 +191,15 @@ spec:
             secretKeyRef:
               key: VIDEO_MCP_BEARER_TOKEN
               name: video-mcp-auth
+        - name: VIDEO_CHARACTER_SWAP_RUNTIME_URL
+          value: {{ (dig "characterSwapRuntimeUrl" (printf "http://video-minimax-h3-character-swap.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: VIDEO_CHARACTER_SWAP_RUNTIME_VERSION
+          value: video-minimax-h3-character-swap-v0.1.0
+        - name: VIDEO_CHARACTER_SWAP_RUNTIME_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: VIDEO_MCP_BEARER_TOKEN
+              name: video-mcp-auth
         - name: ETCD_ENDPOINTS
           value: {{ (dig "etcdEndpoints" "http://etcd.verdantflare-station.svc.cluster.local:2379" (.Values.services | default dict)) | quote }}
         - name: CHANNEL_DISCOVERY_ETCD_URL

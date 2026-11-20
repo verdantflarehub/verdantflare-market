@@ -26,6 +26,7 @@ DEFAULT_STATION_CHARTS=(
   video-mcp
   video-minimax-h3-fasth3
   video-minimax-h3-regenerate-2k
+  video-minimax-h3-character-swap
   video-minimax-h3-singularity
 )
 
