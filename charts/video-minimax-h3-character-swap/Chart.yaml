@@ -2,12 +2,12 @@ apiVersion: v2
 name: video-minimax-h3-character-swap
 description: H3 Ref2VA INT8 single-character video replacement runtime.
 type: application
-version: 0.1.0
-appVersion: 0.1.0
+version: 0.1.1
+appVersion: 0.1.1
 annotations:
   verdantflare.com/app-id: video-minimax-h3-character-swap
   verdantflare.com/logo-file: logo.svg
   verdantflare.com/channel-file: channel.yaml
   verdantflare.com/capabilities: '["video.character_swap"]'
   verdantflare.com/models: '["H3-Character-Swap"]'
-  verdantflare.com/images: '[{"component":"runtime","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-minimax-h3-character-swap-v0.1.0"}]'
+  verdantflare.com/images: '[{"component":"runtime","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-minimax-h3-character-swap-v0.1.1"}]'
