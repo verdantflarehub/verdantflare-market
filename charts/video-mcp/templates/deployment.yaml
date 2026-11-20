@@ -239,6 +239,22 @@ spec:
             secretKeyRef:
               key: HIGGSFIELD_INTERNAL_TOKEN
               name: video-higgsfield-binding
+        - name: GOOGLE_FLOW_GATEWAY_URL
+          value: {{ (dig "googleFlowGatewayUrl" (printf "http://google-flow-channel.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: GOOGLE_FLOW_ENABLED
+          value: {{ (dig "googleFlowEnabled" "true" (.Values.services | default dict)) | quote }}
+        - name: GOOGLE_FLOW_ORGANIZATION_ID
+          valueFrom:
+            secretKeyRef:
+              key: GOOGLE_FLOW_ORGANIZATION_ID
+              name: google-flow-binding
+              optional: true
+        - name: GOOGLE_FLOW_INTERNAL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: GOOGLE_FLOW_INTERNAL_TOKEN
+              name: google-flow-binding
+              optional: true
         - name: VIDEO_ARTIFACT_SERVICE_URL
           value: {{ (dig "artifactServiceUrl" "https://artifact.verdantflare-station.svc.cluster.local:8094" (.Values.services | default dict)) | quote }}
         - name: VIDEO_ARTIFACT_SERVICE_TOKEN
@@ -378,3 +394,11 @@ spec:
               - key: review.yaml
                 path: fal/review.yaml
               name: {{ (dig "falConfigMap" "video-models-fal-v0-1-1" (.Values.modelCatalog | default dict)) | quote }}
+          - configMap:
+              items:
+              - key: channel-catalog.yaml
+                path: google-flow/channel-catalog.yaml
+              - key: review.yaml
+                path: google-flow/review.yaml
+              name: {{ (dig "googleFlowConfigMap" "video-models-google-flow-v0-1-0" (.Values.modelCatalog | default dict)) | quote }}
+              optional: true

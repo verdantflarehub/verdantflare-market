@@ -12,6 +12,7 @@ DEFAULT_STATION_CHARTS=(
   comfyui
   fal
   google
+  google-flow
   grok
   higgsfield
   image-face-fusion

@@ -1,0 +1,57 @@
+appId: google-flow
+appVersion: 0.1.0
+namespace: verdantflare-app
+workloadName: google-flow-channel
+station:
+  stationId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
+  organizationId: 01a0fbf9-0a33-7c31-90d0-a51e3b0a9781
+  installationId: 01a1f8b0-0000-7000-8000-000000000001
+  templateHash: ""
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: google-flow-v0.1.0
+  pullPolicy: Always
+replicas: 1
+nodeSelector:
+  kubernetes.io/hostname: verdentflare-5090
+egressProxy:
+  url: http://openclash.openclash.svc.cluster.local:1082
+  namespace: openclash
+  port: 1082
+channelDiscovery:
+  executionUrl: http://google-flow-channel.verdantflare-app.svc.cluster.local:8000
+  etcdUrl: http://etcd.verdantflare-station.svc.cluster.local:2379
+  scopeId: 01a0fae2-dbb6-700e-bcf7-99a39c757706
+gpuScheduler:
+  url: http://station-runtime.verdantflare-station.svc.cluster.local:5056
+  peakBudgetMiB: 2048
+  leaseReconcileTimeoutMinutes: 30
+  secretName: station-gpu-scheduler-client
+  secretKey: google-flow-token
+turn:
+  urls: "turn:192.168.1.200:3478?transport=udp,turn:192.168.1.200:3478?transport=tcp"
+  secretName: coturn-auth
+  secretKey: shared-secret
+  viewerPath: /apps/google-flow/desktop/
+secrets:
+  binding: google-flow-binding
+  managementAccess: google-flow-management-access
+  etcdClient: etcd-client-google-flow
+storage:
+  create: false
+  existingClaim: google-flow
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 20Gi
+  mountPath: /data/google-flow
+persistence:
+  create: false
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 20Gi
+networkPolicy:
+  enabled: true
+  ciliumHostTurn: true
+  turnPort: 3478
+cacheRetentionHours: 72
+modelCreditsJson: '{"nano2":0,"nano21":0,"nano-pro":0,"veo-lite":10,"veo-fast":20,"veo-quality":100,"omni-flash":10}'

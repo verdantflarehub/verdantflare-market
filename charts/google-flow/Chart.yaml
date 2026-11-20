@@ -1,0 +1,13 @@
+apiVersion: v2
+name: google-flow
+description: 管理 Google Flow 会员授权、节奏策略与登录桌面，为 Video 与 Image 提供会员渠道。
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+annotations:
+  verdantflare.com/app-id: google-flow
+  verdantflare.com/logo-file: logo.svg
+  verdantflare.com/channel-file: channel.yaml
+  verdantflare.com/capabilities: '["google-flow.membership"]'
+  verdantflare.com/models: '[]'
+  verdantflare.com/images: '[{"component":"gateway","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:google-flow-v0.1.0"}]'

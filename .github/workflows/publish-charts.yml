@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       charts:
-        description: "Space-separated chart names to publish (leave empty for all 14 Station charts)"
+        description: "Space-separated chart names to publish (leave empty for all default Station charts)"
         required: false
         default: ""
   push:

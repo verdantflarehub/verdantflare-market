@@ -1,0 +1,184 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.workloadName | default "google-flow-channel" }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+    {{- if .Values.station }}
+    {{- if .Values.station.stationId }}
+    station.verdantflare.com/station-id: {{ .Values.station.stationId | quote }}
+    {{- end }}
+    {{- if .Values.station.organizationId }}
+    station.verdantflare.com/organization-id: {{ .Values.station.organizationId | quote }}
+    {{- end }}
+    {{- if .Values.station.installationId }}
+    station.verdantflare.com/installation-id: {{ .Values.station.installationId | quote }}
+    {{- end }}
+    {{- if .Values.station.templateHash }}
+    station.verdantflare.com/template-hash: {{ .Values.station.templateHash | quote }}
+    {{- end }}
+    {{- end }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: {{ .Values.replicas | default 1 }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.workloadName | default "google-flow-channel" }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        checksum/channel-metadata: {{ .Files.Get "channel.yaml" | sha256sum }}
+      labels:
+        app.kubernetes.io/name: {{ .Values.workloadName | default "google-flow-channel" }}
+        verdantflare.io/gpu-scheduler-client: "true"
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - name: gateway
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
+        env:
+        - name: NVIDIA_DRIVER_CAPABILITIES
+          value: compute,utility,graphics,video,display
+        - name: CHANNEL_METADATA_FILE
+          value: /etc/verdantflare/channel.yaml
+        - name: CHANNEL_EXECUTION_URL
+          value: {{ .Values.channelDiscovery.executionUrl | quote }}
+        - name: CHANNEL_DISCOVERY_ETCD_URL
+          value: {{ .Values.channelDiscovery.etcdUrl | quote }}
+        - name: CHANNEL_DISCOVERY_SCOPE_ID
+          value: {{ .Values.channelDiscovery.scopeId | quote }}
+        - name: GOOGLE_FLOW_STATION_ID
+          value: {{ .Values.station.stationId | quote }}
+        - name: GOOGLE_FLOW_ORGANIZATION_ID
+          value: {{ .Values.station.organizationId | quote }}
+        - name: GOOGLE_FLOW_POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        - name: GOOGLE_FLOW_CONTAINER_ID
+          value: "pod-$(GOOGLE_FLOW_POD_UID)-gateway"
+        - name: GOOGLE_FLOW_SCHEDULER_URL
+          value: {{ .Values.gpuScheduler.url | quote }}
+        - name: GOOGLE_FLOW_PEAK_BUDGET_MIB
+          value: {{ .Values.gpuScheduler.peakBudgetMiB | default 2048 | quote }}
+        - name: GOOGLE_FLOW_LEASE_RECONCILE_TIMEOUT_MINUTES
+          value: {{ .Values.gpuScheduler.leaseReconcileTimeoutMinutes | default 30 | quote }}
+        - name: GOOGLE_FLOW_SCHEDULER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.gpuScheduler.secretName | default "station-gpu-scheduler-client" }}
+              key: {{ .Values.gpuScheduler.secretKey | default "google-flow-token" }}
+        - name: GOOGLE_FLOW_TURN_URLS
+          value: {{ .Values.turn.urls | quote }}
+        - name: GOOGLE_FLOW_TURN_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.turn.secretName | default "coturn-auth" }}
+              key: {{ .Values.turn.secretKey | default "shared-secret" }}
+              optional: true
+        - name: GOOGLE_FLOW_VIEWER_PATH
+          value: {{ .Values.turn.viewerPath | default "/apps/google-flow/desktop/" | quote }}
+        - name: GOOGLE_FLOW_CACHE_RETENTION_HOURS
+          value: {{ .Values.cacheRetentionHours | default 72 | quote }}
+        - name: GOOGLE_FLOW_MODEL_CREDITS
+          value: {{ .Values.modelCreditsJson | default "{}" | quote }}
+        - name: GFLOW_CLI_BROWSER_PROXY
+          value: {{ .Values.egressProxy.url | quote }}
+        - name: HTTPS_PROXY
+          value: {{ .Values.egressProxy.url | quote }}
+        - name: https_proxy
+          value: {{ .Values.egressProxy.url | quote }}
+        - name: HTTP_PROXY
+          value: {{ .Values.egressProxy.url | quote }}
+        - name: http_proxy
+          value: {{ .Values.egressProxy.url | quote }}
+        - name: NO_PROXY
+          value: "127.0.0.1,localhost,.svc,.svc.cluster.local"
+        - name: no_proxy
+          value: "127.0.0.1,localhost,.svc,.svc.cluster.local"
+        envFrom:
+        - secretRef:
+            name: {{ .Values.secrets.binding | default "google-flow-binding" }}
+        - secretRef:
+            name: {{ .Values.secrets.managementAccess | default "google-flow-management-access" }}
+        - secretRef:
+            name: {{ .Values.secrets.etcdClient | default "etcd-client-google-flow" }}
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        - containerPort: 8001
+          name: management
+          protocol: TCP
+        - containerPort: 48083
+          name: webrtc
+          protocol: TCP
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: http
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 2
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: http
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 2
+        resources:
+          limits:
+            nvidia.com/gpu: "1"
+        securityContext:
+          allowPrivilegeEscalation: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: {{ .Values.storage.mountPath | default "/data/google-flow" }}
+          name: data
+        - mountPath: /etc/verdantflare/channel.yaml
+          name: channel-metadata
+          readOnly: true
+          subPath: channel.yaml
+        - mountPath: /dev/shm
+          name: dshm
+        - mountPath: /run/user/1000
+          name: xdg-runtime
+      dnsPolicy: ClusterFirst
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 1000
+      terminationGracePeriodSeconds: 45
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.existingClaim | default "google-flow" }}
+      - name: channel-metadata
+        configMap:
+          name: {{ .Values.workloadName | default "google-flow-channel" }}-metadata
+      - name: dshm
+        emptyDir:
+          medium: Memory
+          sizeLimit: 2Gi
+      - name: xdg-runtime
+        emptyDir:
+          medium: Memory
+          sizeLimit: 256Mi

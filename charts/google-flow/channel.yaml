@@ -1,0 +1,148 @@
+schema_version: 1
+channel_id: google-flow
+channel_name: Google Flow
+capabilities:
+- capability_id: image.generate.nano2
+  type: image
+  model_id: nano2
+  display_name: Nano Banana 2
+  operation: image.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+        minLength: 1
+        maxLength: 10000
+      aspect_ratio:
+        enum:
+        - '1:1'
+        - '16:9'
+        - '9:16'
+        - '4:3'
+        - '3:4'
+  execution_state: adapter_connected_unverified
+- capability_id: image.generate.nano21
+  type: image
+  model_id: nano21
+  display_name: Nano Banana 2.1
+  operation: image.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+        minLength: 1
+        maxLength: 10000
+      aspect_ratio:
+        enum:
+        - '1:1'
+        - '16:9'
+        - '9:16'
+        - '4:3'
+        - '3:4'
+  execution_state: adapter_connected_unverified
+- capability_id: image.generate.nano-pro
+  type: image
+  model_id: nano-pro
+  display_name: Nano Banana Pro
+  operation: image.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+        minLength: 1
+        maxLength: 10000
+      aspect_ratio:
+        enum:
+        - '1:1'
+        - '16:9'
+        - '9:16'
+        - '4:3'
+        - '3:4'
+  execution_state: adapter_connected_unverified
+- capability_id: video.generate.veo-lite
+  type: video
+  model_id: veo-lite
+  display_name: Veo Lite
+  operation: video.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+        minLength: 1
+        maxLength: 10000
+      duration_seconds:
+        type: integer
+        minimum: 4
+        maximum: 8
+      aspect_ratio:
+        enum:
+        - '16:9'
+        - '9:16'
+  execution_state: adapter_connected_unverified
+- capability_id: video.generate.veo-fast
+  type: video
+  model_id: veo-fast
+  display_name: Veo 3.1 Fast
+  operation: video.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+        minLength: 1
+        maxLength: 10000
+      duration_seconds:
+        type: integer
+        minimum: 4
+        maximum: 8
+      aspect_ratio:
+        enum:
+        - '16:9'
+        - '9:16'
+  execution_state: adapter_connected_unverified
+- capability_id: video.generate.veo-quality
+  type: video
+  model_id: veo-quality
+  display_name: Veo 3.1 Quality
+  operation: video.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+        minLength: 1
+        maxLength: 10000
+      duration_seconds:
+        type: integer
+        minimum: 4
+        maximum: 8
+      aspect_ratio:
+        enum:
+        - '16:9'
+        - '9:16'
+  execution_state: adapter_connected_unverified
+- capability_id: video.generate.omni-flash
+  type: video
+  model_id: omni-flash
+  display_name: Omni Flash
+  operation: video.generate
+  parameter_schema:
+    type: object
+    properties:
+      prompt:
+        type: string
+        minLength: 1
+        maxLength: 10000
+      duration_seconds:
+        type: integer
+        minimum: 4
+        maximum: 8
+      aspect_ratio:
+        enum:
+        - '16:9'
+        - '9:16'
+  execution_state: adapter_connected_unverified

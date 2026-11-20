@@ -29,6 +29,7 @@ services:
   chatgptChannelUrl: http://chatgpt-channel.verdantflare-app.svc.cluster.local:8001
   grokChannelUrl: http://grok-channel.verdantflare-app.svc.cluster.local:8001
   googleChannelUrl: http://google-channel.verdantflare-app.svc.cluster.local:8001
+  googleFlowChannelUrl: http://google-flow-channel.verdantflare-app.svc.cluster.local:8000
   mossImageApiUrl: http://image-moss.verdantflare-app.svc.cluster.local:8000
   faceFusionApiUrl: http://image-face-fusion.verdantflare-app.svc.cluster.local:8000
   allowedHosts: mcp.dev.verdantflarehub.com,mcp.dev.verdantflarehub.com:*,studio.dev.verdantflarehub.com,studio.dev.verdantflarehub.com:*,192.168.1.200:*,127.0.0.1:*,localhost:*,[::1]:*,image-mcp-server:*,image-mcp-server.verdantflare-app:*,image-mcp-server.verdantflare-app.svc.cluster.local:*,*.cluster.local:*

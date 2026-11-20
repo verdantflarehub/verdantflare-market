@@ -171,6 +171,14 @@ spec:
             secretKeyRef:
               key: IMAGE_GOOGLE_CHANNEL_TOKEN
               name: image-channel-authority
+        - name: IMAGE_GOOGLE_FLOW_CHANNEL_URL
+          value: {{ (dig "googleFlowChannelUrl" (printf "http://google-flow-channel.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: IMAGE_GOOGLE_FLOW_CHANNEL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: GOOGLE_FLOW_INTERNAL_TOKEN
+              name: google-flow-binding
+              optional: true
         - name: STATION_ORGANIZATION_ID
           value: {{ (dig "organizationId" "01a0fbf9-0a33-7c31-90d0-a51e3b0a9781" (.Values.station | default dict)) | quote }}
         - name: COMFYUI_INTERNAL_ORIGIN

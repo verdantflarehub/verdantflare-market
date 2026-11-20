@@ -29,6 +29,7 @@ modelCatalog:
   localConfigMap: video-models-local-v0-1-3
   higgsfieldConfigMap: video-models-higgsfield-v0-1-2
   falConfigMap: video-models-fal-v0-1-1
+  googleFlowConfigMap: video-models-google-flow-v0-1-0
 services:
   etcdEndpoints: http://etcd.verdantflare-station.svc.cluster.local:2379
   artifactServiceUrl: https://artifact.verdantflare-station.svc.cluster.local:8094
@@ -41,6 +42,8 @@ services:
   h3SingularityRuntimeUrl: http://video-minimax-h3-singularity.verdantflare-app.svc.cluster.local:8000
   regenerate2kRuntimeUrl: http://video-minimax-h3-regenerate-2k.verdantflare-app.svc.cluster.local:8000
   higgsfieldGatewayUrl: http://higgsfield-channel.verdantflare-app.svc.cluster.local:8000
+  googleFlowGatewayUrl: http://google-flow-channel.verdantflare-app.svc.cluster.local:8000
+  googleFlowEnabled: "true"
   falGatewayUrl: http://fal-channel.verdantflare-app.svc.cluster.local:8001
   runtimeBaseUrl: http://video-mcp-server.verdantflare-app.svc.cluster.local:8000
   allowedHosts: 192.168.1.200:*,127.0.0.1:*,localhost:*,[::1]:*,video-mcp-server:*,video-mcp-server.verdantflare-app:*,video-mcp-server.verdantflare-app.svc.cluster.local:*,*.cluster.local:*

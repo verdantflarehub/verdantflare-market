@@ -1,0 +1,122 @@
+{{- if .Values.networkPolicy | default dict | dig "enabled" true }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Values.workloadName | default "google-flow-channel" }}-policy
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.workloadName | default "google-flow-channel" }}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchExpressions:
+        - key: app.kubernetes.io/name
+          operator: In
+          values:
+          - video-mcp-server
+          - image-mcp-server
+    ports:
+    - protocol: TCP
+      port: 8000
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: verdantflare-station
+      podSelector:
+        matchExpressions:
+        - key: app.kubernetes.io/name
+          operator: In
+          values:
+          - verdantflare-studio
+          - station-runtime
+    ports:
+    - protocol: TCP
+      port: 8001
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: verdantflare-station
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: verdantflare-studio
+    ports:
+    - protocol: TCP
+      port: 48083
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: {{ .Values.egressProxy.namespace | default "openclash" }}
+    ports:
+    - protocol: TCP
+      port: {{ .Values.egressProxy.port | default 1082 }}
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: verdantflare-station
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: etcd
+    ports:
+    - protocol: TCP
+      port: 2379
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: verdantflare-station
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: station-runtime
+    ports:
+    - protocol: TCP
+      port: 5056
+  - to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: video-mcp-server
+    ports:
+    - protocol: TCP
+      port: 8000
+{{- if .Values.networkPolicy | default dict | dig "ciliumHostTurn" true }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ .Values.workloadName | default "google-flow-channel" }}-host-turn
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    station.verdantflare.com/app-id: {{ .Values.appId | default .Chart.Name | quote }}
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.workloadName | default "google-flow-channel" }}
+  egress:
+  - toEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: {{ .Values.networkPolicy.turnPort | default 3478 | quote }}
+        protocol: UDP
+      - port: {{ .Values.networkPolicy.turnPort | default 3478 | quote }}
+        protocol: TCP
+{{- end }}
+{{- end }}
