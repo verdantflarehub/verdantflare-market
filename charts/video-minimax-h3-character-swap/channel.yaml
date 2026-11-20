@@ -1,0 +1,12 @@
+schemaVersion: 1
+appId: video-minimax-h3-character-swap
+providerId: character-swap
+displayName: H3-Character-Swap
+category: local-channel
+version: 0.1.0
+logo: logo.svg
+capabilities:
+- video.character_swap
+service:
+  name: video-minimax-h3-character-swap
+  port: 8000
