@@ -34,7 +34,9 @@ spec:
         checksum/channel-metadata: {{ .Files.Get "channel.yaml" | sha256sum }}
       labels:
         app.kubernetes.io/name: {{ .Values.workloadName | default "google-flow-channel" }}
+        {{- if dig "enabled" false (.Values.gpu | default dict) }}
         verdantflare.io/gpu-scheduler-client: "true"
+        {{- end }}
     spec:
       automountServiceAccountToken: false
       containers:
@@ -42,8 +44,13 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
         env:
+        {{- if dig "enabled" false (.Values.gpu | default dict) }}
         - name: NVIDIA_DRIVER_CAPABILITIES
           value: compute,utility,graphics,video,display
+        {{- else }}
+        - name: GOOGLE_FLOW_NO_GPU
+          value: "true"
+        {{- end }}
         - name: CHANNEL_METADATA_FILE
           value: /etc/verdantflare/channel.yaml
         - name: CHANNEL_EXECUTION_URL
@@ -62,6 +69,7 @@ spec:
               fieldPath: metadata.uid
         - name: GOOGLE_FLOW_CONTAINER_ID
           value: "pod-$(GOOGLE_FLOW_POD_UID)-gateway"
+        {{- if dig "enabled" false (.Values.gpu | default dict) }}
         - name: GOOGLE_FLOW_SCHEDULER_URL
           value: {{ .Values.gpuScheduler.url | quote }}
         - name: GOOGLE_FLOW_PEAK_BUDGET_MIB
@@ -81,8 +89,9 @@ spec:
               name: {{ .Values.turn.secretName | default "coturn-auth" }}
               key: {{ .Values.turn.secretKey | default "shared-secret" }}
               optional: true
+        {{- end }}
         - name: GOOGLE_FLOW_VIEWER_PATH
-          value: {{ .Values.turn.viewerPath | default "/apps/google-flow/desktop/" | quote }}
+          value: {{ dig "viewerPath" "/apps/google-flow/desktop/" (.Values.turn | default dict) | quote }}
         - name: GOOGLE_FLOW_CACHE_RETENTION_HOURS
           value: {{ .Values.cacheRetentionHours | default 72 | quote }}
         - name: GOOGLE_FLOW_MODEL_CREDITS
@@ -136,11 +145,13 @@ spec:
           periodSeconds: 5
           successThreshold: 1
           timeoutSeconds: 2
+        {{- if dig "enabled" false (.Values.gpu | default dict) }}
         resources:
           limits:
             nvidia.com/gpu: "1"
+        {{- end }}
         securityContext:
-          allowPrivilegeEscalation: true
+          allowPrivilegeEscalation: {{ dig "enabled" false (.Values.gpu | default dict) }}
           runAsNonRoot: true
           runAsUser: 1000
           runAsGroup: 1000

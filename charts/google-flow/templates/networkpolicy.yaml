@@ -79,6 +79,7 @@ spec:
     ports:
     - protocol: TCP
       port: 2379
+  {{- if dig "enabled" false (.Values.gpu | default dict) }}
   - to:
     - namespaceSelector:
         matchLabels:
@@ -89,6 +90,7 @@ spec:
     ports:
     - protocol: TCP
       port: 5056
+  {{- end }}
   - to:
     - podSelector:
         matchLabels:
@@ -96,7 +98,7 @@ spec:
     ports:
     - protocol: TCP
       port: 8000
-{{- if .Values.networkPolicy | default dict | dig "ciliumHostTurn" true }}
+{{- if .Values.networkPolicy | default dict | dig "ciliumHostTurn" false }}
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
