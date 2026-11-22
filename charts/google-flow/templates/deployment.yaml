@@ -96,6 +96,10 @@ spec:
           value: {{ .Values.cacheRetentionHours | default 72 | quote }}
         - name: GOOGLE_FLOW_MODEL_CREDITS
           value: {{ .Values.modelCreditsJson | default "{}" | quote }}
+        - name: GOOGLE_FLOW_MAX_ACCOUNTS
+          value: {{ .Values.multiAccount.maxAccounts | default 8 | quote }}
+        - name: GOOGLE_FLOW_ALLOWED_PROXY_HOSTS
+          value: {{ .Values.multiAccount.allowedProxyHosts | default "openclash.openclash.svc.cluster.local" | quote }}
         - name: GFLOW_CLI_BROWSER_PROXY
           value: {{ .Values.egressProxy.url | quote }}
         - name: HTTPS_PROXY

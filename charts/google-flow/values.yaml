@@ -18,6 +18,11 @@ egressProxy:
   url: http://openclash.openclash.svc.cluster.local:1082
   namespace: openclash
   port: 1082
+  portRangeStart: 1080
+  portRangeEnd: 1099
+multiAccount:
+  maxAccounts: 8
+  allowedProxyHosts: "openclash.openclash.svc.cluster.local"
 channelDiscovery:
   executionUrl: http://google-flow-channel.verdantflare-app.svc.cluster.local:8000
   etcdUrl: http://etcd.verdantflare-station.svc.cluster.local:2379

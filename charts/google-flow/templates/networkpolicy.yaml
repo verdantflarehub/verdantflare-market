@@ -68,7 +68,8 @@ spec:
           kubernetes.io/metadata.name: {{ .Values.egressProxy.namespace | default "openclash" }}
     ports:
     - protocol: TCP
-      port: {{ .Values.egressProxy.port | default 1082 }}
+      port: {{ .Values.egressProxy.portRangeStart | default 1080 }}
+      endPort: {{ .Values.egressProxy.portRangeEnd | default 1099 }}
   - to:
     - namespaceSelector:
         matchLabels:
