@@ -100,6 +100,14 @@ spec:
           value: {{ .Values.multiAccount.maxAccounts | default 8 | quote }}
         - name: GOOGLE_FLOW_ALLOWED_PROXY_HOSTS
           value: {{ .Values.multiAccount.allowedProxyHosts | default "openclash.openclash.svc.cluster.local" | quote }}
+        - name: GOOGLE_FLOW_NETWORK_URL
+          value: {{ .Values.multiAccount.networkUrl | default "http://app-network.verdantflare-app.svc.cluster.local:8080" | quote }}
+        - name: GOOGLE_FLOW_NETWORK_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.multiAccount.networkSecretName | default "network-channel-google-flow-access" }}
+              key: token
+              optional: true
         - name: GFLOW_CLI_BROWSER_PROXY
           value: {{ .Values.egressProxy.url | quote }}
         - name: HTTPS_PROXY

@@ -99,6 +99,13 @@ spec:
     ports:
     - protocol: TCP
       port: 8000
+  - to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: app-network
+    ports:
+    - protocol: TCP
+      port: 8080
 {{- if .Values.networkPolicy | default dict | dig "ciliumHostTurn" false }}
 ---
 apiVersion: cilium.io/v2
