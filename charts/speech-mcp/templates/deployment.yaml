@@ -76,6 +76,8 @@ spec:
             {{- end }}
             - name: GPU_TASK_DEPLOYMENT
               value: {{ (dig "deployment" "speech-indextts2" (.Values.gpuTask | default dict)) | quote }}
+            - name: GPU_COSYVOICE3_DEPLOYMENT
+              value: {{ (dig "cosyvoice3Deployment" "speech-cosyvoice3" (.Values.gpuTask | default dict)) | quote }}
             - name: GPU_IDLE_SECONDS
               value: {{ (dig "idleSeconds" "600" (.Values.gpuTask | default dict)) | quote }}
             - name: STATION_GPU_SCHEDULER_URL
