@@ -200,6 +200,15 @@ spec:
             secretKeyRef:
               key: VIDEO_MCP_BEARER_TOKEN
               name: video-mcp-auth
+        - name: VIDEO_LIPSYNC_RUNTIME_URL
+          value: {{ (dig "lipsyncRuntimeUrl" (printf "http://video-lipsync.%s.svc.cluster.local:8000" .Release.Namespace) (.Values.services | default dict)) | quote }}
+        - name: VIDEO_LIPSYNC_RUNTIME_VERSION
+          value: video-lipsync-v0.1.0
+        - name: VIDEO_LIPSYNC_RUNTIME_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: VIDEO_MCP_BEARER_TOKEN
+              name: video-mcp-auth
         - name: ETCD_ENDPOINTS
           value: {{ (dig "etcdEndpoints" "http://etcd.verdantflare-station.svc.cluster.local:2379" (.Values.services | default dict)) | quote }}
         - name: CHANNEL_DISCOVERY_ETCD_URL
@@ -372,14 +381,14 @@ spec:
               items:
               - key: channels.yaml
                 path: channels.yaml
-              name: {{ (dig "channelsConfigMap" "video-model-channels-v0-1-6" (.Values.modelCatalog | default dict)) | quote }}
+              name: {{ (dig "channelsConfigMap" "video-model-channels-v0-1-7" (.Values.modelCatalog | default dict)) | quote }}
           - configMap:
               items:
               - key: channel-catalog.yaml
                 path: local/channel-catalog.yaml
               - key: review.yaml
                 path: local/review.yaml
-              name: {{ (dig "localConfigMap" "video-models-local-v0-1-3" (.Values.modelCatalog | default dict)) | quote }}
+              name: {{ (dig "localConfigMap" "video-models-local-v0-1-4" (.Values.modelCatalog | default dict)) | quote }}
           - configMap:
               items:
               - key: channel-catalog.yaml

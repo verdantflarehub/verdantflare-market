@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.workloadName | default "video-lipsync" }}-metadata
+  namespace: {{ .Release.Namespace }}
+data:
+  channel.yaml: |-
+{{ .Files.Get "channel.yaml" | indent 4 }}

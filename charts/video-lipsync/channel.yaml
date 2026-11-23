@@ -1,0 +1,6 @@
+channel_id: local
+service: video-lipsync
+model_id: latentsync-1.6
+display_name: LatentSync 1.6
+business_type: video_lipsync
+execution_status: ready

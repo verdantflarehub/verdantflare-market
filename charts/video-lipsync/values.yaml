@@ -1,0 +1,35 @@
+appId: video-lipsync
+appVersion: 0.1.0
+namespace: verdantflare-app
+workloadName: video-lipsync
+station:
+  stationId: ""
+  organizationId: ""
+  installationId: ""
+  templateHash: ""
+image:
+  repository: registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app
+  tag: video-lipsync-v0.1.0
+  pullPolicy: Always
+replicas: 0
+networkPolicy:
+  enabled: true
+  clientName: video-mcp-server
+runtime:
+  minFreeVramMib: "28672"
+  enableCpuOffload: "1"
+  artifactRoot: /data/projects/video
+  gpuGrantPolicy: require
+storage:
+  create: false
+  existingClaim: models-latentsync
+  projectsClaim: video-projects
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 20Gi
+persistence:
+  create: false
+  storageClassName: local-nvme
+  volumeName: ""
+  size: 20Gi
+pvcs: []

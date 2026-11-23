@@ -1,0 +1,13 @@
+apiVersion: v2
+name: video-lipsync
+description: 5090 asynchronous video lip-sync runtime backed by ByteDance LatentSync 1.6.
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+annotations:
+  verdantflare.com/app-id: video-lipsync
+  verdantflare.com/logo-file: logo.svg
+  verdantflare.com/channel-file: channel.yaml
+  verdantflare.com/capabilities: '["video.lipsync"]'
+  verdantflare.com/models: '["LatentSync 1.6"]'
+  verdantflare.com/images: '[{"component":"runtime","image":"registry.cn-qingdao.aliyuncs.com/wod/verdantflare-app:video-lipsync-v0.1.0"}]'
